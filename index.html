@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MyLittlePenguin" />
+  <meta name="theme-color" content="#0a1628" />
+  <title>MyLittlePenguin 🐧</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/penguin-icon-180.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       SPLASH SCREEN
+  ═══════════════════════════════════════════ -->
+  <div id="splash" class="screen active">
+    <div class="splash-scene">
+      <div class="splash-aurora"></div>
+      <div class="splash-stars"></div>
+      <div class="splash-penguin">
+        <div class="sp-body">
+          <div class="sp-belly"></div>
+          <div class="sp-face">
+            <div class="sp-eye left"></div>
+            <div class="sp-eye right"></div>
+            <div class="sp-beak"></div>
+          </div>
+          <div class="sp-wing left"></div>
+          <div class="sp-wing right"></div>
+          <div class="sp-feet">
+            <div class="sp-foot left"></div>
+            <div class="sp-foot right"></div>
+          </div>
+          <div class="sp-scarf"></div>
+        </div>
+      </div>
+      <h1 class="splash-title">MyLittle<span>Penguin</span></h1>
+      <p class="splash-subtitle">Ton compagnon de l'Antarctique 🧊</p>
+      <div class="splash-loader">
+        <div class="loader-track"><div class="loader-fill"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       ONBOARDING SCREEN
+  ═══════════════════════════════════════════ -->
+  <div id="onboarding" class="screen">
+    <div class="onboarding-bg">
+      <div class="ob-aurora"></div>
+    </div>
+    <div class="onboarding-content">
+      <div class="ob-penguin">
+        <div class="ob-body">
+          <div class="ob-belly"></div>
+          <div class="ob-face">
+            <div class="ob-eye left"></div>
+            <div class="ob-eye right"></div>
+            <div class="ob-beak"></div>
+          </div>
+          <div class="ob-wing left"></div>
+          <div class="ob-wing right"></div>
+          <div class="ob-feet">
+            <div class="ob-foot left"></div>
+            <div class="ob-foot right"></div>
+          </div>
+        </div>
+        <div class="ob-speech-bubble">
+          <span id="ob-speech-text">Salut ! Je suis Pingu 🐧<br/>Créons ton expédition !</span>
+        </div>
+      </div>
+
+      <div class="ob-card" id="ob-step-1">
+        <h2>Choisis ton pseudo</h2>
+        <p class="ob-hint">Unique, sans email. Promis.</p>
+        <div class="ob-input-wrap">
+          <span class="ob-input-icon">🐧</span>
+          <input type="text" id="pseudo-input" placeholder="ex: IceExplorer42" maxlength="20" autocomplete="off" />
+        </div>
+        <div class="ob-error" id="pseudo-error"></div>
+        <button class="ob-btn" id="pseudo-next-btn">Continuer →</button>
+      </div>
+
+      <div class="ob-card hidden" id="ob-step-2">
+        <h2>Depuis quand tiens-tu bon ?</h2>
+        <p class="ob-hint">Choisis une date ou entre un nombre de jours</p>
+        <div class="ob-toggle">
+          <button class="ob-toggle-btn active" id="toggle-date" onclick="switchInputMode('date')">📅 Date</button>
+          <button class="ob-toggle-btn" id="toggle-days" onclick="switchInputMode('days')">🔢 Jours</button>
+        </div>
+        <div class="ob-input-wrap" id="date-wrap">
+          <span class="ob-input-icon">📅</span>
+          <input type="date" id="date-input" />
+        </div>
+        <div class="ob-input-wrap hidden" id="days-wrap">
+          <span class="ob-input-icon">🔢</span>
+          <input type="number" id="days-input" placeholder="ex: 42" min="0" max="9999" />
+        </div>
+        <div class="ob-preview" id="ob-preview"></div>
+        <div class="ob-error" id="date-error"></div>
+        <button class="ob-btn" id="date-next-btn">Commencer l'expédition 🚀</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN APP SHELL
+  ═══════════════════════════════════════════ -->
+  <div id="app" class="screen">
+
+    <!-- PAGE 1: BANQUISE -->
+    <div id="page-banquise" class="page active">
+      <div class="banquise-scene">
+        <!-- Sky & Aurora -->
+        <div class="sky">
+          <div class="aurora a1"></div>
+          <div class="aurora a2"></div>
+          <div class="aurora a3"></div>
+          <div class="stars-container" id="stars-container"></div>
+        </div>
+
+        <!-- Animals floating around -->
+        <div class="animals-layer" id="animals-layer"></div>
+
+        <!-- Ice Scene -->
+        <div class="ice-scene">
+          <div class="ice-back-mountains"></div>
+          <div class="ocean-base">
+            <div class="ocean-wave w1"></div>
+            <div class="ocean-wave w2"></div>
+            <div class="ocean-wave w3"></div>
+          </div>
+          <div class="iceberg-main">
+            <div class="iceberg-top"></div>
+            <div class="iceberg-underwater"></div>
+            <div class="iceberg-shine"></div>
+            <!-- Main penguin on iceberg -->
+            <div class="main-penguin" id="main-penguin">
+              <div class="mp-body">
+                <div class="mp-belly"></div>
+                <div class="mp-face">
+                  <div class="mp-eye left"></div>
+                  <div class="mp-eye right"></div>
+                  <div class="mp-beak"></div>
+                </div>
+                <div class="mp-wing left"></div>
+                <div class="mp-wing right"></div>
+                <div class="mp-feet">
+                  <div class="mp-foot left"></div>
+                  <div class="mp-foot right"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Small floating icebergs -->
+          <div class="ice-chunk ic1"></div>
+          <div class="ice-chunk ic2"></div>
+          <div class="ice-chunk ic3"></div>
+        </div>
+      </div>
+
+      <!-- Scroll content -->
+      <div class="banquise-scroll-content">
+        <!-- Animals summary -->
+        <div class="scroll-section animal-summary">
+          <h3 class="section-label">Ton troupeau 🐾</h3>
+          <div class="animal-count-display" id="animal-count-display"></div>
+        </div>
+
+        <!-- Days panel held by penguin -->
+        <div class="scroll-section days-panel-section">
+          <div class="days-panel-penguin">
+            <div class="dp-penguin">
+              <div class="dp-body">
+                <div class="dp-belly"></div>
+                <div class="dp-face">
+                  <div class="dp-eye left"></div>
+                  <div class="dp-eye right"></div>
+                  <div class="dp-beak"></div>
+                </div>
+                <div class="dp-wing left"></div>
+                <div class="dp-wing right"></div>
+                <div class="dp-feet">
+                  <div class="dp-foot left"></div>
+                  <div class="dp-foot right"></div>
+                </div>
+              </div>
+            </div>
+            <div class="days-sign">
+              <div class="days-sign-post"></div>
+              <div class="days-sign-board">
+                <div class="dsb-label">EN ROUTE DEPUIS</div>
+                <div class="dsb-number" id="days-count-display">0</div>
+                <div class="dsb-unit">JOURS</div>
+                <div class="dsb-streak">🔥 <span id="streak-display">0</span> de suite</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kill the Penguin -->
+        <div class="scroll-section kill-section">
+          <div class="kill-zone">
+            <div class="kill-warning">⚠️ Zone Dangereuse ⚠️</div>
+            <button class="kill-btn" id="kill-btn">
+              <div class="kill-cross">✕</div>
+              <div class="kill-label">KILL THE PENGUIN</div>
+              <div class="kill-sublabel">Remet le compteur à zéro</div>
+            </button>
+          </div>
+        </div>
+
+        <div class="bottom-spacer"></div>
+      </div>
+    </div>
+
+    <!-- PAGE 2: PROFIL -->
+    <div id="page-profil" class="page">
+      <div class="profil-bg"></div>
+      <div class="profil-content">
+        <div class="profil-header">
+          <div class="profil-avatar-wrap">
+            <div class="profil-avatar" id="profil-avatar-display">
+              <!-- CSS penguin avatar -->
+            </div>
+            <button class="avatar-edit-btn" id="avatar-edit-btn">✎</button>
+          </div>
+          <h1 class="profil-username" id="profil-username">—</h1>
+          <div class="profil-level-badge" id="profil-level-badge">
+            <span class="level-icon">🐣</span>
+            <span class="level-name" id="level-name-display">Poussin Polaire</span>
+          </div>
+        </div>
+
+        <!-- Avatar picker -->
+        <div class="avatar-picker hidden" id="avatar-picker">
+          <h3>Choisis ton avatar</h3>
+          <div class="avatar-grid" id="avatar-grid"></div>
+          <button class="ob-btn" id="avatar-confirm-btn">Confirmer</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="profil-stats">
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-value" id="stat-days">0</div>
+            <div class="stat-label">Jours totaux</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🐦</div>
+            <div class="stat-value" id="stat-mouettes">0</div>
+            <div class="stat-label">Mouettes</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🐧</div>
+            <div class="stat-value" id="stat-pingouins">0</div>
+            <div class="stat-label">Pingouins</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🐋</div>
+            <div class="stat-value" id="stat-orques">0</div>
+            <div class="stat-label">Orques</div>
+          </div>
+        </div>
+
+        <!-- Level progression -->
+        <div class="profil-section">
+          <h3 class="section-label">Progression</h3>
+          <div class="level-progress-card">
+            <div class="lp-current">
+              <span id="lp-icon">🐣</span>
+              <span id="lp-current-name">Poussin Polaire</span>
+            </div>
+            <div class="lp-bar-wrap">
+              <div class="lp-bar"><div class="lp-fill" id="lp-fill"></div></div>
+              <div class="lp-info" id="lp-info"></div>
+            </div>
+            <div class="lp-next" id="lp-next">→ <span id="lp-next-name">Maître des Mouettes</span></div>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="profil-section">
+          <h3 class="section-label">Paramètres</h3>
+          <div class="settings-list">
+            <div class="setting-item">
+              <div class="si-left">
+                <span class="si-icon">🔔</span>
+                <div>
+                  <div class="si-label">Notifications</div>
+                  <div class="si-sub">Amis et messages</div>
+                </div>
+              </div>
+              <div class="toggle-switch" id="notif-toggle" onclick="toggleNotif()">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+            <div class="setting-item" id="privacy-setting">
+              <div class="si-left">
+                <span class="si-icon">🏔️</span>
+                <div>
+                  <div class="si-label">Ma banquise</div>
+                  <div class="si-sub">Visible par mes amis</div>
+                </div>
+              </div>
+              <div class="toggle-switch active" id="privacy-toggle" onclick="togglePrivacy()">
+                <div class="toggle-knob"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logout -->
+        <div class="profil-section">
+          <button class="logout-btn" id="logout-btn">
+            <span>❄️</span> Quitter la banquise
+          </button>
+        </div>
+
+        <div class="bottom-spacer"></div>
+      </div>
+    </div>
+
+    <!-- PAGE 3: AMIS -->
+    <div id="page-amis" class="page">
+      <div class="amis-bg"></div>
+      <div class="amis-content">
+        <div class="amis-header">
+          <h1>Explorateurs 🗺️</h1>
+          <button class="add-friend-btn" id="open-add-friend-btn">+ Ajouter</button>
+        </div>
+
+        <!-- Add friend modal-like section -->
+        <div class="add-friend-panel hidden" id="add-friend-panel">
+          <div class="afp-inner">
+            <h3>Trouver un explorer</h3>
+            <div class="ob-input-wrap">
+              <span class="ob-input-icon">🔍</span>
+              <input type="text" id="search-friend-input" placeholder="Pseudo exact..." autocomplete="off" />
+            </div>
+            <div id="search-result" class="search-result"></div>
+            <button class="ob-btn" id="search-friend-btn">Chercher</button>
+            <button class="cancel-btn" id="cancel-add-btn">Annuler</button>
+          </div>
+        </div>
+
+        <!-- Friends list -->
+        <div class="friends-list" id="friends-list">
+          <div class="empty-friends">
+            <div class="ef-penguin">🐧</div>
+            <p>Ton expédition est encore solitaire…<br/>Ajoute des amis pour partager l'aventure !</p>
+          </div>
+        </div>
+
+        <!-- Messages -->
+        <div class="profil-section">
+          <h3 class="section-label">Messages & Cadeaux 🎁</h3>
+          <div class="messages-area" id="messages-area">
+            <div class="empty-messages">Aucun message pour l'instant 📭</div>
+          </div>
+          <div class="message-composer" id="message-composer" style="display:none;">
+            <div class="mc-to" id="mc-to-label"></div>
+            <div class="mc-animals">
+              <button class="mc-animal-btn" onclick="sendAnimal('mouette')">🐦 Mouette</button>
+              <button class="mc-animal-btn" onclick="sendAnimal('pingouin')">🐧 Pingouin</button>
+              <button class="mc-animal-btn" onclick="sendAnimal('orque')">🐋 Orque</button>
+            </div>
+            <textarea id="mc-text" placeholder="Écris un message..." maxlength="200"></textarea>
+            <button class="ob-btn small" id="mc-send-btn">Envoyer ✈️</button>
+          </div>
+        </div>
+
+        <div class="bottom-spacer"></div>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav" id="bottom-nav">
+      <button class="nav-btn active" data-page="banquise" onclick="switchPage('banquise')">
+        <span class="nav-icon">🏔️</span>
+        <span class="nav-label">Banquise</span>
+      </button>
+      <button class="nav-btn" data-page="amis" onclick="switchPage('amis')">
+        <span class="nav-icon">🗺️</span>
+        <span class="nav-label">Amis</span>
+      </button>
+      <button class="nav-btn" data-page="profil" onclick="switchPage('profil')">
+        <span class="nav-icon">🐧</span>
+        <span class="nav-label">Profil</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- Kill confirm modal -->
+  <div class="modal-overlay hidden" id="kill-modal">
+    <div class="modal-card">
+      <div class="modal-penguin-dead">💀</div>
+      <h3>Tu es sûr·e ?</h3>
+      <p>Tous tes animaux vont disparaître. Le compte repart de zéro demain.</p>
+      <div class="modal-btns">
+        <button class="modal-cancel" onclick="closeKillModal()">Annuler</button>
+        <button class="modal-confirm" onclick="confirmKill()">Oui, tout effacer ☠️</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="js/supabase-config.js"></script>
+  <script src="js/animals.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
