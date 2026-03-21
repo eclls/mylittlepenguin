@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
@@ -8,416 +9,824 @@
   <meta name="apple-mobile-web-app-title" content="MyLittlePenguin" />
   <meta name="theme-color" content="#0a1628" />
   <title>MyLittlePenguin 🐧</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="apple-touch-icon" href="icons/penguin-icon-180.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+:root{--night:#0a1628;--deep:#0d2240;--polar:#1a3a5c;--ice:#2a6fa8;--glacier:#5ba8d4;--sky:#a8d8f0;--teal:#4ecdc4;--snow:#f0f8ff;--belly:#f5f0e8;--black:#1a1a2e;--beak:#ff8c42;--foot:#ff7a1a;--red:#ef4444;--fd:'Fredoka',sans-serif;--fb:'Nunito',sans-serif;--r-sm:12px;--r-md:20px;--r-lg:32px;--r-xl:48px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--night)}
+body{font-family:var(--fb);color:var(--snow);-webkit-font-smoothing:antialiased;overscroll-behavior:none;user-select:none;-webkit-tap-highlight-color:transparent}
+input,textarea,button{font-family:var(--fb);border:none;outline:none}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+/* SCREENS */
+.screen{position:fixed;inset:0;opacity:0;pointer-events:none;transition:opacity .5s;z-index:10;display:flex;flex-direction:column;align-items:center}
+.screen.active{opacity:1;pointer-events:all}
+#app{position:fixed;inset:0;background:var(–night);z-index:5;opacity:0;pointer-events:none;transition:opacity .5s}
+#app.active{opacity:1;pointer-events:all}
+.page{position:absolute;inset:0;bottom:72px;opacity:0;pointer-events:none;transition:opacity .35s;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.page.active{opacity:1;pointer-events:all}
+.bsp{height:48px}
+
+/* SPLASH */
+#splash{background:var(–night);justify-content:center;z-index:100}
+.sp-aurora{position:fixed;inset:0;background:radial-gradient(ellipse 130% 45% at 50% 0%,rgba(78,205,196,.28) 0%,transparent 65%),radial-gradient(ellipse 80% 35% at 85% 25%,rgba(168,85,247,.18) 0%,transparent 60%);pointer-events:none}
+.sp-stars{position:fixed;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.8) 1px,transparent 1px),radial-gradient(circle,rgba(255,255,255,.4) 1px,transparent 1px);background-size:160px 160px,80px 80px;background-position:0 0,40px 40px;opacity:.35;pointer-events:none}
+.sp-scene{display:flex;flex-direction:column;align-items:center;gap:22px;z-index:1}
+.sp-title{font-family:var(–fd);font-size:2.8rem;font-weight:700;letter-spacing:1px}
+.sp-title span{background:linear-gradient(135deg,var(–teal),var(–glacier));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sp-sub{font-size:.95rem;color:var(–sky);opacity:.8}
+.ld-track{width:160px;height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+.ld-fill{height:100%;width:0;background:linear-gradient(90deg,var(–teal),var(–glacier));border-radius:99px;animation:load 2s ease forwards}
+@keyframes load{to{width:100%}}
+
+/* PENGUINS */
+.peng{position:relative;display:inline-flex;flex-direction:column;align-items:center}
+.pb{border-radius:50% 50% 45% 45%;background:var(–black);position:relative;display:flex;align-items:center;justify-content:center;animation:bob 3s ease-in-out infinite}
+.pby{background:var(–belly);border-radius:50%;position:absolute;bottom:14%;left:50%;transform:translateX(-50%)}
+.pf{position:absolute;top:12%;width:70%;display:flex;align-items:center;justify-content:center}
+.pe{background:white;border-radius:50%;position:absolute;top:0}
+.pe::after{content:’’;background:var(–black);border-radius:50%;position:absolute;top:28%;left:28%;width:44%;height:44%}
+.pe.l{left:5%}.pe.r{right:5%}
+.pk{background:var(–beak);border-radius:0 0 50% 50%;position:absolute;top:64%;clip-path:polygon(10% 0%,90% 0%,100% 100%,0% 100%)}
+.pw{background:var(–black);border-radius:50%;position:absolute}
+.pw.l{left:-18%;transform:rotate(15deg)}.pw.r{right:-18%;transform:rotate(-15deg)}
+.pw.hl{left:-18%;transform:rotate(-38deg);transform-origin:top center}
+.pw.hr{right:-18%;transform:rotate(38deg);transform-origin:top center}
+.pft{position:absolute;display:flex;gap:8px}
+.pfo{background:var(–foot);border-radius:50%}
+.psc{position:absolute;left:-10%;right:-10%;height:15px;background:repeating-linear-gradient(90deg,#ef4444 0,#ef4444 8px,#fbbf24 8px,#fbbf24 16px);border-radius:8px;z-index:2}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
+
+/* XL */
+.pxl .pb{width:90px;height:110px}.pxl .pby{width:58px;height:72px}.pxl .pe{width:14px;height:14px}.pxl .pk{width:18px;height:11px}.pxl .pw{width:22px;height:50px;top:28%}.pxl .pft{bottom:-12px}.pxl .pfo{width:22px;height:12px}
+/* LG */
+.plg .pb{width:70px;height:86px}.plg .pby{width:44px;height:56px}.plg .pe{width:11px;height:11px}.plg .pk{width:14px;height:8px}.plg .pw{width:17px;height:38px;top:26%}.plg .pft{bottom:-10px}.plg .pfo{width:17px;height:9px}
+/* MD */
+.pmd .pb{width:56px;height:68px}.pmd .pby{width:35px;height:44px}.pmd .pe{width:9px;height:9px}.pmd .pk{width:11px;height:7px}.pmd .pw{width:14px;height:30px;top:26%}.pmd .pft{bottom:-8px}.pmd .pfo{width:14px;height:8px}
+/* SM */
+.psm .pb{width:36px;height:44px}.psm .pby{width:22px;height:28px}.psm .pe{width:6px;height:6px}.psm .pk{width:8px;height:5px}.psm .pw{width:9px;height:20px;top:26%}.psm .pft{bottom:-6px}.psm .pfo{width:10px;height:6px}
+
+/* ONBOARDING */
+#onboarding{background:var(–night);padding:60px 20px 40px;overflow-y:auto;gap:20px;z-index:90}
+.ob-aurora{position:fixed;inset:0;background:radial-gradient(ellipse 140% 50% at 50% 0%,rgba(78,205,196,.2) 0%,transparent 60%);pointer-events:none}
+.ob-w{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.speech{background:white;color:var(–night);border-radius:var(–r-md);border-bottom-left-radius:4px;padding:10px 16px;font-size:.85rem;font-weight:700;line-height:1.5;text-align:center;max-width:240px;position:relative;margin-bottom:4px;order:-1}
+.speech::after{content:’’;position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);border:8px solid transparent;border-top-color:white;border-bottom:0}
+.ob-card{background:rgba(255,255,255,.05);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:var(–r-lg);padding:26px 22px;width:100%;display:flex;flex-direction:column;gap:14px}
+.ob-card h2{font-family:var(–fd);font-size:1.55rem;font-weight:600}
+.ob-hint{font-size:.84rem;color:var(–sky);opacity:.7}
+.ob-inp{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:var(–r-md);padding:14px 16px;transition:border-color .2s}
+.ob-inp:focus-within{border-color:var(–teal);background:rgba(78,205,196,.05)}
+.ob-inp-ic{font-size:1.2rem;flex-shrink:0}
+.ob-inp input{flex:1;background:transparent;color:var(–snow);font-size:1rem;font-weight:600}
+.ob-inp input::placeholder{color:rgba(255,255,255,.3);font-weight:400}
+.ob-inp input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1)}
+.ob-tog{display:flex;gap:8px;background:rgba(255,255,255,.05);padding:5px;border-radius:var(–r-md)}
+.ob-tb{flex:1;padding:10px;border-radius:calc(var(–r-md) - 4px);font-size:.88rem;font-weight:700;color:rgba(255,255,255,.45);background:transparent;transition:all .25s}
+.ob-tb.on{background:var(–ice);color:white;box-shadow:0 2px 12px rgba(42,111,168,.4)}
+.ob-prev{background:rgba(78,205,196,.1);border:1px solid rgba(78,205,196,.3);border-radius:var(–r-sm);padding:12px 16px;font-size:.9rem;font-weight:700;color:var(–teal);text-align:center;min-height:44px;display:flex;align-items:center;justify-content:center}
+.ob-btn{width:100%;padding:16px;border-radius:var(–r-xl);background:linear-gradient(135deg,var(–ice),var(–teal));color:white;font-size:1.05rem;font-weight:800;letter-spacing:.5px;transition:all .2s;box-shadow:0 4px 20px rgba(78,205,196,.35)}
+.ob-btn:active{transform:scale(.97)}
+.ob-err{color:#f87171;font-size:.82rem;font-weight:700;min-height:16px}
+
+/* BANQUISE */
+#page-banquise{overflow-y:auto}
+.scene{width:100%;height:300px;position:relative;overflow:hidden;flex-shrink:0}
+.sky{position:absolute;inset:0;background:linear-gradient(180deg,var(–night) 0%,var(–deep) 40%,var(–polar) 70%,#1a4a6e 100%)}
+.aur{position:absolute;border-radius:50%;filter:blur(28px);opacity:0;animation:aglow 8s ease-in-out infinite}
+.aur.a1{width:200px;height:70px;background:radial-gradient(ellipse,rgba(78,205,196,.65),transparent 70%);top:10%;left:8%}
+.aur.a2{width:170px;height:55px;background:radial-gradient(ellipse,rgba(168,85,247,.55),transparent 70%);top:16%;right:6%;animation-delay:2.5s}
+.aur.a3{width:150px;height:48px;background:radial-gradient(ellipse,rgba(240,171,252,.45),transparent 70%);top:6%;left:46%;animation-delay:5s}
+@keyframes aglow{0%,100%{opacity:0}30%{opacity:1}50%{opacity:.7}70%{opacity:1}}
+.st-c{position:absolute;inset:0;pointer-events:none}
+.star{position:absolute;background:white;border-radius:50%;animation:twk var(–d,3s) ease-in-out infinite;animation-delay:var(–dl,0s)}
+@keyframes twk{0%,100%{opacity:.2;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+.ocean{position:absolute;bottom:0;left:0;right:0;height:45%;background:linear-gradient(180deg,#0d3a6e,#051830);overflow:hidden}
+.wave{position:absolute;width:200%;height:22px;background:rgba(91,168,212,.14);border-radius:50%;left:-50%}
+.w1{top:-8px;animation:wv 6s linear infinite}
+.w2{top:4px;animation:wv 8s linear infinite reverse;opacity:.6}
+.w3{top:14px;animation:wv 10s linear infinite;opacity:.35}
+@keyframes wv{0%{transform:translateX(0)}100%{transform:translateX(25%)}}
+.mts{position:absolute;bottom:42%;left:0;right:0;height:28%;background:linear-gradient(180deg,transparent,var(–polar));clip-path:polygon(0% 100%,8% 30%,18% 70%,30% 10%,42% 65%,55% 20%,67% 50%,80% 5%,92% 45%,100% 25%,100% 100%);opacity:.55}
+.ice-sc{position:absolute;bottom:0;left:0;right:0;height:58%;display:flex;justify-content:center;align-items:flex-end}
+.icbg{position:relative;width:160px;height:120px;display:flex;align-items:flex-start;justify-content:center}
+.ic-top{position:absolute;top:0;width:144px;height:68px;background:linear-gradient(180deg,#e8f4fd,#b8ddf0,#8ec8e8);border-radius:50% 50% 30% 30%;box-shadow:0 4px 20px rgba(91,168,212,.3),inset 0 2px 8px rgba(255,255,255,.5)}
+.ic-sub{position:absolute;bottom:0;width:104px;height:54px;background:linear-gradient(180deg,rgba(91,168,212,.55),rgba(13,34,64,.8));border-radius:30% 30% 50% 50%;filter:blur(2px)}
+.ic-sh{position:absolute;top:8px;left:20px;width:28px;height:18px;background:rgba(255,255,255,.6);border-radius:50%;transform:rotate(-20deg);filter:blur(4px)}
+.ic-ck{position:absolute;background:linear-gradient(180deg,#d4edf8,#8ec8e8);border-radius:50% 50% 40% 40%;bottom:10%}
+.ck1{width:40px;height:22px;left:6%}.ck2{width:28px;height:16px;right:10%;bottom:18%}.ck3{width:20px;height:11px;right:28%}
+.mp-wrap{position:absolute;top:-52px;z-index:10}
+.al{position:absolute;inset:0;pointer-events:none;z-index:5}
+.atk{position:absolute;animation:afl var(–fd,4s) ease-in-out infinite;animation-delay:var(–fdl,0s)}
+@keyframes afl{0%,100%{transform:translate(0,0) rotate(var(–r0,-3deg))}33%{transform:translate(var(–x1,3px),var(–y1,-5px)) rotate(var(–r1,3deg))}66%{transform:translate(var(–x2,-2px),var(–y2,-2px)) rotate(var(–r2,0deg))}}
+
+/* Mouette */
+.mtt{width:32px;height:22px;position:relative}
+.mtt-b{width:18px;height:10px;background:white;border-radius:50% 40% 40% 50%;position:absolute;top:8px;left:7px}
+.mtt-wl,.mtt-wr{position:absolute;top:5px;width:14px;height:7px;background:#cbd5e1;border-radius:50% 10% 10% 50%}
+.mtt-wl{left:1px;transform:rotate(-12deg)}.mtt-wr{right:1px;transform:scaleX(-1) rotate(-12deg)}
+.mtt-h{width:9px;height:9px;background:white;border-radius:50%;position:absolute;top:1px;right:11px}
+.mtt-bk{width:7px;height:3px;background:#f59e0b;border-radius:0 50% 50% 0;position:absolute;top:6px;right:5px}
+
+/* Orque */
+.oq{width:50px;height:30px;position:relative}
+.oq-b{width:40px;height:22px;background:var(–black);border-radius:50% 40% 40% 50%;position:absolute;top:4px;left:0}
+.oq-by{width:22px;height:12px;background:white;border-radius:50%;position:absolute;bottom:2px;left:6px}
+.oq-f{width:10px;height:16px;background:var(–black);border-radius:2px 10px 0 2px;position:absolute;top:-10px;left:16px}
+.oq-t{width:14px;height:20px;background:var(–black);border-radius:2px;position:absolute;right:0;top:2px;clip-path:polygon(100% 0%,0% 50%,100% 100%)}
+.oq-e{width:5px;height:5px;background:white;border-radius:50%;position:absolute;top:7px;right:8px}
+
+/* Requin */
+.rq{width:54px;height:28px;position:relative}
+.rq-b{width:44px;height:18px;background:#3b82f6;border-radius:50% 30% 30% 50%;position:absolute;top:5px;left:0}
+.rq-by{width:24px;height:10px;background:#e2e8f0;border-radius:50%;position:absolute;bottom:2px;left:6px}
+.rq-f{width:12px;height:15px;background:#3b82f6;position:absolute;top:-8px;left:14px;clip-path:polygon(50% 0%,0% 100%,100% 100%)}
+.rq-t{width:16px;height:22px;background:#3b82f6;position:absolute;right:0;top:0;clip-path:polygon(100% 10%,0% 50%,100% 90%)}
+
+/* SCROLL CONTENT */
+.sc{padding:14px;display:flex;flex-direction:column;gap:20px}
+.ss{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(–r-lg);padding:20px;backdrop-filter:blur(10px)}
+.sl{font-family:var(–fd);font-size:1.12rem;font-weight:600;color:var(–sky);margin-bottom:12px}
+.acd{display:flex;flex-wrap:wrap;gap:10px}
+.acd-it{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border-radius:var(–r-md);padding:10px 14px;flex:1;min-width:110px}
+.acd-n{font-family:var(–fd);font-size:1.7rem;font-weight:700}
+.acd-l{font-size:.72rem;color:var(–sky);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+
+/* Days sign */
+.dp{display:flex;align-items:flex-end;justify-content:center}
+.sp-wr{display:flex;flex-direction:column;align-items:center}
+.sp-post{width:8px;height:26px;background:#8b5e3c;border-radius:2px}
+.sp-bd{background:linear-gradient(135deg,#fef3c7,#fde68a);border:3px solid #d97706;border-radius:var(–r-sm);padding:12px 22px;text-align:center;box-shadow:4px 4px 0 #92400e;min-width:155px}
+.sbl{font-size:.58rem;font-weight:800;color:#92400e;letter-spacing:.12em;margin-bottom:4px}
+.sbn{font-family:var(–fd);font-size:3rem;font-weight:700;color:#78350f;line-height:1}
+.sbu{font-size:.62rem;font-weight:800;color:#92400e;letter-spacing:.15em;margin-top:2px}
+.sbs{margin-top:8px;font-size:.75rem;font-weight:700;color:#b45309;background:rgba(180,83,9,.1);border-radius:99px;padding:2px 10px;display:inline-block}
+
+/* Kill */
+.kz{display:flex;flex-direction:column;align-items:center;gap:12px}
+.kw{font-size:.76rem;font-weight:800;color:#fca5a5;letter-spacing:.1em;text-transform:uppercase}
+.kb{display:flex;flex-direction:column;align-items:center;gap:4px;padding:20px 44px;background:linear-gradient(135deg,#991b1b,#7f1d1d);border:3px solid var(–red);border-radius:var(–r-lg);color:white;box-shadow:0 0 30px rgba(239,68,68,.28);transition:all .2s;position:relative;overflow:hidden}
+.kb::before{content:’’;position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 8px,rgba(255,255,255,.03) 8px,rgba(255,255,255,.03) 16px)}
+.kb:active{transform:scale(.96)}
+.kx{font-size:2.4rem;line-height:1;font-weight:900;color:var(–red);text-shadow:0 0 20px rgba(239,68,68,.8)}
+.kl{font-size:1rem;font-weight:900;letter-spacing:.08em}
+.ks{font-size:.7rem;opacity:.65;font-weight:600}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;height:72px;background:rgba(10,22,40,.94);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:stretch;z-index:50;padding-bottom:env(safe-area-inset-bottom,0px)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:transparent;color:rgba(255,255,255,.38);transition:all .25s cubic-bezier(.34,1.56,.64,1);border-radius:var(–r-md);margin:6px 4px}
+.nb.on{background:rgba(42,111,168,.28);color:var(–teal)}
+.nb:active{transform:scale(.88)}
+.ni{font-size:1.35rem;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+.nb.on .ni{transform:scale(1.18)}
+.nl{font-size:.62rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+
+/* PROFIL */
+#page-profil{background:var(–night)}
+.p-bg{position:fixed;inset:0;background:radial-gradient(ellipse 130% 55% at 50% 0%,rgba(42,111,168,.28) 0%,transparent 60%);pointer-events:none}
+.pc{padding:16px;display:flex;flex-direction:column;gap:18px;position:relative;z-index:1;padding-top:18px}
+.ph{display:flex;flex-direction:column;align-items:center;gap:12px;padding:26px 20px 20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(–r-lg)}
+.av-w{position:relative;width:90px;height:90px}
+.av-d{width:90px;height:90px;border-radius:50%;background:var(–deep);border:3px solid var(–glacier);display:flex;align-items:center;justify-content:center;font-size:2.5rem}
+.av-e{position:absolute;bottom:0;right:0;width:28px;height:28px;border-radius:50%;background:var(–teal);color:var(–night);font-size:.88rem;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.p-un{font-family:var(–fd);font-size:1.8rem;font-weight:700}
+.p-bg2{display:flex;align-items:center;gap:8px;background:rgba(78,205,196,.14);border:1px solid rgba(78,205,196,.28);border-radius:99px;padding:6px 16px}
+.p-bi{font-size:1.1rem}
+.p-bn{font-size:.84rem;font-weight:800;color:var(–teal);letter-spacing:.03em}
+.apg{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:var(–r-lg);padding:18px;display:flex;flex-direction:column;gap:12px}
+.apg h3{font-family:var(–fd);font-size:1.15rem}
+.av-gr{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.av-op{aspect-ratio:1;border-radius:var(–r-md);background:rgba(255,255,255,.06);border:2px solid transparent;display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer;transition:all .2s}
+.av-op.sel{border-color:var(–teal);background:rgba(78,205,196,.15)}
+.p-st{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(–r-md);padding:16px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.stc-i{font-size:1.35rem}
+.stc-v{font-family:var(–fd);font-size:1.8rem;font-weight:700}
+.stc-l{font-size:.7rem;font-weight:700;color:var(–sky);text-transform:uppercase;letter-spacing:.08em}
+.psec{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(–r-lg);padding:18px}
+.lpc{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.lpc-c{display:flex;align-items:center;gap:8px;font-weight:700}
+.lp-bar{width:100%;height:10px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
+.lp-fill{height:100%;background:linear-gradient(90deg,var(–ice),var(–teal));border-radius:99px;transition:width .8s cubic-bezier(.34,1.56,.64,1)}
+.lp-info{font-size:.74rem;color:var(–sky);font-weight:600;margin-top:4px}
+.lp-next{font-size:.8rem;color:rgba(255,255,255,.45);font-weight:700}
+.slist{display:flex;flex-direction:column;gap:2px}
+.si{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.si:last-child{border-bottom:none}
+.si-l{display:flex;align-items:center;gap:12px}
+.si-ic{font-size:1.25rem}
+.si-lb{font-weight:700;font-size:.94rem}
+.si-sb{font-size:.74rem;color:var(–sky);opacity:.7}
+.tog{width:48px;height:26px;background:rgba(255,255,255,.15);border-radius:99px;position:relative;cursor:pointer;transition:background .3s}
+.tog.on{background:var(–teal)}
+.knob{position:absolute;top:3px;left:3px;width:20px;height:20px;background:white;border-radius:50%;transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.tog.on .knob{transform:translateX(22px)}
+.logout-btn{width:100%;padding:15px;border-radius:var(–r-xl);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(–sky);font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
+
+/* AMIS */
+#page-amis{background:var(–night)}
+.am-bg{position:fixed;inset:0;background:radial-gradient(ellipse 120% 50% at 80% 20%,rgba(168,85,247,.14) 0%,transparent 60%);pointer-events:none}
+.amc{padding:16px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1;padding-top:20px}
+.amh{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
+.amh h1{font-family:var(–fd);font-size:1.75rem;font-weight:700}
+.add-btn{background:linear-gradient(135deg,var(–ice),var(–teal));color:white;font-weight:800;padding:10px 18px;border-radius:var(–r-xl);font-size:.88rem;box-shadow:0 4px 15px rgba(78,205,196,.28);transition:all .2s}
+.add-btn:active{transform:scale(.95)}
+.add-pnl{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(–r-lg);padding:18px;display:flex;flex-direction:column;gap:12px}
+.add-pnl h3{font-family:var(–fd);font-size:1.15rem}
+.cn-btn{width:100%;padding:12px;border-radius:var(–r-xl);background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.45);font-weight:700;font-size:.88rem}
+.sr{padding:8px;font-size:.88rem;font-weight:700;color:var(–teal);min-height:18px}
+.fl{display:flex;flex-direction:column;gap:8px}
+.ef{display:flex;flex-direction:column;align-items:center;gap:12px;padding:38px 20px;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:var(–r-lg);text-align:center}
+.ef p{font-size:.86rem;color:rgba(255,255,255,.45);line-height:1.6;font-weight:600}
+.fc{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:var(–r-md);padding:13px 15px}
+.fc-av{font-size:1.9rem;width:42px;text-align:center}
+.fc-if{flex:1}
+.fc-nm{font-weight:800;font-size:.98rem}
+.fc-lv{font-size:.73rem;color:var(–sky);font-weight:600}
+.fc-ac{display:flex;gap:7px}
+.fcb{padding:7px 11px;border-radius:var(–r-md);font-size:.76rem;font-weight:800;background:rgba(78,205,196,.14);color:var(–teal);border:1px solid rgba(78,205,196,.28)}
+.fcb.d{background:rgba(239,68,68,.14);color:#f87171;border-color:rgba(239,68,68,.28)}
+.ma{background:rgba(255,255,255,.03);border-radius:var(–r-md);padding:12px;min-height:70px;display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.em{font-size:.83rem;color:rgba(255,255,255,.3);text-align:center;padding:18px;font-weight:600}
+.mi{display:flex;align-items:flex-start;gap:9px;background:rgba(255,255,255,.04);border-radius:var(–r-sm);padding:9px 11px}
+.mi-av{font-size:1.15rem}
+.mi-bd{flex:1}
+.mi-tp{display:flex;justify-content:space-between;margin-bottom:2px}
+.mi-fr{font-size:.76rem;font-weight:800;color:var(–teal)}
+.mi-tm{font-size:.66rem;color:rgba(255,255,255,.28)}
+.mi-tx{font-size:.84rem;font-weight:600;line-height:1.4}
+.mc{display:flex;flex-direction:column;gap:9px;margin-top:10px}
+.mc-to{font-size:.78rem;font-weight:700;color:var(–sky)}
+.mca{display:flex;gap:7px;flex-wrap:wrap}
+.mcb{padding:8px 12px;border-radius:var(–r-md);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:white;font-weight:700;font-size:.8rem}
+.mcb:active{background:rgba(255,255,255,.12);transform:scale(.95)}
+.mctw{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:var(–r-md);padding:10px 13px}
+#mc-text{width:100%;background:transparent;color:white;font-size:.88rem;font-weight:600;resize:none;height:65px}
+#mc-text::placeholder{color:rgba(255,255,255,.28)}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.72);backdrop-filter:blur(10px);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fi .2s ease}
+.mo.hidden{display:none}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.mc-card{background:var(–deep);border:1px solid rgba(255,255,255,.1);border-radius:var(–r-lg);padding:26px 22px;width:100%;max-width:310px;display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center;animation:mi .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes mi{from{transform:scale(.8) translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.mc-card h3{font-family:var(–fd);font-size:1.38rem;font-weight:700}
+.mc-card p{font-size:.86rem;color:rgba(255,255,255,.68);line-height:1.55}
+.mb{display:flex;gap:10px;width:100%}
+.mcn{flex:1;padding:13px;border-radius:var(–r-xl);background:rgba(255,255,255,.08);color:white;font-weight:700;font-size:.88rem}
+.mck{flex:1;padding:13px;border-radius:var(–r-xl);background:linear-gradient(135deg,#ef4444,#991b1b);color:white;font-weight:800;font-size:.88rem}
+
+/* TOAST */
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(16px);background:rgba(26,58,92,.96);color:white;padding:11px 20px;border-radius:99px;font-size:.86rem;font-weight:700;opacity:0;pointer-events:none;z-index:300;transition:all .3s cubic-bezier(.34,1.56,.64,1);border:1px solid rgba(255,255,255,.1);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+
 </head>
 <body>
 
-  <!-- ═══════════════════════════════════════════
-       SPLASH SCREEN
-  ═══════════════════════════════════════════ -->
-  <div id="splash" class="screen active">
-    <div class="splash-scene">
-      <div class="splash-aurora"></div>
-      <div class="splash-stars"></div>
-      <div class="splash-penguin">
-        <div class="sp-body">
-          <div class="sp-belly"></div>
-          <div class="sp-face">
-            <div class="sp-eye left"></div>
-            <div class="sp-eye right"></div>
-            <div class="sp-beak"></div>
+<!-- SPLASH -->
+
+<div id="splash" class="screen active">
+  <div class="sp-aurora"></div>
+  <div class="sp-stars"></div>
+  <div class="sp-scene">
+    <div class="peng pxl">
+      <div class="pb">
+        <div class="pby"></div>
+        <div class="pf"><div class="pe l"></div><div class="pe r"></div><div class="pk"></div></div>
+        <div class="pw l"></div><div class="pw r"></div>
+        <div class="psc" style="top:40px"></div>
+        <div class="pft"><div class="pfo"></div><div class="pfo"></div></div>
+      </div>
+    </div>
+    <h1 class="sp-title">MyLittle<span>Penguin</span></h1>
+    <p class="sp-sub">Ton compagnon de l'Antarctique 🧊</p>
+    <div class="ld-track"><div class="ld-fill"></div></div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+
+<div id="onboarding" class="screen">
+  <div class="ob-aurora"></div>
+  <div class="ob-w">
+    <div class="peng plg" style="position:relative">
+      <div class="speech" id="ob-speech">Salut ! Je suis Pingu 🐧<br/>Créons ton expédition !</div>
+      <div class="pb">
+        <div class="pby"></div>
+        <div class="pf"><div class="pe l"></div><div class="pe r"></div><div class="pk"></div></div>
+        <div class="pw l"></div><div class="pw r"></div>
+        <div class="pft"><div class="pfo"></div><div class="pfo"></div></div>
+      </div>
+    </div>
+    <!-- Step 1 -->
+    <div class="ob-card" id="ob-s1">
+      <h2>Choisis ton pseudo</h2>
+      <p class="ob-hint">Unique, sans email. Promis.</p>
+      <div class="ob-inp"><span class="ob-inp-ic">🐧</span><input type="text" id="pseudo-in" placeholder="ex: IceExplorer42" maxlength="20" autocomplete="off"/></div>
+      <div class="ob-err" id="pseudo-err"></div>
+      <button class="ob-btn" id="pseudo-next">Continuer →</button>
+    </div>
+    <!-- Step 2 -->
+    <div class="ob-card hidden" id="ob-s2">
+      <h2>Depuis quand tiens-tu bon ?</h2>
+      <p class="ob-hint">Choisis une date ou entre un nombre de jours</p>
+      <div class="ob-tog">
+        <button class="ob-tb on" id="tog-date" onclick="setMode('date')">📅 Date</button>
+        <button class="ob-tb" id="tog-days" onclick="setMode('days')">🔢 Jours</button>
+      </div>
+      <div class="ob-inp" id="wrap-date"><span class="ob-inp-ic">📅</span><input type="date" id="date-in"/></div>
+      <div class="ob-inp hidden" id="wrap-days"><span class="ob-inp-ic">🔢</span><input type="number" id="days-in" placeholder="ex: 42" min="0" max="9999"/></div>
+      <div class="ob-prev" id="ob-prev"></div>
+      <div class="ob-err" id="date-err"></div>
+      <button class="ob-btn" id="date-next">Commencer l'expédition 🚀</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+
+<div id="app">
+
+  <!-- BANQUISE -->
+
+  <div id="page-banquise" class="page active">
+    <div class="scene">
+      <div class="sky">
+        <div class="aur a1"></div><div class="aur a2"></div><div class="aur a3"></div>
+        <div class="st-c" id="st-c"></div>
+      </div>
+      <div class="mts"></div>
+      <div class="al" id="al"></div>
+      <div class="ice-sc">
+        <div class="icbg">
+          <div class="ic-top"></div><div class="ic-sub"></div><div class="ic-sh"></div>
+          <div class="mp-wrap">
+            <div class="peng psm"><div class="pb"><div class="pby"></div><div class="pf"><div class="pe l"></div><div class="pe r"></div><div class="pk"></div></div><div class="pw l"></div><div class="pw r"></div><div class="pft"><div class="pfo"></div><div class="pfo"></div></div></div></div>
           </div>
-          <div class="sp-wing left"></div>
-          <div class="sp-wing right"></div>
-          <div class="sp-feet">
-            <div class="sp-foot left"></div>
-            <div class="sp-foot right"></div>
+        </div>
+        <div class="ic-ck ck1"></div><div class="ic-ck ck2"></div><div class="ic-ck ck3"></div>
+        <div class="ocean"><div class="wave w1"></div><div class="wave w2"></div><div class="wave w3"></div></div>
+      </div>
+    </div>
+    <div class="sc">
+      <div class="ss"><div class="sl">Ton troupeau 🐾</div><div class="acd" id="acd"></div></div>
+      <div class="ss">
+        <div class="dp">
+          <div class="peng pmd" style="margin-right:-4px">
+            <div class="pb"><div class="pby"></div><div class="pf"><div class="pe l"></div><div class="pe r"></div><div class="pk"></div></div><div class="pw hl"></div><div class="pw hr"></div><div class="pft"><div class="pfo"></div><div class="pfo"></div></div></div>
           </div>
-          <div class="sp-scarf"></div>
+          <div class="sp-wr">
+            <div class="sp-bd">
+              <div class="sbl">EN ROUTE DEPUIS</div>
+              <div class="sbn" id="days-num">0</div>
+              <div class="sbu">JOURS</div>
+              <div class="sbs">🔥 <span id="streak-num">0</span> de suite</div>
+            </div>
+            <div class="sp-post"></div>
+          </div>
         </div>
       </div>
-      <h1 class="splash-title">MyLittle<span>Penguin</span></h1>
-      <p class="splash-subtitle">Ton compagnon de l'Antarctique 🧊</p>
-      <div class="splash-loader">
-        <div class="loader-track"><div class="loader-fill"></div></div>
-      </div>
+      <div class="ss"><div class="kz"><div class="kw">⚠️ Zone Dangereuse ⚠️</div><button class="kb" id="kill-btn"><div class="kx">✕</div><div class="kl">KILL THE PENGUIN</div><div class="ks">Remet le compteur à zéro</div></button></div></div>
+      <div class="bsp"></div>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════
-       ONBOARDING SCREEN
-  ═══════════════════════════════════════════ -->
-  <div id="onboarding" class="screen">
-    <div class="onboarding-bg">
-      <div class="ob-aurora"></div>
-    </div>
-    <div class="onboarding-content">
-      <div class="ob-penguin">
-        <div class="ob-body">
-          <div class="ob-belly"></div>
-          <div class="ob-face">
-            <div class="ob-eye left"></div>
-            <div class="ob-eye right"></div>
-            <div class="ob-beak"></div>
-          </div>
-          <div class="ob-wing left"></div>
-          <div class="ob-wing right"></div>
-          <div class="ob-feet">
-            <div class="ob-foot left"></div>
-            <div class="ob-foot right"></div>
-          </div>
-        </div>
-        <div class="ob-speech-bubble">
-          <span id="ob-speech-text">Salut ! Je suis Pingu 🐧<br/>Créons ton expédition !</span>
-        </div>
-      </div>
+  <!-- PROFIL -->
 
-      <div class="ob-card" id="ob-step-1">
-        <h2>Choisis ton pseudo</h2>
-        <p class="ob-hint">Unique, sans email. Promis.</p>
-        <div class="ob-input-wrap">
-          <span class="ob-input-icon">🐧</span>
-          <input type="text" id="pseudo-input" placeholder="ex: IceExplorer42" maxlength="20" autocomplete="off" />
-        </div>
-        <div class="ob-error" id="pseudo-error"></div>
-        <button class="ob-btn" id="pseudo-next-btn">Continuer →</button>
+  <div id="page-profil" class="page">
+    <div class="p-bg"></div>
+    <div class="pc">
+      <div class="ph">
+        <div class="av-w"><div class="av-d" id="av-d">🐧</div><button class="av-e" id="av-edit">✎</button></div>
+        <div class="p-un" id="p-un">—</div>
+        <div class="p-bg2"><span class="p-bi" id="p-lvl-i">🐣</span><span class="p-bn" id="p-lvl-n">Poussin Polaire</span></div>
       </div>
-
-      <div class="ob-card hidden" id="ob-step-2">
-        <h2>Depuis quand tiens-tu bon ?</h2>
-        <p class="ob-hint">Choisis une date ou entre un nombre de jours</p>
-        <div class="ob-toggle">
-          <button class="ob-toggle-btn active" id="toggle-date" onclick="switchInputMode('date')">📅 Date</button>
-          <button class="ob-toggle-btn" id="toggle-days" onclick="switchInputMode('days')">🔢 Jours</button>
-        </div>
-        <div class="ob-input-wrap" id="date-wrap">
-          <span class="ob-input-icon">📅</span>
-          <input type="date" id="date-input" />
-        </div>
-        <div class="ob-input-wrap hidden" id="days-wrap">
-          <span class="ob-input-icon">🔢</span>
-          <input type="number" id="days-input" placeholder="ex: 42" min="0" max="9999" />
-        </div>
-        <div class="ob-preview" id="ob-preview"></div>
-        <div class="ob-error" id="date-error"></div>
-        <button class="ob-btn" id="date-next-btn">Commencer l'expédition 🚀</button>
+      <div class="apg hidden" id="av-picker">
+        <h3>Choisis ton avatar</h3>
+        <div class="av-gr" id="av-gr"></div>
+        <button class="ob-btn" id="av-ok">Confirmer</button>
       </div>
+      <div class="p-st">
+        <div class="stc"><div class="stc-i">📅</div><div class="stc-v" id="st-d">0</div><div class="stc-l">Jours</div></div>
+        <div class="stc"><div class="stc-i">🐦</div><div class="stc-v" id="st-m">0</div><div class="stc-l">Mouettes</div></div>
+        <div class="stc"><div class="stc-i">🐧</div><div class="stc-v" id="st-p">0</div><div class="stc-l">Pingouins</div></div>
+        <div class="stc"><div class="stc-i">🐋</div><div class="stc-v" id="st-o">0</div><div class="stc-l">Orques</div></div>
+      </div>
+      <div class="psec">
+        <div class="sl">Progression</div>
+        <div class="lpc">
+          <div class="lpc-c"><span id="lp-i">🐣</span><span id="lp-cn">Poussin Polaire</span></div>
+          <div><div class="lp-bar"><div class="lp-fill" id="lp-fill" style="width:0%"></div></div><div class="lp-info" id="lp-info"></div></div>
+          <div class="lp-next">→ <span id="lp-nn">Maître des Mouettes</span></div>
+        </div>
+      </div>
+      <div class="psec">
+        <div class="sl">Paramètres</div>
+        <div class="slist">
+          <div class="si"><div class="si-l"><span class="si-ic">🔔</span><div><div class="si-lb">Notifications</div><div class="si-sb">Amis et messages</div></div></div><div class="tog on" id="notif-tog" onclick="toggleNotif()"><div class="knob"></div></div></div>
+          <div class="si"><div class="si-l"><span class="si-ic">🏔️</span><div><div class="si-lb">Ma banquise</div><div class="si-sb">Visible par mes amis</div></div></div><div class="tog on" id="priv-tog" onclick="togglePriv()"><div class="knob"></div></div></div>
+        </div>
+      </div>
+      <div class="psec"><button class="logout-btn" id="logout-btn"><span>❄️</span> Quitter la banquise</button></div>
+      <div class="bsp"></div>
     </div>
   </div>
 
-  <!-- ═══════════════════════════════════════════
-       MAIN APP SHELL
-  ═══════════════════════════════════════════ -->
-  <div id="app" class="screen">
+  <!-- AMIS -->
 
-    <!-- PAGE 1: BANQUISE -->
-    <div id="page-banquise" class="page active">
-      <div class="banquise-scene">
-        <!-- Sky & Aurora -->
-        <div class="sky">
-          <div class="aurora a1"></div>
-          <div class="aurora a2"></div>
-          <div class="aurora a3"></div>
-          <div class="stars-container" id="stars-container"></div>
-        </div>
-
-        <!-- Animals floating around -->
-        <div class="animals-layer" id="animals-layer"></div>
-
-        <!-- Ice Scene -->
-        <div class="ice-scene">
-          <div class="ice-back-mountains"></div>
-          <div class="ocean-base">
-            <div class="ocean-wave w1"></div>
-            <div class="ocean-wave w2"></div>
-            <div class="ocean-wave w3"></div>
+  <div id="page-amis" class="page">
+    <div class="am-bg"></div>
+    <div class="amc">
+      <div class="amh"><h1>Explorateurs 🗺️</h1><button class="add-btn" id="open-add">+ Ajouter</button></div>
+      <div class="add-pnl hidden" id="add-pnl">
+        <h3>Trouver un explorateur</h3>
+        <div class="ob-inp"><span class="ob-inp-ic">🔍</span><input type="text" id="search-in" placeholder="Pseudo exact..." autocomplete="off"/></div>
+        <div class="sr" id="search-res"></div>
+        <button class="ob-btn" id="search-btn">Chercher</button>
+        <button class="cn-btn" id="cancel-add">Annuler</button>
+      </div>
+      <div class="fl" id="fl">
+        <div class="ef"><div style="font-size:3rem">🐧</div><p>Ton expédition est encore solitaire…<br/>Ajoute des amis pour partager l'aventure !</p></div>
+      </div>
+      <div class="psec">
+        <div class="sl">Messages & Cadeaux 🎁</div>
+        <div class="ma" id="ma"><div class="em">Aucun message pour l'instant 📭</div></div>
+        <div class="mc hidden" id="mc">
+          <div class="mc-to" id="mc-to"></div>
+          <div class="mca">
+            <button class="mcb" onclick="sendAnimal('mouette')">🐦 Mouette</button>
+            <button class="mcb" onclick="sendAnimal('pingouin')">🐧 Pingouin</button>
+            <button class="mcb" onclick="sendAnimal('orque')">🐋 Orque</button>
           </div>
-          <div class="iceberg-main">
-            <div class="iceberg-top"></div>
-            <div class="iceberg-underwater"></div>
-            <div class="iceberg-shine"></div>
-            <!-- Main penguin on iceberg -->
-            <div class="main-penguin" id="main-penguin">
-              <div class="mp-body">
-                <div class="mp-belly"></div>
-                <div class="mp-face">
-                  <div class="mp-eye left"></div>
-                  <div class="mp-eye right"></div>
-                  <div class="mp-beak"></div>
-                </div>
-                <div class="mp-wing left"></div>
-                <div class="mp-wing right"></div>
-                <div class="mp-feet">
-                  <div class="mp-foot left"></div>
-                  <div class="mp-foot right"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Small floating icebergs -->
-          <div class="ice-chunk ic1"></div>
-          <div class="ice-chunk ic2"></div>
-          <div class="ice-chunk ic3"></div>
+          <div class="mctw"><textarea id="mc-text" placeholder="Écris un message..." maxlength="200"></textarea></div>
+          <button class="ob-btn" style="padding:13px;font-size:.9rem" id="mc-send">Envoyer ✈️</button>
         </div>
       </div>
-
-      <!-- Scroll content -->
-      <div class="banquise-scroll-content">
-        <!-- Animals summary -->
-        <div class="scroll-section animal-summary">
-          <h3 class="section-label">Ton troupeau 🐾</h3>
-          <div class="animal-count-display" id="animal-count-display"></div>
-        </div>
-
-        <!-- Days panel held by penguin -->
-        <div class="scroll-section days-panel-section">
-          <div class="days-panel-penguin">
-            <div class="dp-penguin">
-              <div class="dp-body">
-                <div class="dp-belly"></div>
-                <div class="dp-face">
-                  <div class="dp-eye left"></div>
-                  <div class="dp-eye right"></div>
-                  <div class="dp-beak"></div>
-                </div>
-                <div class="dp-wing left"></div>
-                <div class="dp-wing right"></div>
-                <div class="dp-feet">
-                  <div class="dp-foot left"></div>
-                  <div class="dp-foot right"></div>
-                </div>
-              </div>
-            </div>
-            <div class="days-sign">
-              <div class="days-sign-post"></div>
-              <div class="days-sign-board">
-                <div class="dsb-label">EN ROUTE DEPUIS</div>
-                <div class="dsb-number" id="days-count-display">0</div>
-                <div class="dsb-unit">JOURS</div>
-                <div class="dsb-streak">🔥 <span id="streak-display">0</span> de suite</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Kill the Penguin -->
-        <div class="scroll-section kill-section">
-          <div class="kill-zone">
-            <div class="kill-warning">⚠️ Zone Dangereuse ⚠️</div>
-            <button class="kill-btn" id="kill-btn">
-              <div class="kill-cross">✕</div>
-              <div class="kill-label">KILL THE PENGUIN</div>
-              <div class="kill-sublabel">Remet le compteur à zéro</div>
-            </button>
-          </div>
-        </div>
-
-        <div class="bottom-spacer"></div>
-      </div>
-    </div>
-
-    <!-- PAGE 2: PROFIL -->
-    <div id="page-profil" class="page">
-      <div class="profil-bg"></div>
-      <div class="profil-content">
-        <div class="profil-header">
-          <div class="profil-avatar-wrap">
-            <div class="profil-avatar" id="profil-avatar-display">
-              <!-- CSS penguin avatar -->
-            </div>
-            <button class="avatar-edit-btn" id="avatar-edit-btn">✎</button>
-          </div>
-          <h1 class="profil-username" id="profil-username">—</h1>
-          <div class="profil-level-badge" id="profil-level-badge">
-            <span class="level-icon">🐣</span>
-            <span class="level-name" id="level-name-display">Poussin Polaire</span>
-          </div>
-        </div>
-
-        <!-- Avatar picker -->
-        <div class="avatar-picker hidden" id="avatar-picker">
-          <h3>Choisis ton avatar</h3>
-          <div class="avatar-grid" id="avatar-grid"></div>
-          <button class="ob-btn" id="avatar-confirm-btn">Confirmer</button>
-        </div>
-
-        <!-- Stats -->
-        <div class="profil-stats">
-          <div class="stat-card">
-            <div class="stat-icon">📅</div>
-            <div class="stat-value" id="stat-days">0</div>
-            <div class="stat-label">Jours totaux</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">🐦</div>
-            <div class="stat-value" id="stat-mouettes">0</div>
-            <div class="stat-label">Mouettes</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">🐧</div>
-            <div class="stat-value" id="stat-pingouins">0</div>
-            <div class="stat-label">Pingouins</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-icon">🐋</div>
-            <div class="stat-value" id="stat-orques">0</div>
-            <div class="stat-label">Orques</div>
-          </div>
-        </div>
-
-        <!-- Level progression -->
-        <div class="profil-section">
-          <h3 class="section-label">Progression</h3>
-          <div class="level-progress-card">
-            <div class="lp-current">
-              <span id="lp-icon">🐣</span>
-              <span id="lp-current-name">Poussin Polaire</span>
-            </div>
-            <div class="lp-bar-wrap">
-              <div class="lp-bar"><div class="lp-fill" id="lp-fill"></div></div>
-              <div class="lp-info" id="lp-info"></div>
-            </div>
-            <div class="lp-next" id="lp-next">→ <span id="lp-next-name">Maître des Mouettes</span></div>
-          </div>
-        </div>
-
-        <!-- Settings -->
-        <div class="profil-section">
-          <h3 class="section-label">Paramètres</h3>
-          <div class="settings-list">
-            <div class="setting-item">
-              <div class="si-left">
-                <span class="si-icon">🔔</span>
-                <div>
-                  <div class="si-label">Notifications</div>
-                  <div class="si-sub">Amis et messages</div>
-                </div>
-              </div>
-              <div class="toggle-switch" id="notif-toggle" onclick="toggleNotif()">
-                <div class="toggle-knob"></div>
-              </div>
-            </div>
-            <div class="setting-item" id="privacy-setting">
-              <div class="si-left">
-                <span class="si-icon">🏔️</span>
-                <div>
-                  <div class="si-label">Ma banquise</div>
-                  <div class="si-sub">Visible par mes amis</div>
-                </div>
-              </div>
-              <div class="toggle-switch active" id="privacy-toggle" onclick="togglePrivacy()">
-                <div class="toggle-knob"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Logout -->
-        <div class="profil-section">
-          <button class="logout-btn" id="logout-btn">
-            <span>❄️</span> Quitter la banquise
-          </button>
-        </div>
-
-        <div class="bottom-spacer"></div>
-      </div>
-    </div>
-
-    <!-- PAGE 3: AMIS -->
-    <div id="page-amis" class="page">
-      <div class="amis-bg"></div>
-      <div class="amis-content">
-        <div class="amis-header">
-          <h1>Explorateurs 🗺️</h1>
-          <button class="add-friend-btn" id="open-add-friend-btn">+ Ajouter</button>
-        </div>
-
-        <!-- Add friend modal-like section -->
-        <div class="add-friend-panel hidden" id="add-friend-panel">
-          <div class="afp-inner">
-            <h3>Trouver un explorer</h3>
-            <div class="ob-input-wrap">
-              <span class="ob-input-icon">🔍</span>
-              <input type="text" id="search-friend-input" placeholder="Pseudo exact..." autocomplete="off" />
-            </div>
-            <div id="search-result" class="search-result"></div>
-            <button class="ob-btn" id="search-friend-btn">Chercher</button>
-            <button class="cancel-btn" id="cancel-add-btn">Annuler</button>
-          </div>
-        </div>
-
-        <!-- Friends list -->
-        <div class="friends-list" id="friends-list">
-          <div class="empty-friends">
-            <div class="ef-penguin">🐧</div>
-            <p>Ton expédition est encore solitaire…<br/>Ajoute des amis pour partager l'aventure !</p>
-          </div>
-        </div>
-
-        <!-- Messages -->
-        <div class="profil-section">
-          <h3 class="section-label">Messages & Cadeaux 🎁</h3>
-          <div class="messages-area" id="messages-area">
-            <div class="empty-messages">Aucun message pour l'instant 📭</div>
-          </div>
-          <div class="message-composer" id="message-composer" style="display:none;">
-            <div class="mc-to" id="mc-to-label"></div>
-            <div class="mc-animals">
-              <button class="mc-animal-btn" onclick="sendAnimal('mouette')">🐦 Mouette</button>
-              <button class="mc-animal-btn" onclick="sendAnimal('pingouin')">🐧 Pingouin</button>
-              <button class="mc-animal-btn" onclick="sendAnimal('orque')">🐋 Orque</button>
-            </div>
-            <textarea id="mc-text" placeholder="Écris un message..." maxlength="200"></textarea>
-            <button class="ob-btn small" id="mc-send-btn">Envoyer ✈️</button>
-          </div>
-        </div>
-
-        <div class="bottom-spacer"></div>
-      </div>
-    </div>
-
-    <!-- BOTTOM NAV -->
-    <nav class="bottom-nav" id="bottom-nav">
-      <button class="nav-btn active" data-page="banquise" onclick="switchPage('banquise')">
-        <span class="nav-icon">🏔️</span>
-        <span class="nav-label">Banquise</span>
-      </button>
-      <button class="nav-btn" data-page="amis" onclick="switchPage('amis')">
-        <span class="nav-icon">🗺️</span>
-        <span class="nav-label">Amis</span>
-      </button>
-      <button class="nav-btn" data-page="profil" onclick="switchPage('profil')">
-        <span class="nav-icon">🐧</span>
-        <span class="nav-label">Profil</span>
-      </button>
-    </nav>
-
-  </div>
-
-  <!-- Kill confirm modal -->
-  <div class="modal-overlay hidden" id="kill-modal">
-    <div class="modal-card">
-      <div class="modal-penguin-dead">💀</div>
-      <h3>Tu es sûr·e ?</h3>
-      <p>Tous tes animaux vont disparaître. Le compte repart de zéro demain.</p>
-      <div class="modal-btns">
-        <button class="modal-cancel" onclick="closeKillModal()">Annuler</button>
-        <button class="modal-confirm" onclick="confirmKill()">Oui, tout effacer ☠️</button>
-      </div>
+      <div class="bsp"></div>
     </div>
   </div>
 
-  <!-- Toast -->
-  <div class="toast" id="toast"></div>
+  <nav class="bnav">
+    <button class="nb on" data-page="banquise" onclick="goPage('banquise')"><span class="ni">🏔️</span><span class="nl">Banquise</span></button>
+    <button class="nb" data-page="amis" onclick="goPage('amis')"><span class="ni">🗺️</span><span class="nl">Amis</span></button>
+    <button class="nb" data-page="profil" onclick="goPage('profil')"><span class="ni">🐧</span><span class="nl">Profil</span></button>
+  </nav>
+</div>
 
-  <script src="js/supabase-config.js"></script>
-  <script src="js/animals.js"></script>
-  <script src="js/app.js"></script>
+<!-- KILL MODAL -->
+
+<div class="mo hidden" id="kill-modal">
+  <div class="mc-card">
+    <div style="font-size:3rem">💀</div>
+    <h3>Tu es sûr·e ?</h3>
+    <p>Tous tes animaux vont disparaître.<br/>Le compte repart de zéro demain.</p>
+    <div class="mb">
+      <button class="mcn" onclick="closeKill()">Annuler</button>
+      <button class="mck" onclick="doKill()">Oui ☠️</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ CONFIG SUPABASE ══════════════════════════════
+// ⚠️ Remplace par tes valeurs
+const SB_URL  = 'https://YOUR_PROJECT.supabase.co';
+const SB_ANON = 'YOUR_ANON_KEY';
+
+// ══ LEVELS ══════════════════════════════════════
+const LVL = [
+  {min:0,  max:29,  i:'🐣',n:'Poussin Polaire',      nx:30},
+  {min:30, max:59,  i:'🐦',n:'Maître des Mouettes',  nx:60},
+  {min:60, max:89,  i:'🐧',n:'Pingouin Confirmé',    nx:90},
+  {min:90, max:179, i:'🏔️',n:'Gardien de la Banquise',nx:180},
+  {min:180,max:359, i:'🐋',n:'Dompteur d\'Orques',   nx:360},
+  {min:360,max:719, i:'🦈',n:'Légende des Abysses',  nx:720},
+  {min:720,max:9999,i:'❄️',n:'Dieu du Grand Froid',  nx:null},
+];
+const AVS = ['🐧','🐦','🐋','🦈','🦭','🐟','❄️','🌊','🏔️','⭐','🔥','🎯'];
+
+// ══ STATE ════════════════════════════════════════
+let P = null; // profile
+let MODE = 'date';
+let SEL_AV = '🐧';
+let SEL_FID = null;
+let SEL_FNM = null;
+let SB = null;
+
+// ══ BOOT ═════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  genStars();
+  document.getElementById('date-in').max = new Date().toISOString().slice(0,10);
+  document.getElementById('date-in').value = new Date().toISOString().slice(0,10);
+  bindAll();
+  setTimeout(boot, 2000);
+});
+
+function boot() {
+  const saved = localStorage.getItem('mlp_v2');
+  if (saved) { try { P = JSON.parse(saved); enterApp(); return; } catch(e){} }
+  showOB();
+}
+
+function showOB() {
+  document.getElementById('splash').classList.remove('active');
+  document.getElementById('onboarding').classList.add('active');
+}
+
+function enterApp() {
+  document.getElementById('splash').classList.remove('active');
+  document.getElementById('onboarding').classList.remove('active');
+  document.getElementById('app').classList.add('active');
+  updateB();
+  updateP();
+}
+
+// ══ PAGES ════════════════════════════════════════
+function goPage(name) {
+  document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nb').forEach(b => b.classList.toggle('on', b.dataset.page === name));
+  if (name === 'profil') updateP();
+  if (name === 'amis') { loadF(); loadM(); }
+}
+window.goPage = goPage;
+
+// ══ ONBOARDING ═══════════════════════════════════
+function bindAll() {
+  document.getElementById('pseudo-next').onclick = onPN;
+  document.getElementById('date-next').onclick   = onDN;
+  document.getElementById('date-in').oninput     = upPrev;
+  document.getElementById('days-in').oninput     = upPrev;
+  document.getElementById('kill-btn').onclick    = () => document.getElementById('kill-modal').classList.remove('hidden');
+  document.getElementById('logout-btn').onclick  = doLogout;
+  document.getElementById('av-edit').onclick     = toggleAP;
+  document.getElementById('av-ok').onclick       = confirmAV;
+  document.getElementById('open-add').onclick    = () => document.getElementById('add-pnl').classList.toggle('hidden');
+  document.getElementById('cancel-add').onclick  = () => document.getElementById('add-pnl').classList.add('hidden');
+  document.getElementById('search-btn').onclick  = doSearch;
+  document.getElementById('mc-send').onclick     = doSend;
+}
+
+function setMode(m) {
+  MODE = m;
+  document.getElementById('wrap-date').classList.toggle('hidden', m!=='date');
+  document.getElementById('wrap-days').classList.toggle('hidden', m!=='days');
+  document.getElementById('tog-date').classList.toggle('on', m==='date');
+  document.getElementById('tog-days').classList.toggle('on', m==='days');
+  upPrev();
+}
+window.setMode = setMode;
+
+function upPrev() {
+  const el = document.getElementById('ob-prev');
+  let d = 0;
+  if (MODE==='date') {
+    const v = document.getElementById('date-in').value;
+    if (!v) { el.textContent=''; return; }
+    const dt=new Date(v),now=new Date(); now.setHours(0,0,0,0); dt.setHours(0,0,0,0);
+    d = Math.max(0,Math.floor((now-dt)/86400000));
+  } else {
+    d = parseInt(document.getElementById('days-in').value)||0;
+  }
+  const {r,o,p,m} = bd(d);
+  const pts=[];
+  if(r)pts.push(r+' 🦈'); if(o)pts.push(o+' 🐋'); if(p)pts.push(p+' 🐧'); if(m)pts.push(m+' 🐦');
+  el.textContent = d===0 ? 'Ça commence aujourd\'hui ! 🎉' : d+' jours → '+(pts.join(' + ')||'🐣');
+}
+
+function onPN() {
+  const v = document.getElementById('pseudo-in').value.trim();
+  const e = document.getElementById('pseudo-err');
+  if (v.length<2){e.textContent='Au moins 2 caractères !';return;}
+  if (v.length>20){e.textContent='Max 20 caractères.';return;}
+  e.textContent='';
+  window._pseudo = v;
+  document.getElementById('ob-speech').innerHTML = `Top, ${v} ! 🎉<br/>Depuis quand tiens-tu bon ?`;
+  document.getElementById('ob-s1').classList.add('hidden');
+  document.getElementById('ob-s2').classList.remove('hidden');
+  upPrev();
+}
+
+function onDN() {
+  const e = document.getElementById('date-err');
+  let sd;
+  if (MODE==='date') {
+    const v = document.getElementById('date-in').value;
+    if (!v){e.textContent='Choisis une date !';return;}
+    const dt=new Date(v),now=new Date(); now.setHours(0,0,0,0); dt.setHours(0,0,0,0);
+    if (dt>now){e.textContent='Pas dans le futur !';return;}
+    sd=v;
+  } else {
+    const d=parseInt(document.getElementById('days-in').value);
+    if (isNaN(d)||d<0){e.textContent='Nombre invalide !';return;}
+    const dt=new Date(); dt.setDate(dt.getDate()-d);
+    sd=dt.toISOString().slice(0,10);
+  }
+  e.textContent='';
+  P = {pseudo:window._pseudo,start_date:sd,avatar:'🐧',notif_enabled:true,banquise_public:true,last_kill_date:null,kills:0};
+  localStorage.setItem('mlp_v2', JSON.stringify(P));
+  enterApp();
+}
+
+// ══ CALC ═════════════════════════════════════════
+function calcD() {
+  if (!P) return 0;
+  const ref = P.last_kill_date||P.start_date;
+  const d=new Date(ref),now=new Date(); now.setHours(0,0,0,0); d.setHours(0,0,0,0);
+  return Math.max(0,Math.floor((now-d)/86400000));
+}
+function calcDF(sd,kd) {
+  const ref=kd||sd; const d=new Date(ref),now=new Date(); now.setHours(0,0,0,0); d.setHours(0,0,0,0);
+  return Math.max(0,Math.floor((now-d)/86400000));
+}
+function bd(days) {
+  let r=days; const rq=Math.floor(r/360); r%=360; const oq=Math.floor(r/180); r%=180; const pq=Math.floor(r/30); r%=30;
+  return {r:rq,o:oq,p:pq,m:r};
+}
+function lvl(d) { return LVL.find(l=>d>=l.min&&d<=l.max)||LVL[0]; }
+
+// ══ BANQUISE ═════════════════════════════════════
+function updateB() {
+  const d = calcD();
+  renderAL(d); renderACD(d);
+  document.getElementById('days-num').textContent = d;
+  document.getElementById('streak-num').textContent = d;
+}
+
+function renderAL(days) {
+  const layer = document.getElementById('al');
+  layer.innerHTML = '';
+  const {r,o,p,m} = bd(days);
+  const tks=[];
+  for(let i=0;i<Math.min(r,3);i++) tks.push('rq');
+  for(let i=0;i<Math.min(o,6);i++) tks.push('oq');
+  for(let i=0;i<Math.min(p,10);i++) tks.push('pg');
+  for(let i=0;i<Math.min(m,20);i++) tks.push('mt');
+  tks.forEach((t,idx) => {
+    const w=document.createElement('div'); w.className='atk';
+    const z=idx%4; let x,y;
+    if(z===0){x=rnd(3,28);y=rnd(5,52);}else if(z===1){x=rnd(70,94);y=rnd(5,52);}else if(z===2){x=rnd(3,38);y=rnd(5,28);}else{x=rnd(62,94);y=rnd(5,28);}
+    w.style.cssText=`left:${x}%;top:${y}%;--fd:${(3+Math.random()*3).toFixed(1)}s;--fdl:${(Math.random()*3).toFixed(1)}s;--r0:${rv(-5,5)}deg;--r1:${rv(-5,5)}deg;--r2:${rv(-5,5)}deg;--x1:${rv(-6,6)}px;--y1:${rv(-8,2)}px;--x2:${rv(-6,6)}px;--y2:${rv(-5,3)}px`;
+    w.innerHTML = aHTML(t); layer.appendChild(w);
+  });
+}
+
+function aHTML(t) {
+  if(t==='mt') return `<div class="mtt"><div class="mtt-wl"></div><div class="mtt-b"></div><div class="mtt-wr"></div><div class="mtt-h"></div><div class="mtt-bk"></div></div>`;
+  if(t==='pg') return `<div class="peng psm"><div class="pb"><div class="pby"></div><div class="pf"><div class="pe l"></div><div class="pe r"></div><div class="pk"></div></div><div class="pw l"></div><div class="pw r"></div><div class="pft"><div class="pfo"></div><div class="pfo"></div></div></div></div>`;
+  if(t==='oq') return `<div class="oq"><div class="oq-f"></div><div class="oq-b"><div class="oq-by"></div><div class="oq-e"></div></div><div class="oq-t"></div></div>`;
+  if(t==='rq') return `<div class="rq"><div class="rq-f"></div><div class="rq-b"><div class="rq-by"></div></div><div class="rq-t"></div></div>`;
+  return '';
+}
+
+function renderACD(days) {
+  const el=document.getElementById('acd'); const {r,o,p,m}=bd(days);
+  const its=[{i:'🦈',n:r,l:'Requin'+(r!==1?'s':'')},{i:'🐋',n:o,l:'Orque'+(o!==1?'s':'')},{i:'🐧',n:p,l:'Pingouin'+(p!==1?'s':'')},{i:'🐦',n:m,l:'Mouette'+(m!==1?'s':'')}].filter(x=>x.n>0);
+  if(!its.length){el.innerHTML='<div style="color:rgba(255,255,255,.35);font-size:.84rem;font-weight:600;text-align:center;width:100%;padding:10px 0">Commence ton aventure aujourd\'hui ! 🐧</div>';return;}
+  el.innerHTML=its.map(x=>`<div class="acd-it"><span style="font-size:1.55rem">${x.i}</span><div><div class="acd-n">${x.n}</div><div class="acd-l">${x.l}</div></div></div>`).join('');
+}
+
+// ══ KILL ═════════════════════════════════════════
+function closeKill(){document.getElementById('kill-modal').classList.add('hidden');}
+window.closeKill=closeKill;
+function doKill(){
+  closeKill();
+  const today=new Date().toISOString().slice(0,10);
+  P.last_kill_date=today; P.kills=(P.kills||0)+1;
+  localStorage.setItem('mlp_v2',JSON.stringify(P));
+  const l=document.getElementById('al');
+  l.style.transition='opacity .6s'; l.style.opacity='0';
+  setTimeout(()=>{updateB();l.style.opacity='1';},660);
+  toast('☠️ Pingouin tué ! Demain on recommence…');
+}
+window.doKill=doKill;
+
+// ══ PROFIL ═══════════════════════════════════════
+function updateP(){
+  if(!P)return;
+  const d=calcD(); const lv=lvl(d); const {r,o,p,m}=bd(d);
+  const nl=LVL.find(l=>l.min===lv.nx);
+  const pct=lv.nx?Math.min(100,Math.round(((d-lv.min)/(lv.nx-lv.min))*100)):100;
+  const rem=lv.nx?lv.nx-d:0;
+  document.getElementById('p-un').textContent=P.pseudo||'—';
+  document.getElementById('av-d').textContent=P.avatar||'🐧';
+  document.getElementById('p-lvl-i').textContent=lv.i;
+  document.getElementById('p-lvl-n').textContent=lv.n;
+  document.getElementById('lp-i').textContent=lv.i;
+  document.getElementById('lp-cn').textContent=lv.n;
+  document.getElementById('lp-fill').style.width=pct+'%';
+  document.getElementById('lp-info').textContent=rem>0?rem+' jours avant le prochain niveau':'Niveau max ! 🏆';
+  document.getElementById('lp-nn').textContent=nl?nl.n:'—';
+  document.getElementById('st-d').textContent=d;
+  document.getElementById('st-m').textContent=m;
+  document.getElementById('st-p').textContent=p;
+  document.getElementById('st-o').textContent=o;
+  document.getElementById('notif-tog').classList.toggle('on',!!P.notif_enabled);
+  document.getElementById('priv-tog').classList.toggle('on',!!P.banquise_public);
+}
+
+function toggleAP(){
+  const pk=document.getElementById('av-picker');
+  pk.classList.toggle('hidden');
+  if(!pk.classList.contains('hidden')){
+    document.getElementById('av-gr').innerHTML=AVS.map(a=>`<div class="av-op${a===(P?.avatar||'🐧')?' sel':''}" onclick="pickAv('${a}')">${a}</div>`).join('');
+  }
+}
+function pickAv(a){SEL_AV=a;document.querySelectorAll('.av-op').forEach(el=>el.classList.toggle('sel',el.textContent===a));}
+window.pickAv=pickAv;
+function confirmAV(){P.avatar=SEL_AV;localStorage.setItem('mlp_v2',JSON.stringify(P));document.getElementById('av-d').textContent=SEL_AV;document.getElementById('av-picker').classList.add('hidden');toast('Avatar mis à jour ! '+SEL_AV);}
+function toggleNotif(){P.notif_enabled=!P.notif_enabled;localStorage.setItem('mlp_v2',JSON.stringify(P));document.getElementById('notif-tog').classList.toggle('on',P.notif_enabled);toast(P.notif_enabled?'🔔 Activées':'🔕 Désactivées');}
+window.toggleNotif=toggleNotif;
+function togglePriv(){P.banquise_public=!P.banquise_public;localStorage.setItem('mlp_v2',JSON.stringify(P));document.getElementById('priv-tog').classList.toggle('on',P.banquise_public);toast(P.banquise_public?'👁️ Banquise visible':'🔒 Banquise privée');}
+window.togglePriv=togglePriv;
+function doLogout(){if(!confirm('Quitter la banquise ?'))return;localStorage.clear();location.reload();}
+
+// ══ AMIS (Supabase requis) ═══════════════════════
+async function initSB(){
+  if(SB)return;
+  try{if(window.supabase&&SB_URL.includes('supabase.co')&&!SB_URL.includes('YOUR_PROJECT')){SB=window.supabase.createClient(SB_URL,SB_ANON);}}catch(e){}
+}
+async function getUser(){
+  await initSB(); if(!SB)return null;
+  const {data:{user}}=await SB.auth.getUser().catch(()=>({data:{user:null}}));
+  return user;
+}
+async function doSearch(){
+  const ps=document.getElementById('search-in').value.trim();
+  const re=document.getElementById('search-res');
+  if(!ps){re.textContent='Écris un pseudo !';return;}
+  await initSB();
+  if(!SB){re.innerHTML='<span style="color:#fbbf24">⚠️ Configure Supabase pour chercher des amis</span>';return;}
+  re.textContent='Recherche…';
+  try{
+    const {data}=await SB.from('profiles').select('id,pseudo,avatar,start_date,last_kill_date').eq('pseudo',ps).limit(1);
+    if(!data||!data.length){re.innerHTML='<span style="color:#f87171">Personne trouvée 😕</span>';return;}
+    const u=data[0]; const d=calcDF(u.start_date,u.last_kill_date);
+    re.innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin:6px 0"><span style="font-size:1.3rem">${u.avatar||'🐧'}</span><div><div style="font-weight:800">${u.pseudo}</div><div style="font-size:.74rem;color:var(--sky)">${lvl(d).n}</div></div><button onclick="addFriend('${u.id}')" style="margin-left:auto;padding:8px 14px;border-radius:99px;background:rgba(78,205,196,.2);border:1px solid rgba(78,205,196,.4);color:var(--teal);font-weight:800;font-size:.8rem">+ Ajouter</button></div>`;
+  }catch(e){re.innerHTML='<span style="color:#f87171">Erreur Supabase</span>';}
+}
+async function addFriend(toId){
+  const u=await getUser(); if(!u){toast('Non connecté');return;}
+  try{await SB.from('friendships').insert({user_a:u.id,user_b:toId,status:'pending'});toast('Demande envoyée ! 🐧✉️');document.getElementById('add-pnl').classList.add('hidden');}
+  catch(e){toast('Déjà ami ou erreur');}
+}
+window.addFriend=addFriend;
+async function loadF(){
+  const u=await getUser(); if(!u)return;
+  const {data:fs}=await SB.from('friendships').select(`id,status,user_a,user_b,pa:profiles!friendships_user_a_fkey(id,pseudo,avatar,start_date,last_kill_date),pb:profiles!friendships_user_b_fkey(id,pseudo,avatar,start_date,last_kill_date)`).or(`user_a.eq.${u.id},user_b.eq.${u.id}`).catch(()=>({data:null}));
+  if(!fs||!fs.length)return;
+  document.getElementById('fl').innerHTML=fs.map(f=>{
+    const ot=f.user_a===u.id?f.pb:f.pa; if(!ot)return '';
+    const d=calcDF(ot.start_date,ot.last_kill_date);
+    return `<div class="fc"><div class="fc-av">${ot.avatar||'🐧'}</div><div class="fc-if"><div class="fc-nm">${ot.pseudo}</div><div class="fc-lv">${lvl(d).i} ${lvl(d).n} • ${d}j ${f.status==='pending'?'⏳':''}</div></div><div class="fc-ac">${f.status==='pending'&&f.user_b===u.id?`<button class="fcb" onclick="acceptF('${f.id}')">✓</button>`:`<button class="fcb" onclick="openC('${ot.id}','${ot.pseudo}')">✉️</button>`}<button class="fcb d" onclick="removeF('${f.id}')">✕</button></div></div>`;
+  }).join('');
+}
+async function acceptF(id){const u=await getUser();if(!u)return;await SB.from('friendships').update({status:'accepted'}).eq('id',id);toast('Ami accepté ! 🎉');loadF();}
+window.acceptF=acceptF;
+async function removeF(id){if(!confirm('Retirer cet ami ?'))return;const u=await getUser();if(!u)return;await SB.from('friendships').delete().eq('id',id);toast('Ami retiré');loadF();}
+window.removeF=removeF;
+function openC(id,nm){SEL_FID=id;SEL_FNM=nm;const c=document.getElementById('mc');c.classList.remove('hidden');document.getElementById('mc-to').textContent='À : '+nm;}
+window.openC=openC;
+async function sendAnimal(a){
+  const u=await getUser();if(!u||!SEL_FID){toast('Sélectionne un ami !');return;}
+  await SB.from('messages').insert({from_id:u.id,to_id:SEL_FID,animal:a}).catch(()=>{});
+  toast({mouette:'🐦 Mouette envoyée !',pingouin:'🐧 Pingouin envoyé !',orque:'🐋 Orque lancée !'}[a]);
+}
+window.sendAnimal=sendAnimal;
+async function doSend(){
+  const t=document.getElementById('mc-text').value.trim();if(!t){toast('Écris quelque chose !');return;}
+  const u=await getUser();if(!u||!SEL_FID){toast('Sélectionne un ami !');return;}
+  await SB.from('messages').insert({from_id:u.id,to_id:SEL_FID,text:t}).catch(()=>{});
+  document.getElementById('mc-text').value='';toast('Envoyé ✈️');loadM();
+}
+async function loadM(){
+  const u=await getUser();if(!u)return;
+  const {data:msgs}=await SB.from('messages').select(`*,fp:profiles!messages_from_id_fkey(pseudo,avatar)`).eq('to_id',u.id).order('created_at',{ascending:false}).limit(30).catch(()=>({data:null}));
+  if(!msgs||!msgs.length)return;
+  document.getElementById('ma').innerHTML=msgs.map(m=>{
+    const a=m.animal?{mouette:'🐦 Mouette',pingouin:'🐧 Pingouin',orque:'🐋 Orque'}[m.animal]:'';
+    return `<div class="mi"><div class="mi-av">${m.fp?.avatar||'🐧'}</div><div class="mi-bd"><div class="mi-tp"><span class="mi-fr">${m.fp?.pseudo||'?'}</span><span class="mi-tm">${tAgo(new Date(m.created_at))}</span></div><div class="mi-tx">${a?`<strong>${a}</strong> `:''}${m.text||''}</div></div></div>`;
+  }).join('');
+}
+
+// ══ UTILS ════════════════════════════════════════
+function genStars(){
+  const c=document.getElementById('st-c');if(!c)return;
+  for(let i=0;i<38;i++){const s=document.createElement('div');s.className='star';const sz=rnd(1,3);s.style.cssText=`width:${sz}px;height:${sz}px;left:${rnd(0,100)}%;top:${rnd(0,82)}%;--d:${(2+Math.random()*4).toFixed(1)}s;--dl:${(Math.random()*4).toFixed(1)}s`;c.appendChild(s);}
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800);}
+function tAgo(d){const df=Date.now()-d;const m=Math.floor(df/60000),h=Math.floor(df/3600000),dy=Math.floor(df/86400000);if(m<1)return'à l\'instant';if(m<60)return m+'min';if(h<24)return h+'h';return dy+'j';}
+function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function rv(a,b){return(Math.random()*(b-a)+a).toFixed(0);}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+
 </body>
 </html>
