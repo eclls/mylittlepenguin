@@ -42,86 +42,51 @@ button{cursor:pointer}
 .ld-fill{height:100%;width:0;background:linear-gradient(90deg,var(–teal),var(–glacier));border-radius:99px;animation:load 2s ease forwards}
 @keyframes load{to{width:100%}}
 
-/* PENGUINS */
-.peng{position:relative;display:inline-flex;flex-direction:column;align-items:center}
-.pb{border-radius:50% 50% 45% 45%;background:var(–black);position:relative;display:flex;align-items:center;justify-content:center;animation:bob 3s ease-in-out infinite}
-.pby{background:var(–belly);border-radius:50%;position:absolute;bottom:14%;left:50%;transform:translateX(-50%)}
-.pf{position:absolute;top:12%;width:70%;height:55%;}
-.pe{background:white;border-radius:50%;position:absolute;top:0}
-.pe::after{content:’’;background:var(–black);border-radius:50%;position:absolute;top:28%;left:28%;width:44%;height:44%}
-.pe.l{left:8%}.pe.r{right:8%}
-/* XL eyes */
-.pxl .pe.l{left:6px}.pxl .pe.r{right:6px}
-/* LG eyes */
-.plg .pe.l{left:5px}.plg .pe.r{right:5px}
-/* MD eyes */
-.pmd .pe.l{left:4px}.pmd .pe.r{right:4px}
-/* SM eyes */
-.psm .pe.l{left:2px}.psm .pe.r{right:2px}
-.pk{background:var(–beak);border-radius:0 0 50% 50%;position:absolute;top:55%;left:50%;transform:translateX(-50%);clip-path:polygon(10% 0%,90% 0%,100% 100%,0% 100%)}
-.pw{background:var(–black);border-radius:50%;position:absolute}
-.pw.l{left:-18%;transform:rotate(15deg)}.pw.r{right:-18%;transform:rotate(-15deg)}
-.pw.hl{left:-18%;transform:rotate(-38deg);transform-origin:top center}
-.pw.hr{right:-18%;transform:rotate(38deg);transform-origin:top center}
-.pft{position:absolute;display:flex;gap:8px}
-.pfo{background:var(–foot);border-radius:50%}
-.psc{position:absolute;left:-10%;right:-10%;height:15px;background:repeating-linear-gradient(90deg,#ef4444 0,#ef4444 8px,#fbbf24 8px,#fbbf24 16px);border-radius:8px;z-index:2}
-@keyframes bob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
+/* ══ PENGUIN SVG SYSTEM — Happy Feet style ══ */
+.peng-svg{display:inline-block;animation:bob 3s ease-in-out infinite}
+.peng-svg.hold{animation:bob-hold 3s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-9px) rotate(1.5deg)}}
+@keyframes bob-hold{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-6px) rotate(1deg)}}
 
-/* XL */
-.pxl .pb{width:90px;height:110px}.pxl .pby{width:58px;height:72px}.pxl .pe{width:14px;height:14px}.pxl .pk{width:18px;height:11px}.pxl .pw{width:22px;height:50px;top:28%}.pxl .pft{bottom:-12px}.pxl .pfo{width:22px;height:12px}
-/* LG */
-.plg .pb{width:70px;height:86px}.plg .pby{width:44px;height:56px}.plg .pe{width:11px;height:11px}.plg .pk{width:14px;height:8px}.plg .pw{width:17px;height:38px;top:26%}.plg .pft{bottom:-10px}.plg .pfo{width:17px;height:9px}
-/* MD */
-.pmd .pb{width:56px;height:68px}.pmd .pby{width:35px;height:44px}.pmd .pe{width:9px;height:9px}.pmd .pk{width:11px;height:7px}.pmd .pw{width:14px;height:30px;top:26%}.pmd .pft{bottom:-8px}.pmd .pfo{width:14px;height:8px}
-/* SM */
-.psm .pb{width:36px;height:44px}.psm .pby{width:22px;height:28px}.psm .pe{width:6px;height:6px}.psm .pk{width:8px;height:5px}.psm .pw{width:9px;height:20px;top:26%}.psm .pft{bottom:-6px}.psm .pfo{width:10px;height:6px}
-
-/* READABILITY FIXES — textes lisibles sur fond sombre */
-.ob-card h2{font-family:var(–fd);font-size:1.55rem;font-weight:600;color:#ffffff}
-.ob-hint{font-size:.84rem;color:#a8d8f0;opacity:1}
-.ob-inp input{flex:1;background:transparent;color:#ffffff;font-size:1rem;font-weight:600}
-.ob-inp input::placeholder{color:rgba(255,255,255,.45);font-weight:400}
-.ob-inp input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1)}
-/* Section labels */
-.sl{font-family:var(–fd);font-size:1.12rem;font-weight:700;color:#ffffff;margin-bottom:12px}
-/* ACD labels */
-.acd-n{font-family:var(–fd);font-size:1.7rem;font-weight:700;color:#ffffff}
-.acd-l{font-size:.72rem;color:#c8e8f8;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-/* Stats */
-.stc-v{font-family:var(–fd);font-size:1.8rem;font-weight:700;color:#ffffff}
-.stc-l{font-size:.7rem;font-weight:700;color:#a8d8f0;text-transform:uppercase;letter-spacing:.08em}
-/* Settings */
-.si-lb{font-weight:700;font-size:.94rem;color:#ffffff}
-.si-sb{font-size:.74rem;color:#a8d8f0;opacity:1}
-/* Level progression */
-.lpc-c{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1rem;color:#ffffff}
-.lp-info{font-size:.74rem;color:#a8d8f0;font-weight:700;margin-top:4px}
-.lp-next{font-size:.82rem;color:rgba(255,255,255,.65);font-weight:700}
-/* Profile */
-.p-un{font-family:var(–fd);font-size:1.8rem;font-weight:700;color:#ffffff}
-.p-bn{font-size:.84rem;font-weight:800;color:var(–teal);letter-spacing:.03em}
-/* Amis */
-.amh h1{font-family:var(–fd);font-size:1.75rem;font-weight:700;color:#ffffff}
-.add-pnl h3{font-family:var(–fd);font-size:1.15rem;color:#ffffff}
-.apg h3{font-family:var(–fd);font-size:1.15rem;color:#ffffff}
-.fc-nm{font-weight:800;font-size:.98rem;color:#ffffff}
-.fc-lv{font-size:.73rem;color:#a8d8f0;font-weight:600}
-.ef p{font-size:.86rem;color:rgba(255,255,255,.6);line-height:1.6;font-weight:600}
-.em{font-size:.83rem;color:rgba(255,255,255,.5);text-align:center;padding:18px;font-weight:600}
-.mi-tx{font-size:.84rem;font-weight:700;line-height:1.4;color:#ffffff}
-.mc-to{font-size:.78rem;font-weight:700;color:#a8d8f0}
-/* Sign board text already dark — keep as is */
-/* Modal */
-.mc-card h3{font-family:var(–fd);font-size:1.38rem;font-weight:700;color:#ffffff}
-.mc-card p{font-size:.86rem;color:rgba(255,255,255,.8);line-height:1.55}
-/* Nav labels */
-.nl{font-size:.62rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:inherit}
-/* Logout */
-.logout-btn{width:100%;padding:15px;border-radius:var(–r-xl);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:#a8d8f0;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
-/* Stats grid — 3 columns on wide, 2 on narrow */
+/* ══ iPHONE READABILITY ══════════════════════ */
+/* Base: tout le texte interface en blanc pur ou bleu clair fort */
+body{color:#ffffff}
+.ob-hint{font-size:.88rem;color:#b8e0f7;opacity:1;font-weight:600}
+.ob-card h2{color:#ffffff;font-size:1.5rem}
+.sl{color:#ffffff;font-size:1.1rem;font-weight:700;margin-bottom:14px}
+.acd-n{color:#ffffff;font-size:1.65rem;font-weight:800}
+.acd-l{color:#b8e0f7;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.stc-v{color:#ffffff;font-size:1.7rem;font-weight:800}
+.stc-l{color:#b8e0f7;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.si-lb{color:#ffffff;font-weight:700;font-size:.96rem}
+.si-sb{color:#b8e0f7;font-size:.76rem;opacity:1;font-weight:600}
+.lpc-c{color:#ffffff;font-weight:800;font-size:1rem;display:flex;align-items:center;gap:8px}
+.lp-info{color:#b8e0f7;font-size:.76rem;font-weight:700;margin-top:4px}
+.lp-next{color:rgba(255,255,255,.7);font-size:.84rem;font-weight:700}
+.p-un{color:#ffffff;font-family:var(–fd);font-size:1.8rem;font-weight:700}
+.p-bn{color:var(–teal);font-size:.86rem;font-weight:800;letter-spacing:.03em}
+.amh h1{color:#ffffff;font-family:var(–fd);font-size:1.75rem;font-weight:700}
+.add-pnl h3,.apg h3{color:#ffffff;font-family:var(–fd);font-size:1.15rem}
+.fc-nm{color:#ffffff;font-weight:800;font-size:1rem}
+.fc-lv{color:#b8e0f7;font-size:.75rem;font-weight:600}
+.ef p{color:rgba(255,255,255,.65);font-size:.88rem;line-height:1.65;font-weight:600}
+.em{color:rgba(255,255,255,.55);font-size:.85rem;font-weight:600}
+.mi-tx{color:#ffffff;font-size:.86rem;font-weight:600;line-height:1.45}
+.mi-fr{color:var(–teal);font-size:.78rem;font-weight:800}
+.mi-tm{color:rgba(255,255,255,.45);font-size:.68rem}
+.mc-to{color:#b8e0f7;font-size:.8rem;font-weight:700}
+.mc-card h3{color:#ffffff;font-family:var(–fd);font-size:1.38rem;font-weight:700}
+.mc-card p{color:rgba(255,255,255,.82);font-size:.88rem;line-height:1.55}
+.nl{font-size:.64rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:inherit}
+.logout-btn{color:#b8e0f7;font-size:1rem;font-weight:700;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);width:100%;padding:15px;border-radius:var(–r-xl);display:flex;align-items:center;justify-content:center;gap:8px}
+/* Stats grid — 3 cols on 340px+, 2 on small */
 .p-st{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media(min-width:340px){.p-st{grid-template-columns:repeat(3,1fr)}}
+/* Section cards — slightly more opaque on small screens */
+@media(max-width:390px){
+.ss,.psec,.apg{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14)}
+.ob-card{background:rgba(255,255,255,.09)}
+}
 #onboarding{background:var(–night);padding:60px 20px 40px;overflow-y:auto;gap:20px;z-index:90}
 .ob-aurora{position:fixed;inset:0;background:radial-gradient(ellipse 140% 50% at 50% 0%,rgba(78,205,196,.2) 0%,transparent 60%);pointer-events:none}
 .ob-w{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:18px}
@@ -345,14 +310,43 @@ button{cursor:pointer}
   <div class="sp-aurora"></div>
   <div class="sp-stars"></div>
   <div class="sp-scene">
-    <div class="peng pxl">
-      <div class="pb">
-        <div class="pby"></div>
-        <div class="pf"><div class="pe l"></div><div class="pe r"></div><div class="pk"></div></div>
-        <div class="pw l"></div><div class="pw r"></div>
-        <div class="psc" style="top:40px"></div>
-        <div class="pft"><div class="pfo"></div><div class="pfo"></div></div>
-      </div>
+    <div class="peng-svg"><!--XL splash penguin with scarf-->
+      <svg width="110" height="140" viewBox="0 0 110 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Feet -->
+        <ellipse cx="38" cy="132" rx="14" ry="7" fill="#FF7A1A"/>
+        <ellipse cx="72" cy="132" rx="14" ry="7" fill="#FF7A1A"/>
+        <!-- Body -->
+        <ellipse cx="55" cy="88" rx="38" ry="46" fill="#1a1a2e"/>
+        <!-- White belly -->
+        <ellipse cx="55" cy="96" rx="24" ry="30" fill="#F5F0E8"/>
+        <!-- Left wing -->
+        <ellipse cx="18" cy="88" rx="11" ry="28" fill="#1a1a2e" transform="rotate(-12 18 88)"/>
+        <!-- Right wing -->
+        <ellipse cx="92" cy="88" rx="11" ry="28" fill="#1a1a2e" transform="rotate(12 92 88)"/>
+        <!-- Head -->
+        <ellipse cx="55" cy="46" rx="28" ry="28" fill="#1a1a2e"/>
+        <!-- White face patch -->
+        <ellipse cx="55" cy="50" rx="18" ry="16" fill="#F5F0E8"/>
+        <!-- Left eye white -->
+        <ellipse cx="44" cy="40" rx="9" ry="9" fill="white"/>
+        <!-- Right eye white -->
+        <ellipse cx="66" cy="40" rx="9" ry="9" fill="white"/>
+        <!-- Left pupil -->
+        <ellipse cx="46" cy="42" rx="5" ry="5" fill="#1a1a2e"/>
+        <!-- Right pupil -->
+        <ellipse cx="68" cy="42" rx="5" ry="5" fill="#1a1a2e"/>
+        <!-- Eye shine left -->
+        <ellipse cx="48" cy="39" rx="2" ry="2" fill="white"/>
+        <!-- Eye shine right -->
+        <ellipse cx="70" cy="39" rx="2" ry="2" fill="white"/>
+        <!-- Beak -->
+        <path d="M49 54 Q55 62 61 54 Z" fill="#FF8C42"/>
+        <!-- Scarf -->
+        <rect x="30" y="66" width="50" height="10" rx="5" fill="#ef4444"/>
+        <rect x="30" y="66" width="12" height="10" rx="3" fill="#fbbf24"/>
+        <rect x="54" y="66" width="12" height="10" rx="3" fill="#fbbf24"/>
+        <rect x="78" y="66" width="12" height="10" rx="3" fill="#fbbf24"/>
+      </svg>
     </div>
     <h1 class="sp-title">MyLittle<span>Penguin</span></h1>
     <p class="sp-sub">Ton compagnon de l'Antarctique 🧊</p>
@@ -365,13 +359,26 @@ button{cursor:pointer}
 <div id="onboarding" class="screen">
   <div class="ob-aurora"></div>
   <div class="ob-w">
-    <div class="peng plg" style="position:relative">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:0">
       <div class="speech" id="ob-speech">Salut ! Je suis Pingu 🐧<br/>Créons ton expédition !</div>
-      <div class="pb">
-        <div class="pby"></div>
-        <div class="pf"><div class="pe l"></div><div class="pe r"></div><div class="pk"></div></div>
-        <div class="pw l"></div><div class="pw r"></div>
-        <div class="pft"><div class="pfo"></div><div class="pfo"></div></div>
+      <div class="peng-svg">
+      <svg width="80" height="104" viewBox="0 0 80 104" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="28" cy="98" rx="10" ry="5" fill="#FF7A1A"/>
+        <ellipse cx="52" cy="98" rx="10" ry="5" fill="#FF7A1A"/>
+        <ellipse cx="40" cy="66" rx="28" ry="34" fill="#1a1a2e"/>
+        <ellipse cx="40" cy="72" rx="18" ry="22" fill="#F5F0E8"/>
+        <ellipse cx="14" cy="64" rx="8" ry="20" fill="#1a1a2e" transform="rotate(-10 14 64)"/>
+        <ellipse cx="66" cy="64" rx="8" ry="20" fill="#1a1a2e" transform="rotate(10 66 64)"/>
+        <ellipse cx="40" cy="34" rx="22" ry="22" fill="#1a1a2e"/>
+        <ellipse cx="40" cy="38" rx="14" ry="12" fill="#F5F0E8"/>
+        <ellipse cx="31" cy="29" rx="7" ry="7" fill="white"/>
+        <ellipse cx="49" cy="29" rx="7" ry="7" fill="white"/>
+        <ellipse cx="33" cy="31" rx="4" ry="4" fill="#1a1a2e"/>
+        <ellipse cx="51" cy="31" rx="4" ry="4" fill="#1a1a2e"/>
+        <ellipse cx="34" cy="28" rx="1.5" ry="1.5" fill="white"/>
+        <ellipse cx="52" cy="28" rx="1.5" ry="1.5" fill="white"/>
+        <path d="M36 41 Q40 47 44 41 Z" fill="#FF8C42"/>
+      </svg>
       </div>
     </div>
     <!-- Step 1 -->
@@ -417,7 +424,25 @@ button{cursor:pointer}
         <div class="icbg">
           <div class="ic-top"></div><div class="ic-sub"></div><div class="ic-sh"></div>
           <div class="mp-wrap">
-            <div class="peng psm"><div class="pb"><div class="pby"></div><div class="pf"><div class="pe l"></div><div class="pe r"></div><div class="pk"></div></div><div class="pw l"></div><div class="pw r"></div><div class="pft"><div class="pfo"></div><div class="pfo"></div></div></div></div>
+            <div class="peng-svg">
+              <svg width="44" height="56" viewBox="0 0 44 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="15" cy="53" rx="7" ry="3.5" fill="#FF7A1A"/>
+                <ellipse cx="29" cy="53" rx="7" ry="3.5" fill="#FF7A1A"/>
+                <ellipse cx="22" cy="35" rx="16" ry="20" fill="#1a1a2e"/>
+                <ellipse cx="22" cy="39" rx="10" ry="13" fill="#F5F0E8"/>
+                <ellipse cx="8" cy="33" rx="5" ry="12" fill="#1a1a2e" transform="rotate(-8 8 33)"/>
+                <ellipse cx="36" cy="33" rx="5" ry="12" fill="#1a1a2e" transform="rotate(8 36 33)"/>
+                <ellipse cx="22" cy="18" rx="13" ry="13" fill="#1a1a2e"/>
+                <ellipse cx="22" cy="21" rx="8" ry="7" fill="#F5F0E8"/>
+                <ellipse cx="16" cy="14" rx="4.5" ry="4.5" fill="white"/>
+                <ellipse cx="28" cy="14" rx="4.5" ry="4.5" fill="white"/>
+                <ellipse cx="17" cy="15.5" rx="2.5" ry="2.5" fill="#1a1a2e"/>
+                <ellipse cx="29" cy="15.5" rx="2.5" ry="2.5" fill="#1a1a2e"/>
+                <ellipse cx="18" cy="14" rx="1" ry="1" fill="white"/>
+                <ellipse cx="30" cy="14" rx="1" ry="1" fill="white"/>
+                <path d="M19 23 Q22 27 25 23 Z" fill="#FF8C42"/>
+              </svg>
+            </div>
           </div>
         </div>
         <div class="ic-ck ck1"></div><div class="ic-ck ck2"></div><div class="ic-ck ck3"></div>
@@ -428,8 +453,26 @@ button{cursor:pointer}
       <div class="ss"><div class="sl">Ton troupeau 🐾</div><div class="acd" id="acd"></div></div>
       <div class="ss">
         <div class="dp">
-          <div class="peng pmd" style="margin-right:-4px">
-            <div class="pb"><div class="pby"></div><div class="pf"><div class="pe l"></div><div class="pe r"></div><div class="pk"></div></div><div class="pw hl"></div><div class="pw hr"></div><div class="pft"><div class="pfo"></div><div class="pfo"></div></div></div>
+          <div class="peng-svg hold" style="margin-right:-6px">
+            <svg width="64" height="82" viewBox="0 0 64 82" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="21" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/>
+              <ellipse cx="43" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/>
+              <ellipse cx="32" cy="52" rx="22" ry="27" fill="#1a1a2e"/>
+              <ellipse cx="32" cy="57" rx="14" ry="18" fill="#F5F0E8"/>
+              <!-- Left arm raised holding sign -->
+              <ellipse cx="8" cy="38" rx="6" ry="18" fill="#1a1a2e" transform="rotate(-50 8 38)"/>
+              <!-- Right arm raised holding sign -->
+              <ellipse cx="56" cy="38" rx="6" ry="18" fill="#1a1a2e" transform="rotate(50 56 38)"/>
+              <ellipse cx="32" cy="26" rx="18" ry="18" fill="#1a1a2e"/>
+              <ellipse cx="32" cy="30" rx="11" ry="10" fill="#F5F0E8"/>
+              <ellipse cx="23" cy="21" rx="6" ry="6" fill="white"/>
+              <ellipse cx="41" cy="21" rx="6" ry="6" fill="white"/>
+              <ellipse cx="25" cy="23" rx="3.5" ry="3.5" fill="#1a1a2e"/>
+              <ellipse cx="43" cy="23" rx="3.5" ry="3.5" fill="#1a1a2e"/>
+              <ellipse cx="26" cy="21" rx="1.5" ry="1.5" fill="white"/>
+              <ellipse cx="44" cy="21" rx="1.5" ry="1.5" fill="white"/>
+              <path d="M28 33 Q32 38 36 33 Z" fill="#FF8C42"/>
+            </svg>
           </div>
           <div class="sp-wr">
             <div class="sp-bd">
@@ -550,8 +593,8 @@ button{cursor:pointer}
 // ══ CONFIG SUPABASE ══════════════════════════════
 // ⚠️ Remplace par tes valeurs
 const SB_URL  = 'https://cirdtmjrsgbqbstwrgzx.supabase.co';
-const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcmR0bWpyc2dicWJzdHdyZ3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDMxMjMsImV4cCI6MjA4OTYxOTEyM30.g0wYu9rQ75KZStirsfFV9JV-1V2tmWGy9zftEOzbQIU';
-
+const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcmR0bWpyc2dicWJzdHdyZ3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDMxMjMsImV4cCI6MjA4OTYxOTEyM30.g0wYu9rQ75KZStirsfFV9JV-1V2tmWGy9zftEOzbQIU'; 
+  
 // ══ LEVELS ══════════════════════════════════════
 const LVL = [
   {min:0,  max:29,  i:'🐣',n:'Poussin Polaire',      nx:30},
@@ -732,7 +775,7 @@ function renderAL(days) {
 
 function aHTML(t) {
   if(t==='mt') return `<div class="mtt"><div class="mtt-wl"></div><div class="mtt-b"></div><div class="mtt-wr"></div><div class="mtt-h"></div><div class="mtt-bk"></div></div>`;
-  if(t==='pg') return `<div class="peng psm"><div class="pb"><div class="pby"></div><div class="pf"><div class="pe l"></div><div class="pe r"></div><div class="pk"></div></div><div class="pw l"></div><div class="pw r"></div><div class="pft"><div class="pfo"></div><div class="pfo"></div></div></div></div>`;
+  if(t==='pg') return `<svg width="28" height="36" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="9" cy="34" rx="5" ry="2.5" fill="#FF7A1A"/><ellipse cx="19" cy="34" rx="5" ry="2.5" fill="#FF7A1A"/><ellipse cx="14" cy="22" rx="10" ry="13" fill="#1a1a2e"/><ellipse cx="14" cy="25" rx="6.5" ry="8.5" fill="#F5F0E8"/><ellipse cx="5" cy="21" rx="3.5" ry="8" fill="#1a1a2e" transform="rotate(-8 5 21)"/><ellipse cx="23" cy="21" rx="3.5" ry="8" fill="#1a1a2e" transform="rotate(8 23 21)"/><ellipse cx="14" cy="11" rx="8" ry="8" fill="#1a1a2e"/><ellipse cx="14" cy="13" rx="5" ry="4.5" fill="#F5F0E8"/><ellipse cx="10" cy="8" rx="3" ry="3" fill="white"/><ellipse cx="18" cy="8" rx="3" ry="3" fill="white"/><ellipse cx="11" cy="9" rx="1.8" ry="1.8" fill="#1a1a2e"/><ellipse cx="19" cy="9" rx="1.8" ry="1.8" fill="#1a1a2e"/><ellipse cx="11.5" cy="7.5" rx=".8" ry=".8" fill="white"/><ellipse cx="19.5" cy="7.5" rx=".8" ry=".8" fill="white"/><path d="M11.5 15 Q14 18 16.5 15 Z" fill="#FF8C42"/></svg>`;
   if(t==='oq') return `<div class="oq"><div class="oq-f"></div><div class="oq-b"><div class="oq-by"></div><div class="oq-e"></div></div><div class="oq-t"></div></div>`;
   if(t==='rq') return `<div class="rq"><div class="rq-f"></div><div class="rq-b"><div class="rq-by"></div></div><div class="rq-t"></div></div>`;
   return '';
