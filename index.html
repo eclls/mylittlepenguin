@@ -46,11 +46,19 @@ button{cursor:pointer}
 .peng{position:relative;display:inline-flex;flex-direction:column;align-items:center}
 .pb{border-radius:50% 50% 45% 45%;background:var(–black);position:relative;display:flex;align-items:center;justify-content:center;animation:bob 3s ease-in-out infinite}
 .pby{background:var(–belly);border-radius:50%;position:absolute;bottom:14%;left:50%;transform:translateX(-50%)}
-.pf{position:absolute;top:12%;width:70%;display:flex;align-items:center;justify-content:center}
+.pf{position:absolute;top:12%;width:70%;height:55%;}
 .pe{background:white;border-radius:50%;position:absolute;top:0}
 .pe::after{content:’’;background:var(–black);border-radius:50%;position:absolute;top:28%;left:28%;width:44%;height:44%}
-.pe.l{left:5%}.pe.r{right:5%}
-.pk{background:var(–beak);border-radius:0 0 50% 50%;position:absolute;top:64%;clip-path:polygon(10% 0%,90% 0%,100% 100%,0% 100%)}
+.pe.l{left:8%}.pe.r{right:8%}
+/* XL eyes */
+.pxl .pe.l{left:6px}.pxl .pe.r{right:6px}
+/* LG eyes */
+.plg .pe.l{left:5px}.plg .pe.r{right:5px}
+/* MD eyes */
+.pmd .pe.l{left:4px}.pmd .pe.r{right:4px}
+/* SM eyes */
+.psm .pe.l{left:2px}.psm .pe.r{right:2px}
+.pk{background:var(–beak);border-radius:0 0 50% 50%;position:absolute;top:55%;left:50%;transform:translateX(-50%);clip-path:polygon(10% 0%,90% 0%,100% 100%,0% 100%)}
 .pw{background:var(–black);border-radius:50%;position:absolute}
 .pw.l{left:-18%;transform:rotate(15deg)}.pw.r{right:-18%;transform:rotate(-15deg)}
 .pw.hl{left:-18%;transform:rotate(-38deg);transform-origin:top center}
@@ -69,7 +77,51 @@ button{cursor:pointer}
 /* SM */
 .psm .pb{width:36px;height:44px}.psm .pby{width:22px;height:28px}.psm .pe{width:6px;height:6px}.psm .pk{width:8px;height:5px}.psm .pw{width:9px;height:20px;top:26%}.psm .pft{bottom:-6px}.psm .pfo{width:10px;height:6px}
 
-/* ONBOARDING */
+/* READABILITY FIXES — textes lisibles sur fond sombre */
+.ob-card h2{font-family:var(–fd);font-size:1.55rem;font-weight:600;color:#ffffff}
+.ob-hint{font-size:.84rem;color:#a8d8f0;opacity:1}
+.ob-inp input{flex:1;background:transparent;color:#ffffff;font-size:1rem;font-weight:600}
+.ob-inp input::placeholder{color:rgba(255,255,255,.45);font-weight:400}
+.ob-inp input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1)}
+/* Section labels */
+.sl{font-family:var(–fd);font-size:1.12rem;font-weight:700;color:#ffffff;margin-bottom:12px}
+/* ACD labels */
+.acd-n{font-family:var(–fd);font-size:1.7rem;font-weight:700;color:#ffffff}
+.acd-l{font-size:.72rem;color:#c8e8f8;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+/* Stats */
+.stc-v{font-family:var(–fd);font-size:1.8rem;font-weight:700;color:#ffffff}
+.stc-l{font-size:.7rem;font-weight:700;color:#a8d8f0;text-transform:uppercase;letter-spacing:.08em}
+/* Settings */
+.si-lb{font-weight:700;font-size:.94rem;color:#ffffff}
+.si-sb{font-size:.74rem;color:#a8d8f0;opacity:1}
+/* Level progression */
+.lpc-c{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1rem;color:#ffffff}
+.lp-info{font-size:.74rem;color:#a8d8f0;font-weight:700;margin-top:4px}
+.lp-next{font-size:.82rem;color:rgba(255,255,255,.65);font-weight:700}
+/* Profile */
+.p-un{font-family:var(–fd);font-size:1.8rem;font-weight:700;color:#ffffff}
+.p-bn{font-size:.84rem;font-weight:800;color:var(–teal);letter-spacing:.03em}
+/* Amis */
+.amh h1{font-family:var(–fd);font-size:1.75rem;font-weight:700;color:#ffffff}
+.add-pnl h3{font-family:var(–fd);font-size:1.15rem;color:#ffffff}
+.apg h3{font-family:var(–fd);font-size:1.15rem;color:#ffffff}
+.fc-nm{font-weight:800;font-size:.98rem;color:#ffffff}
+.fc-lv{font-size:.73rem;color:#a8d8f0;font-weight:600}
+.ef p{font-size:.86rem;color:rgba(255,255,255,.6);line-height:1.6;font-weight:600}
+.em{font-size:.83rem;color:rgba(255,255,255,.5);text-align:center;padding:18px;font-weight:600}
+.mi-tx{font-size:.84rem;font-weight:700;line-height:1.4;color:#ffffff}
+.mc-to{font-size:.78rem;font-weight:700;color:#a8d8f0}
+/* Sign board text already dark — keep as is */
+/* Modal */
+.mc-card h3{font-family:var(–fd);font-size:1.38rem;font-weight:700;color:#ffffff}
+.mc-card p{font-size:.86rem;color:rgba(255,255,255,.8);line-height:1.55}
+/* Nav labels */
+.nl{font-size:.62rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:inherit}
+/* Logout */
+.logout-btn{width:100%;padding:15px;border-radius:var(–r-xl);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);color:#a8d8f0;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
+/* Stats grid — 3 columns on wide, 2 on narrow */
+.p-st{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:340px){.p-st{grid-template-columns:repeat(3,1fr)}}
 #onboarding{background:var(–night);padding:60px 20px 40px;overflow-y:auto;gap:20px;z-index:90}
 .ob-aurora{position:fixed;inset:0;background:radial-gradient(ellipse 140% 50% at 50% 0%,rgba(78,205,196,.2) 0%,transparent 60%);pointer-events:none}
 .ob-w{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:18px}
@@ -415,6 +467,7 @@ button{cursor:pointer}
         <div class="stc"><div class="stc-i">🐦</div><div class="stc-v" id="st-m">0</div><div class="stc-l">Mouettes</div></div>
         <div class="stc"><div class="stc-i">🐧</div><div class="stc-v" id="st-p">0</div><div class="stc-l">Pingouins</div></div>
         <div class="stc"><div class="stc-i">🐋</div><div class="stc-v" id="st-o">0</div><div class="stc-l">Orques</div></div>
+        <div class="stc"><div class="stc-i">🦈</div><div class="stc-v" id="st-r">0</div><div class="stc-l">Requins</div></div>
       </div>
       <div class="psec">
         <div class="sl">Progression</div>
@@ -727,6 +780,7 @@ function updateP(){
   document.getElementById('st-m').textContent=m;
   document.getElementById('st-p').textContent=p;
   document.getElementById('st-o').textContent=o;
+  document.getElementById('st-r').textContent=r;
   document.getElementById('notif-tog').classList.toggle('on',!!P.notif_enabled);
   document.getElementById('priv-tog').classList.toggle('on',!!P.banquise_public);
 }
