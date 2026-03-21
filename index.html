@@ -48,45 +48,164 @@ button{cursor:pointer}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-9px) rotate(1.5deg)}}
 @keyframes bob-hold{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-6px) rotate(1deg)}}
 
-/* ══ iPHONE READABILITY ══════════════════════ */
-/* Base: tout le texte interface en blanc pur ou bleu clair fort */
-body{color:#ffffff}
+/* ══ CONTRASTE DÉFINITIF ══════════════════════
+Règle : fond sombre → texte blanc
+fond clair  → texte bleu nuit foncé
+═══════════════════════════════════════════════ */
+
+/* Bouton principal : fond bleu foncé profond, texte blanc */
+.ob-btn{
+width:100%;padding:16px;border-radius:var(–r-xl);
+background:#1a4a8a;
+color:#ffffff !important;
+font-size:1.05rem;font-weight:800;letter-spacing:.5px;
+transition:all .2s;
+border:2px solid #4ecdc4;
+box-shadow:0 4px 20px rgba(26,74,138,.5);
+}
+.ob-btn:active{transform:scale(.97);background:#153d75}
+
+/* Bulle de dialogue : fond blanc, texte bleu nuit lisible */
+.speech{
+background:#ffffff;
+color:#0a1628 !important;
+border-radius:var(–r-md);
+border-bottom-left-radius:4px;
+padding:12px 18px;
+font-size:.9rem;
+font-weight:700;
+line-height:1.55;
+text-align:center;
+max-width:250px;
+position:relative;
+box-shadow:0 4px 16px rgba(0,0,0,.25);
+}
+.speech::after{content:’’;position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);border:9px solid transparent;border-top-color:#ffffff;border-bottom:0}
+
+/* Card onboarding : fond sombre semi-opaque, tout le texte blanc */
+.ob-card{
+background:rgba(10,22,40,.75);
+backdrop-filter:blur(20px);
+border:1.5px solid rgba(78,205,196,.35);
+border-radius:var(–r-lg);
+padding:26px 22px;
+width:100%;
+display:flex;flex-direction:column;gap:14px;
+}
+.ob-card h2{font-family:var(–fd);font-size:1.55rem;font-weight:700;color:#ffffff}
 .ob-hint{font-size:.88rem;color:#b8e0f7;opacity:1;font-weight:600}
-.ob-card h2{color:#ffffff;font-size:1.5rem}
-.sl{color:#ffffff;font-size:1.1rem;font-weight:700;margin-bottom:14px}
-.acd-n{color:#ffffff;font-size:1.65rem;font-weight:800}
-.acd-l{color:#b8e0f7;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-.stc-v{color:#ffffff;font-size:1.7rem;font-weight:800}
-.stc-l{color:#b8e0f7;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+
+/* Champs de saisie : fond légèrement plus visible */
+.ob-inp{
+display:flex;align-items:center;gap:10px;
+background:rgba(255,255,255,.12);
+border:1.5px solid rgba(255,255,255,.25);
+border-radius:var(–r-md);padding:14px 16px;transition:border-color .2s;
+}
+.ob-inp:focus-within{border-color:#4ecdc4;background:rgba(78,205,196,.1)}
+.ob-inp-ic{font-size:1.2rem;flex-shrink:0}
+.ob-inp input{flex:1;background:transparent;color:#ffffff;font-size:1rem;font-weight:700}
+.ob-inp input::placeholder{color:rgba(255,255,255,.5);font-weight:400}
+.ob-inp input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1)}
+.ob-inp input[type=date]{color-scheme:dark}
+
+/* Toggle date/jours */
+.ob-tog{display:flex;gap:8px;background:rgba(255,255,255,.08);padding:5px;border-radius:var(–r-md)}
+.ob-tb{flex:1;padding:10px;border-radius:calc(var(–r-md) - 4px);font-size:.88rem;font-weight:700;color:rgba(255,255,255,.55);background:transparent;transition:all .25s}
+.ob-tb.on{background:#1a4a8a;color:#ffffff;border:1.5px solid #4ecdc4}
+
+/* Preview box */
+.ob-prev{
+background:rgba(78,205,196,.15);
+border:1.5px solid rgba(78,205,196,.5);
+border-radius:var(–r-sm);padding:12px 16px;
+font-size:.92rem;font-weight:700;
+color:#4ecdc4;
+text-align:center;min-height:44px;
+display:flex;align-items:center;justify-content:center;
+}
+.ob-err{color:#ff6b6b;font-size:.84rem;font-weight:700;min-height:16px}
+
+/* Annuler btn */
+.cn-btn{
+width:100%;padding:12px;border-radius:var(–r-xl);
+background:transparent;
+border:1.5px solid rgba(255,255,255,.3);
+color:rgba(255,255,255,.7);
+font-weight:700;font-size:.88rem;
+}
+
+/* Sections scroll — fond plus visible */
+.ss,.psec,.apg{
+background:rgba(10,22,40,.6);
+border:1.5px solid rgba(255,255,255,.12);
+border-radius:var(–r-lg);padding:20px;
+backdrop-filter:blur(15px);
+}
+
+/* Stats cards */
+.stc{
+background:rgba(10,22,40,.7);
+border:1.5px solid rgba(255,255,255,.12);
+border-radius:var(–r-md);padding:16px;
+display:flex;flex-direction:column;align-items:center;gap:4px;
+}
+.stc-i{font-size:1.35rem}
+.stc-v{font-family:var(–fd);font-size:1.8rem;font-weight:800;color:#ffffff}
+.stc-l{font-size:.7rem;font-weight:700;color:#b8e0f7;text-transform:uppercase;letter-spacing:.08em}
+
+/* ACD items */
+.acd-it{
+display:flex;align-items:center;gap:8px;
+background:rgba(10,22,40,.7);
+border:1.5px solid rgba(255,255,255,.12);
+border-radius:var(–r-md);padding:10px 14px;flex:1;min-width:110px;
+}
+.acd-n{font-family:var(–fd);font-size:1.65rem;font-weight:800;color:#ffffff}
+.acd-l{font-size:.7rem;color:#b8e0f7;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+
+/* Profile header */
+.ph{
+display:flex;flex-direction:column;align-items:center;gap:12px;
+padding:26px 20px 20px;
+background:rgba(10,22,40,.7);
+border:1.5px solid rgba(255,255,255,.12);
+border-radius:var(–r-lg);
+}
+
+/* Friend cards */
+.fc{
+display:flex;align-items:center;gap:12px;
+background:rgba(10,22,40,.7);
+border:1.5px solid rgba(255,255,255,.12);
+border-radius:var(–r-md);padding:13px 15px;
+}
+
+/* Panneau jours — fond jaune clair = texte foncé (déjà correct, renforce) */
+.sp-bd{background:linear-gradient(135deg,#fef9e7,#fde68a);border:3px solid #d97706;border-radius:var(–r-sm);padding:12px 22px;text-align:center;box-shadow:4px 4px 0 #92400e;min-width:155px}
+.sbl{font-size:.6rem;font-weight:800;color:#7c2d12;letter-spacing:.12em;margin-bottom:4px}
+.sbn{font-family:var(–fd);font-size:3rem;font-weight:700;color:#431407;line-height:1}
+.sbu{font-size:.64rem;font-weight:800;color:#7c2d12;letter-spacing:.15em;margin-top:2px}
+.sbs{margin-top:8px;font-size:.75rem;font-weight:700;color:#92400e;background:rgba(146,64,14,.15);border-radius:99px;padding:2px 10px;display:inline-block}
+
+/* Tous les titres de section */
+.sl{font-family:var(–fd);font-size:1.12rem;font-weight:700;color:#ffffff;margin-bottom:12px}
+.amh h1{color:#ffffff;font-family:var(–fd);font-size:1.75rem;font-weight:700}
+.p-un{color:#ffffff;font-family:var(–fd);font-size:1.8rem;font-weight:700}
 .si-lb{color:#ffffff;font-weight:700;font-size:.96rem}
 .si-sb{color:#b8e0f7;font-size:.76rem;opacity:1;font-weight:600}
 .lpc-c{color:#ffffff;font-weight:800;font-size:1rem;display:flex;align-items:center;gap:8px}
 .lp-info{color:#b8e0f7;font-size:.76rem;font-weight:700;margin-top:4px}
-.lp-next{color:rgba(255,255,255,.7);font-size:.84rem;font-weight:700}
-.p-un{color:#ffffff;font-family:var(–fd);font-size:1.8rem;font-weight:700}
-.p-bn{color:var(–teal);font-size:.86rem;font-weight:800;letter-spacing:.03em}
-.amh h1{color:#ffffff;font-family:var(–fd);font-size:1.75rem;font-weight:700}
-.add-pnl h3,.apg h3{color:#ffffff;font-family:var(–fd);font-size:1.15rem}
+.lp-next{color:rgba(255,255,255,.75);font-size:.84rem;font-weight:700}
 .fc-nm{color:#ffffff;font-weight:800;font-size:1rem}
 .fc-lv{color:#b8e0f7;font-size:.75rem;font-weight:600}
-.ef p{color:rgba(255,255,255,.65);font-size:.88rem;line-height:1.65;font-weight:600}
-.em{color:rgba(255,255,255,.55);font-size:.85rem;font-weight:600}
+.ef p{color:rgba(255,255,255,.7);font-size:.88rem;line-height:1.65;font-weight:600}
+.em{color:rgba(255,255,255,.6);font-size:.85rem;font-weight:600;text-align:center;padding:18px}
 .mi-tx{color:#ffffff;font-size:.86rem;font-weight:600;line-height:1.45}
-.mi-fr{color:var(–teal);font-size:.78rem;font-weight:800}
-.mi-tm{color:rgba(255,255,255,.45);font-size:.68rem}
-.mc-to{color:#b8e0f7;font-size:.8rem;font-weight:700}
-.mc-card h3{color:#ffffff;font-family:var(–fd);font-size:1.38rem;font-weight:700}
-.mc-card p{color:rgba(255,255,255,.82);font-size:.88rem;line-height:1.55}
-.nl{font-size:.64rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:inherit}
-.logout-btn{color:#b8e0f7;font-size:1rem;font-weight:700;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);width:100%;padding:15px;border-radius:var(–r-xl);display:flex;align-items:center;justify-content:center;gap:8px}
-/* Stats grid — 3 cols on 340px+, 2 on small */
+.p-bn{color:var(–teal);font-size:.86rem;font-weight:800}
+.logout-btn{color:#b8e0f7;font-size:1rem;font-weight:700;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.2);width:100%;padding:15px;border-radius:var(–r-xl);display:flex;align-items:center;justify-content:center;gap:8px}
 .p-st{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 @media(min-width:340px){.p-st{grid-template-columns:repeat(3,1fr)}}
-/* Section cards — slightly more opaque on small screens */
-@media(max-width:390px){
-.ss,.psec,.apg{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14)}
-.ob-card{background:rgba(255,255,255,.09)}
-}
 #onboarding{background:var(–night);padding:60px 20px 40px;overflow-y:auto;gap:20px;z-index:90}
 .ob-aurora{position:fixed;inset:0;background:radial-gradient(ellipse 140% 50% at 50% 0%,rgba(78,205,196,.2) 0%,transparent 60%);pointer-events:none}
 .ob-w{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:18px}
@@ -310,42 +429,56 @@ body{color:#ffffff}
   <div class="sp-aurora"></div>
   <div class="sp-stars"></div>
   <div class="sp-scene">
-    <div class="peng-svg"><!--XL splash penguin with scarf-->
-      <svg width="110" height="140" viewBox="0 0 110 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div class="peng-svg">
+      <svg width="110" height="145" viewBox="0 0 110 145" fill="none" xmlns="http://www.w3.org/2000/svg">
         <!-- Feet -->
-        <ellipse cx="38" cy="132" rx="14" ry="7" fill="#FF7A1A"/>
-        <ellipse cx="72" cy="132" rx="14" ry="7" fill="#FF7A1A"/>
-        <!-- Body -->
-        <ellipse cx="55" cy="88" rx="38" ry="46" fill="#1a1a2e"/>
-        <!-- White belly -->
-        <ellipse cx="55" cy="96" rx="24" ry="30" fill="#F5F0E8"/>
+        <ellipse cx="38" cy="138" rx="15" ry="6" fill="#c25a00"/>
+        <ellipse cx="72" cy="138" rx="15" ry="6" fill="#c25a00"/>
+        <!-- Body shadow -->
+        <ellipse cx="55" cy="105" rx="37" ry="38" fill="#2a2a3a"/>
+        <!-- Body main — gris dégradé comme Happy Feet -->
+        <ellipse cx="55" cy="100" rx="36" ry="42" fill="url(#bodyGrad)"/>
+        <!-- White belly ovale -->
+        <ellipse cx="55" cy="106" rx="22" ry="28" fill="#f8f6f2"/>
         <!-- Left wing -->
-        <ellipse cx="18" cy="88" rx="11" ry="28" fill="#1a1a2e" transform="rotate(-12 18 88)"/>
+        <path d="M19 80 Q8 95 12 115 Q18 120 24 112 Q26 95 30 82 Z" fill="#2a2a3a"/>
         <!-- Right wing -->
-        <ellipse cx="92" cy="88" rx="11" ry="28" fill="#1a1a2e" transform="rotate(12 92 88)"/>
-        <!-- Head -->
-        <ellipse cx="55" cy="46" rx="28" ry="28" fill="#1a1a2e"/>
-        <!-- White face patch -->
-        <ellipse cx="55" cy="50" rx="18" ry="16" fill="#F5F0E8"/>
-        <!-- Left eye white -->
-        <ellipse cx="44" cy="40" rx="9" ry="9" fill="white"/>
-        <!-- Right eye white -->
-        <ellipse cx="66" cy="40" rx="9" ry="9" fill="white"/>
+        <path d="M91 80 Q102 95 98 115 Q92 120 86 112 Q84 95 80 82 Z" fill="#2a2a3a"/>
+        <!-- Neck/chest grey transition -->
+        <ellipse cx="55" cy="72" rx="30" ry="14" fill="#3a3a4a"/>
+        <!-- Head — noir profond arrondi -->
+        <ellipse cx="55" cy="46" rx="30" ry="30" fill="#1a1a28"/>
+        <!-- White face patch — grand comme Happy Feet -->
+        <ellipse cx="55" cy="54" rx="20" ry="17" fill="#f8f6f2"/>
+        <!-- Left eye — grand et expressif -->
+        <ellipse cx="43" cy="40" rx="11" ry="11" fill="white"/>
+        <ellipse cx="43" cy="40" rx="11" ry="11" fill="white" stroke="#1a1a28" stroke-width="1"/>
+        <!-- Right eye -->
+        <ellipse cx="67" cy="40" rx="11" ry="11" fill="white"/>
+        <ellipse cx="67" cy="40" rx="11" ry="11" fill="white" stroke="#1a1a28" stroke-width="1"/>
         <!-- Left pupil -->
-        <ellipse cx="46" cy="42" rx="5" ry="5" fill="#1a1a2e"/>
+        <ellipse cx="45" cy="42" rx="6.5" ry="6.5" fill="#0a0a18"/>
         <!-- Right pupil -->
-        <ellipse cx="68" cy="42" rx="5" ry="5" fill="#1a1a2e"/>
+        <ellipse cx="69" cy="42" rx="6.5" ry="6.5" fill="#0a0a18"/>
         <!-- Eye shine left -->
-        <ellipse cx="48" cy="39" rx="2" ry="2" fill="white"/>
+        <ellipse cx="47" cy="39" rx="2.5" ry="2.5" fill="white"/>
         <!-- Eye shine right -->
-        <ellipse cx="70" cy="39" rx="2" ry="2" fill="white"/>
-        <!-- Beak -->
-        <path d="M49 54 Q55 62 61 54 Z" fill="#FF8C42"/>
-        <!-- Scarf -->
-        <rect x="30" y="66" width="50" height="10" rx="5" fill="#ef4444"/>
-        <rect x="30" y="66" width="12" height="10" rx="3" fill="#fbbf24"/>
-        <rect x="54" y="66" width="12" height="10" rx="3" fill="#fbbf24"/>
-        <rect x="78" y="66" width="12" height="10" rx="3" fill="#fbbf24"/>
+        <ellipse cx="71" cy="39" rx="2.5" ry="2.5" fill="white"/>
+        <!-- Beak — triangulaire court et trapu comme Happy Feet -->
+        <path d="M48 55 L55 66 L62 55 Q58 52 52 52 Z" fill="#e07800"/>
+        <path d="M48 55 L55 61 L62 55 Z" fill="#c25a00"/>
+        <!-- Scarf rouge/or -->
+        <rect x="28" y="67" width="54" height="11" rx="5.5" fill="#dc2626"/>
+        <rect x="28" y="67" width="13" height="11" rx="4" fill="#fbbf24"/>
+        <rect x="55" y="67" width="13" height="11" rx="4" fill="#fbbf24"/>
+        <!-- Gradient def -->
+        <defs>
+          <radialGradient id="bodyGrad" cx="40%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#8a8a9a"/>
+            <stop offset="60%" stop-color="#4a4a5a"/>
+            <stop offset="100%" stop-color="#2a2a3a"/>
+          </radialGradient>
+        </defs>
       </svg>
     </div>
     <h1 class="sp-title">MyLittle<span>Penguin</span></h1>
@@ -362,22 +495,25 @@ body{color:#ffffff}
     <div style="display:flex;flex-direction:column;align-items:center;gap:0">
       <div class="speech" id="ob-speech">Salut ! Je suis Pingu 🐧<br/>Créons ton expédition !</div>
       <div class="peng-svg">
-      <svg width="80" height="104" viewBox="0 0 80 104" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="28" cy="98" rx="10" ry="5" fill="#FF7A1A"/>
-        <ellipse cx="52" cy="98" rx="10" ry="5" fill="#FF7A1A"/>
-        <ellipse cx="40" cy="66" rx="28" ry="34" fill="#1a1a2e"/>
-        <ellipse cx="40" cy="72" rx="18" ry="22" fill="#F5F0E8"/>
-        <ellipse cx="14" cy="64" rx="8" ry="20" fill="#1a1a2e" transform="rotate(-10 14 64)"/>
-        <ellipse cx="66" cy="64" rx="8" ry="20" fill="#1a1a2e" transform="rotate(10 66 64)"/>
-        <ellipse cx="40" cy="34" rx="22" ry="22" fill="#1a1a2e"/>
-        <ellipse cx="40" cy="38" rx="14" ry="12" fill="#F5F0E8"/>
-        <ellipse cx="31" cy="29" rx="7" ry="7" fill="white"/>
-        <ellipse cx="49" cy="29" rx="7" ry="7" fill="white"/>
-        <ellipse cx="33" cy="31" rx="4" ry="4" fill="#1a1a2e"/>
-        <ellipse cx="51" cy="31" rx="4" ry="4" fill="#1a1a2e"/>
-        <ellipse cx="34" cy="28" rx="1.5" ry="1.5" fill="white"/>
-        <ellipse cx="52" cy="28" rx="1.5" ry="1.5" fill="white"/>
-        <path d="M36 41 Q40 47 44 41 Z" fill="#FF8C42"/>
+      <svg width="82" height="108" viewBox="0 0 82 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="28" cy="103" rx="11" ry="5" fill="#c25a00"/>
+        <ellipse cx="54" cy="103" rx="11" ry="5" fill="#c25a00"/>
+        <ellipse cx="41" cy="74" rx="27" ry="32" fill="url(#bg2)"/>
+        <ellipse cx="41" cy="80" rx="16" ry="21" fill="#f8f6f2"/>
+        <path d="M14 58 Q5 72 8 88 Q13 92 18 86 Q20 70 23 60 Z" fill="#2a2a3a"/>
+        <path d="M68 58 Q77 72 74 88 Q69 92 64 86 Q62 70 59 60 Z" fill="#2a2a3a"/>
+        <ellipse cx="41" cy="54" rx="24" ry="10" fill="#3a3a4a"/>
+        <ellipse cx="41" cy="35" rx="23" ry="23" fill="#1a1a28"/>
+        <ellipse cx="41" cy="42" rx="15" ry="13" fill="#f8f6f2"/>
+        <ellipse cx="32" cy="30" rx="8.5" ry="8.5" fill="white"/>
+        <ellipse cx="50" cy="30" rx="8.5" ry="8.5" fill="white"/>
+        <ellipse cx="34" cy="32" rx="5" ry="5" fill="#0a0a18"/>
+        <ellipse cx="52" cy="32" rx="5" ry="5" fill="#0a0a18"/>
+        <ellipse cx="35.5" cy="29.5" rx="2" ry="2" fill="white"/>
+        <ellipse cx="53.5" cy="29.5" rx="2" ry="2" fill="white"/>
+        <path d="M36 43 L41 51 L46 43 Q43 40 39 40 Z" fill="#e07800"/>
+        <path d="M36 43 L41 47 L46 43 Z" fill="#c25a00"/>
+        <defs><radialGradient id="bg2" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#909099"/><stop offset="60%" stop-color="#4a4a5a"/><stop offset="100%" stop-color="#2a2a3a"/></radialGradient></defs>
       </svg>
       </div>
     </div>
@@ -425,22 +561,24 @@ body{color:#ffffff}
           <div class="ic-top"></div><div class="ic-sub"></div><div class="ic-sh"></div>
           <div class="mp-wrap">
             <div class="peng-svg">
-              <svg width="44" height="56" viewBox="0 0 44 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="15" cy="53" rx="7" ry="3.5" fill="#FF7A1A"/>
-                <ellipse cx="29" cy="53" rx="7" ry="3.5" fill="#FF7A1A"/>
-                <ellipse cx="22" cy="35" rx="16" ry="20" fill="#1a1a2e"/>
-                <ellipse cx="22" cy="39" rx="10" ry="13" fill="#F5F0E8"/>
-                <ellipse cx="8" cy="33" rx="5" ry="12" fill="#1a1a2e" transform="rotate(-8 8 33)"/>
-                <ellipse cx="36" cy="33" rx="5" ry="12" fill="#1a1a2e" transform="rotate(8 36 33)"/>
-                <ellipse cx="22" cy="18" rx="13" ry="13" fill="#1a1a2e"/>
-                <ellipse cx="22" cy="21" rx="8" ry="7" fill="#F5F0E8"/>
-                <ellipse cx="16" cy="14" rx="4.5" ry="4.5" fill="white"/>
-                <ellipse cx="28" cy="14" rx="4.5" ry="4.5" fill="white"/>
-                <ellipse cx="17" cy="15.5" rx="2.5" ry="2.5" fill="#1a1a2e"/>
-                <ellipse cx="29" cy="15.5" rx="2.5" ry="2.5" fill="#1a1a2e"/>
-                <ellipse cx="18" cy="14" rx="1" ry="1" fill="white"/>
-                <ellipse cx="30" cy="14" rx="1" ry="1" fill="white"/>
-                <path d="M19 23 Q22 27 25 23 Z" fill="#FF8C42"/>
+              <svg width="46" height="60" viewBox="0 0 46 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <ellipse cx="15" cy="57" rx="8" ry="3.5" fill="#c25a00"/>
+                <ellipse cx="31" cy="57" rx="8" ry="3.5" fill="#c25a00"/>
+                <ellipse cx="23" cy="39" rx="17" ry="21" fill="url(#bgi)"/>
+                <ellipse cx="23" cy="43" rx="10" ry="14" fill="#f8f6f2"/>
+                <path d="M6 30 Q1 38 3 48 Q7 51 10 46 Q11 37 13 31 Z" fill="#2a2a3a"/>
+                <path d="M40 30 Q45 38 43 48 Q39 51 36 46 Q35 37 33 31 Z" fill="#2a2a3a"/>
+                <ellipse cx="23" cy="20" rx="14" ry="14" fill="#1a1a28"/>
+                <ellipse cx="23" cy="23" rx="9" ry="8" fill="#f8f6f2"/>
+                <ellipse cx="17" cy="15" rx="5.5" ry="5.5" fill="white"/>
+                <ellipse cx="29" cy="15" rx="5.5" ry="5.5" fill="white"/>
+                <ellipse cx="18.5" cy="16.5" rx="3.2" ry="3.2" fill="#0a0a18"/>
+                <ellipse cx="30.5" cy="16.5" rx="3.2" ry="3.2" fill="#0a0a18"/>
+                <ellipse cx="19.5" cy="15" rx="1.2" ry="1.2" fill="white"/>
+                <ellipse cx="31.5" cy="15" rx="1.2" ry="1.2" fill="white"/>
+                <path d="M19 25 L23 30 L27 25 Q25 23 21 23 Z" fill="#e07800"/>
+                <path d="M19 25 L23 27.5 L27 25 Z" fill="#c25a00"/>
+                <defs><radialGradient id="bgi" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#909099"/><stop offset="60%" stop-color="#4a4a5a"/><stop offset="100%" stop-color="#2a2a3a"/></radialGradient></defs>
               </svg>
             </div>
           </div>
@@ -463,15 +601,16 @@ body{color:#ffffff}
               <ellipse cx="8" cy="38" rx="6" ry="18" fill="#1a1a2e" transform="rotate(-50 8 38)"/>
               <!-- Right arm raised holding sign -->
               <ellipse cx="56" cy="38" rx="6" ry="18" fill="#1a1a2e" transform="rotate(50 56 38)"/>
-              <ellipse cx="32" cy="26" rx="18" ry="18" fill="#1a1a2e"/>
-              <ellipse cx="32" cy="30" rx="11" ry="10" fill="#F5F0E8"/>
-              <ellipse cx="23" cy="21" rx="6" ry="6" fill="white"/>
-              <ellipse cx="41" cy="21" rx="6" ry="6" fill="white"/>
-              <ellipse cx="25" cy="23" rx="3.5" ry="3.5" fill="#1a1a2e"/>
-              <ellipse cx="43" cy="23" rx="3.5" ry="3.5" fill="#1a1a2e"/>
+              <ellipse cx="32" cy="26" rx="18" ry="18" fill="#1a1a28"/>
+              <ellipse cx="32" cy="30" rx="11" ry="10" fill="#f8f6f2"/>
+              <ellipse cx="23" cy="21" rx="6.5" ry="6.5" fill="white"/>
+              <ellipse cx="41" cy="21" rx="6.5" ry="6.5" fill="white"/>
+              <ellipse cx="25" cy="23" rx="3.8" ry="3.8" fill="#0a0a18"/>
+              <ellipse cx="43" cy="23" rx="3.8" ry="3.8" fill="#0a0a18"/>
               <ellipse cx="26" cy="21" rx="1.5" ry="1.5" fill="white"/>
               <ellipse cx="44" cy="21" rx="1.5" ry="1.5" fill="white"/>
-              <path d="M28 33 Q32 38 36 33 Z" fill="#FF8C42"/>
+              <path d="M28 33 L32 39 L36 33 Q34 31 30 31 Z" fill="#e07800"/>
+              <path d="M28 33 L32 36 L36 33 Z" fill="#c25a00"/>
             </svg>
           </div>
           <div class="sp-wr">
@@ -592,9 +731,9 @@ body{color:#ffffff}
 <script>
 // ══ CONFIG SUPABASE ══════════════════════════════
 // ⚠️ Remplace par tes valeurs
-const SB_URL  = 'https://cirdtmjrsgbqbstwrgzx.supabase.co';
-const SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcmR0bWpyc2dicWJzdHdyZ3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDMxMjMsImV4cCI6MjA4OTYxOTEyM30.g0wYu9rQ75KZStirsfFV9JV-1V2tmWGy9zftEOzbQIU'; 
-  
+const SUPABASE_URL  = 'https://cirdtmjrsgbqbstwrgzx.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcmR0bWpyc2dicWJzdHdyZ3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDMxMjMsImV4cCI6MjA4OTYxOTEyM30.g0wYu9rQ75KZStirsfFV9JV-1V2tmWGy9zftEOzbQIU'; 
+
 // ══ LEVELS ══════════════════════════════════════
 const LVL = [
   {min:0,  max:29,  i:'🐣',n:'Poussin Polaire',      nx:30},
@@ -775,7 +914,7 @@ function renderAL(days) {
 
 function aHTML(t) {
   if(t==='mt') return `<div class="mtt"><div class="mtt-wl"></div><div class="mtt-b"></div><div class="mtt-wr"></div><div class="mtt-h"></div><div class="mtt-bk"></div></div>`;
-  if(t==='pg') return `<svg width="28" height="36" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="9" cy="34" rx="5" ry="2.5" fill="#FF7A1A"/><ellipse cx="19" cy="34" rx="5" ry="2.5" fill="#FF7A1A"/><ellipse cx="14" cy="22" rx="10" ry="13" fill="#1a1a2e"/><ellipse cx="14" cy="25" rx="6.5" ry="8.5" fill="#F5F0E8"/><ellipse cx="5" cy="21" rx="3.5" ry="8" fill="#1a1a2e" transform="rotate(-8 5 21)"/><ellipse cx="23" cy="21" rx="3.5" ry="8" fill="#1a1a2e" transform="rotate(8 23 21)"/><ellipse cx="14" cy="11" rx="8" ry="8" fill="#1a1a2e"/><ellipse cx="14" cy="13" rx="5" ry="4.5" fill="#F5F0E8"/><ellipse cx="10" cy="8" rx="3" ry="3" fill="white"/><ellipse cx="18" cy="8" rx="3" ry="3" fill="white"/><ellipse cx="11" cy="9" rx="1.8" ry="1.8" fill="#1a1a2e"/><ellipse cx="19" cy="9" rx="1.8" ry="1.8" fill="#1a1a2e"/><ellipse cx="11.5" cy="7.5" rx=".8" ry=".8" fill="white"/><ellipse cx="19.5" cy="7.5" rx=".8" ry=".8" fill="white"/><path d="M11.5 15 Q14 18 16.5 15 Z" fill="#FF8C42"/></svg>`;
+  if(t==='pg') return `<svg width="28" height="36" viewBox="0 0 28 36" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="9" cy="34" rx="5" ry="2.5" fill="#c25a00"/><ellipse cx="19" cy="34" rx="5" ry="2.5" fill="#c25a00"/><ellipse cx="14" cy="23" rx="10" ry="13" fill="url(#bgs)"/><ellipse cx="14" cy="26" rx="6" ry="8" fill="#f8f6f2"/><path d="M4 19 Q0 24 2 30 Q5 32 7 28 Q8 22 9 19 Z" fill="#2a2a3a"/><path d="M24 19 Q28 24 26 30 Q23 32 21 28 Q20 22 19 19 Z" fill="#2a2a3a"/><ellipse cx="14" cy="11" rx="9" ry="9" fill="#1a1a28"/><ellipse cx="14" cy="13" rx="5.5" ry="5" fill="#f8f6f2"/><ellipse cx="10" cy="8" rx="3.5" ry="3.5" fill="white"/><ellipse cx="18" cy="8" rx="3.5" ry="3.5" fill="white"/><ellipse cx="11" cy="9" rx="2" ry="2" fill="#0a0a18"/><ellipse cx="19" cy="9" rx="2" ry="2" fill="#0a0a18"/><ellipse cx="11.5" cy="7.5" rx=".9" ry=".9" fill="white"/><ellipse cx="19.5" cy="7.5" rx=".9" ry=".9" fill="white"/><path d="M11.5 14 L14 17.5 L16.5 14 Q15 13 13 13 Z" fill="#e07800"/><defs><radialGradient id="bgs" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#909099"/><stop offset="60%" stop-color="#4a4a5a"/><stop offset="100%" stop-color="#2a2a3a"/></radialGradient></defs></svg>`;
   if(t==='oq') return `<div class="oq"><div class="oq-f"></div><div class="oq-b"><div class="oq-by"></div><div class="oq-e"></div></div><div class="oq-t"></div></div>`;
   if(t==='rq') return `<div class="rq"><div class="rq-f"></div><div class="rq-b"><div class="rq-by"></div></div><div class="rq-t"></div></div>`;
   return '';
