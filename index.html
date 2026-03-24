@@ -1241,7 +1241,7 @@ async function loadF(){
     const pm={};(profiles||[]).forEach(p=>pm[p.id]=p);
 
     // Compter les messages non lus par ami
-    const{data:unread}=await SB.from('messages').select('from_id').eq('to_id',myId()).eq('read',false).catch(()=>({data:[]}));
+const { data: unread } = await SB.from('messages').select('from_id').eq('to_id', myId()).eq('read', false);
     const unreadSet=new Set((unread||[]).map(m=>m.from_id));
 
     listEl.innerHTML=fs.map(f=>{
