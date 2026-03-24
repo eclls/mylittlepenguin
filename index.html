@@ -1690,13 +1690,15 @@ function stopMemory(){ memActive=false; document.getElementById('memory-start-bt
 
 function saveScores(){
   localStorage.setItem('mlp_scores',JSON.stringify(BEST_SCORES));
-  if(SB&&myId()){
-    Object.entries(BEST_SCORES).forEach(([game,score])=>{
-      SB.from('scores').upsert({user_id:myId(),game,score},{onConflict:'user_id,game'}).catch(()=>{});
+  if(SB && myId()){
+    Object.entries(BEST_SCORES).forEach(async ([game,score])=>{
+      const { error } = await SB.from('scores').upsert({user_id:myId(),game,score},{onConflict:'user_id,game'});
+      if (error) console.error("Erreur sauvegarde jeu :", error);
     });
   }
   updateScoreDisplay();
 }
+
 
 // ════════════════════════════════════════════════
 //  UTILS
