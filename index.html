@@ -168,49 +168,53 @@ button{cursor:pointer}
 .game-score{font-family:var(--fd);font-size:1.1rem;font-weight:700;color:var(--gold)}
 
 /* ══ PAGE EXPLORATION Givrée ══ */
-#page-exploration{background:var(--night);overflow-y:auto}
-.expl-bg{position:fixed;inset:0;background-color:#fff;background-image:linear-gradient(90deg,rgba(168,218,240,.6) 50%,transparent 50%),linear-gradient(rgba(168,218,240,.6) 50%,transparent 50%);background-size:60px 60px;pointer-events:none;opacity:.6}
-.expl-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 30%,rgba(10,22,40,.5) 100%)}
-.expl-content{padding:20px 16px;position:relative;z-index:1}
-.expl-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.expl-header h1{font-family:var(--fd);font-size:1.75rem;font-weight:700;color:#0a1628;text-shadow:0 1px 0 #fff}
-.add-exp-btn{background:#1a4a8a;color:#fff;font-weight:800;padding:10px 18px;border-radius:var(--r-xl);font-size:.88rem;border:none}
-.add-exp-btn:active{transform:scale(.95)}
+#page-exploration { background: #e0f2fe; overflow-y: auto; }
 
-/* Chemin d’exploration — Empreintes de pas */
-.expl-path{position:relative;padding:10px 0 40px}
-/* Le chemin central est une traînée d'empreintes (🐾) */
-.path-line{position:absolute;left:50%;top:0;bottom:0;width:24px;transform:translateX(-50%);
-background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3Q%3Ctext y='20' font-size='20'%3E🐾%3C/text%3E%3C/svg%3E");
-background-size:24px 24px;background-repeat:repeat-y;opacity:.3;pointer-events:none}
+/* Motif SVG : Empreintes de pingouin sur fond neige */
+.expl-bg {
+  position: fixed; inset: 0;
+  background-color: #e0f2fe;
+  background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23bae6fd' opacity='0.7'%3E%3Cpath d='M20 30 Q15 20 20 10 Q25 20 20 30 M12 25 Q8 18 12 12 Q16 18 12 25 M28 25 Q32 18 28 12 Q24 18 28 25' transform='rotate(15 20 20)'/%3E%3Cpath d='M70 70 Q65 60 70 50 Q75 60 70 70 M62 65 Q58 58 62 52 Q66 58 62 65 M78 65 Q82 58 78 52 Q74 58 78 65' transform='rotate(-20 70 60)'/%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
 
-.exp-node{position:relative;display:flex;align-items:center;margin-bottom:32px;z-index:1}
-.exp-node.right{flex-direction:row-reverse}
-.exp-bubble{width:calc(50% - 32px);background:rgba(255,255,255,.9);border:1.5px solid rgba(10,22,40,.1);border-radius:var(--r-md);padding:12px;backdrop-filter:blur(5px);cursor:pointer;transition:all .2s;color:#0a1628;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-.exp-bubble:active{transform:scale(.97);border-color:#1a4a8a}
-.exp-node.right .exp-bubble{text-align:right}
-.exp-dot{width:20px;height:20px;border-radius:50%;background:#1a4a8a;border:3px solid #fff;box-shadow:0 0 8px rgba(26,74,138,.3);flex-shrink:0;margin:0 16px;z-index:1}
-.exp-dot.first{background:var(--gold);box-shadow:0 0 8px rgba(251,191,36,.4)}
-.exp-photo{width:100%;height:70px;object-fit:cover;border-radius:var(--r-sm);margin-bottom:6px}
-.exp-photo-placeholder{width:100%;height:50px;background:rgba(10,22,40,.05);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:6px;color:#1a4a8a}
-.exp-title{font-weight:800;font-size:.88rem;color:#0a1628;margin-bottom:2px}
-.exp-date{font-size:.7rem;color:#1a4a8a;font-weight:700}
-.exp-note{font-size:.75rem;color:rgba(10,22,40,.7);margin-top:4px;line-height:1.4}
+/* On cache la ligne du milieu */
+.path-line { display: none; }
 
-.expl-pingu-end{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 0;z-index:1}
-.expl-pingu-label{font-size:.8rem;color:#1a4a8a;font-weight:700;text-align:center}
+.expl-content { padding: 20px 16px; position: relative; z-index: 1; }
+.expl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.expl-header h1 { font-family: var(--fd); font-size: 1.75rem; font-weight: 700; color: #0a1628; text-shadow: 0 1px 0 #fff; }
+.add-exp-btn { background: #1a4a8a; color: #fff; font-weight: 800; padding: 10px 18px; border-radius: var(--r-xl); font-size: .88rem; border: none; }
+.add-exp-btn:active { transform: scale(.95); }
 
-.add-exp-form{background:#fff;border:1.5px solid rgba(10,22,40,.1);border-radius:var(--r-lg);padding:20px;margin-bottom:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 4px 15px rgba(0,0,0,.1);color:#0a1628}
-.add-exp-form h3{font-family:var(--fd);font-size:1.2rem;color:#0a1628}
-.add-exp-form .ob-inp{background:rgba(10,22,40,.05);border-color:rgba(10,22,40,.1)}
-.add-exp-form .ob-inp input,.add-exp-form .ob-inp textarea{color:#0a1628}
-.add-exp-form .ob-inp input::placeholder,.add-exp-form .ob-inp textarea::placeholder{color:rgba(10,22,40,.4)}
-.add-exp-form .ob-inp input[type=date]::-webkit-calendar-picker-indicator{filter:none}
-.add-exp-form .ob-inp input[type=date]{color-scheme:light}
+.expl-path { position: relative; padding: 10px 0 40px; }
+.exp-node { position: relative; display: flex; align-items: center; margin-bottom: 32px; z-index: 1; }
+.exp-node.right { flex-direction: row-reverse; }
+.exp-bubble { width: calc(50% - 32px); background: rgba(255,255,255,.9); border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-md); padding: 12px; backdrop-filter: blur(5px); cursor: pointer; transition: all .2s; color: #0a1628; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+.exp-bubble:active { transform: scale(.97); border-color: #1a4a8a; }
+.exp-node.right .exp-bubble { text-align: right; }
+.exp-dot { width: 20px; height: 20px; border-radius: 50%; background: #1a4a8a; border: 3px solid #fff; box-shadow: 0 0 8px rgba(26,74,138,.3); flex-shrink: 0; margin: 0 16px; z-index: 1; }
+.exp-dot.first { background: var(--gold); }
+.exp-photo { width: 100%; height: 70px; object-fit: cover; border-radius: var(--r-sm); margin-bottom: 6px; }
+.exp-photo-placeholder { width: 100%; height: 50px; background: rgba(10,22,40,.05); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 6px; color: #1a4a8a; }
+.exp-title { font-weight: 800; font-size: .88rem; color: #0a1628; margin-bottom: 2px; }
+.exp-date { font-size: .7rem; color: #1a4a8a; font-weight: 700; }
+.exp-note { font-size: .75rem; color: rgba(10,22,40,.7); margin-top: 4px; line-height: 1.4; }
 
-.photo-upload-btn{width:100%;padding:14px;border-radius:var(--r-md);background:rgba(10,22,40,.05);border:1.5px dashed rgba(10,22,40,.2);color:#1a4a8a;font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
-.photo-preview{width:100%;height:120px;object-fit:cover;border-radius:var(--r-sm);display:none}
-#exp-photo-input{display:none}
+.expl-pingu-end { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px 0; z-index: 1; }
+.expl-pingu-label { font-size: .8rem; color: #1a4a8a; font-weight: 700; text-align: center; }
+
+.add-exp-form { background: #fff; border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-lg); padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,.1); color: #0a1628; }
+.add-exp-form h3 { font-family: var(--fd); font-size: 1.2rem; color: #0a1628; }
+.add-exp-form .ob-inp { background: rgba(10,22,40,.05); border-color: rgba(10,22,40,.1); }
+.add-exp-form .ob-inp input, .add-exp-form .ob-inp textarea { color: #0a1628; }
+.add-exp-form .ob-inp input::placeholder, .add-exp-form .ob-inp textarea::placeholder { color: rgba(10,22,40,.4); }
+.add-exp-form .ob-inp input[type=date]::-webkit-calendar-picker-indicator { filter: none; }
+.add-exp-form .ob-inp input[type=date] { color-scheme: light; }
+
+.photo-upload-btn { width: 100%; padding: 14px; border-radius: var(--r-md); background: rgba(10,22,40,.05); border: 1.5px dashed rgba(10,22,40,.2); color: #1a4a8a; font-weight: 700; font-size: .9rem; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+.photo-preview { width: 100%; height: 120px; object-fit: cover; border-radius: var(--r-sm); display: none; }
+#exp-photo-input { display: none; }
 
 /* ══ PAGE AMIS ══ */
 #page-amis{background:var(--night);overflow-y:auto}
@@ -547,7 +551,7 @@ background-size:24px 24px;background-repeat:repeat-y;opacity:.3;pointer-events:n
         <img id="photo-preview" class="photo-preview" alt="preview"/>
         <div class="ob-err" id="exp-err"></div>
         <button class="ob-btn" id="save-exp-btn">Sauvegarder l'expédition 🚀</button>
-        <button class="cn-btn" id="cancel-exp-btn">Annuler</button>
+        <button class="cn-btn" id="cancel-exp-btn" style="color:#1a4a8a;border-color:rgba(26,74,138,.3)">Annuler</button>
       </div>
       <div class="expl-path" id="expl-path">
         <div class="path-line"></div>
@@ -1166,7 +1170,7 @@ async function doSearch(){
 async function addFriend(toId,toPseudo){
   if(!SB||!P){toast('Non connecté');return;}
   try{
-    const{data:ex}=await SB.from('friendships').select('id').or(`and(user_a.eq.${myId()},user_b.eq.${toId}),and(user_a.eq.${toId()},user_b.eq.${myId()})`).limit(1);
+    const{data:ex}=await SB.from('friendships').select('id').or(`and(user_a.eq.${myId()},user_b.eq.${toId}),and(user_a.eq.${toId},user_b.eq.${myId()})`).limit(1);
     if(ex&&ex.length>0){toast('Déjà ami ou demande en cours 🐧');return;}
     const{error}=await SB.from('friendships').insert({user_a:myId(),user_b:toId,status:'pending'});
     if(error)throw error;
@@ -1192,7 +1196,7 @@ async function loadF(){
     const otherIds=fs.map(f=>f.user_a===myId()?f.user_b:f.user_a);
     const{data:profiles}=await SB.from('profiles').select('id,pseudo,avatar,start_date,last_kill_date').in('id',otherIds);
     const pm={};(profiles||[]).forEach(p=>pm[p.id]=p);
-    const{data:unread}=await SB.from('messages').select('from_id').eq('to_id',myId()).eq('read',false);
+    const { data: unread } = await SB.from('messages').select('from_id').eq('to_id', myId()).eq('read', false);
     const unreadSet=new Set((unread||[]).map(m=>m.from_id));
 
     listEl.innerHTML=fs.map(f=>{
@@ -1291,7 +1295,7 @@ window.sendGift=sendGift;
 
 async function checkBadges(){
   if(!SB||!myId())return;
-  const{data}=await SB.from('messages').select('id').eq('to_id',myId()).eq('read',false).limit(1);
+  const { data } = await SB.from('messages').select('id').eq('to_id', myId()).eq('read', false).limit(1);
   const badge=document.getElementById('badge-amis');
   if(badge) badge.classList.toggle('hidden',!data||!data.length);
 }
@@ -1421,7 +1425,8 @@ function saveScores(){
   localStorage.setItem('mlp_scores',JSON.stringify(BEST_SCORES));
   if(SB&&myId()){
     Object.entries(BEST_SCORES).forEach(async ([game,score])=>{
-      await SB.from('scores').upsert({user_id:myId(),game,score},{onConflict:'user_id,game'});
+      const { error } = await SB.from('scores').upsert({user_id:myId(),game,score},{onConflict:'user_id,game'});
+      if (error) console.error("Erreur sauvegarde jeu :", error);
     });
   }
   updateScoreDisplay();
@@ -1490,40 +1495,66 @@ function endFishing(gameOver){
 function stopFishing(){ if(fishingActive) endFishing(false); }
 
 // ════════════════════════════════════════════════
-//  MINI-JEU : LABYRINTHE 🐻 (OURS CACHÉS !)
+//  MINI-JEU : LABYRINTHE 🐻 (ALGORITHME PARFAIT)
 // ════════════════════════════════════════════════
-let mazeGrid=[], mazeW=8, mazeH=8, mazePlayer={x:0,y:0}, mazeExit={x:7,y:7}, mazeLevel=1, mazeActive=false;
-let mazeBears=[]; // Emplacement des ours 🐻
+let mazeGrid=[], mazeW=8, mazeH=8, mazePlayer={x:1,y:1}, mazeExit={x:7,y:7}, mazeLevel=1, mazeActive=false;
+let mazeBears=[]; 
 let mazeTouchStart=null;
 
 function initMazeBoard(){ drawMaze(); }
 
 function startMaze(){
-  mazeActive=true; mazeLevel=1; mazePlayer={x:0,y:0};
+  mazeActive=true; mazeLevel=1;
   document.getElementById('maze-start-btn').style.display='none';
   document.getElementById('maze-level-disp').textContent='Niveau '+mazeLevel;
-  generateMaze(); drawMaze();
+  generateMaze();
+  mazePlayer = {x: 1, y: 1};
+  drawMaze();
 }
 
 function generateMaze(){
-  mazeW=Math.min(12, 6+mazeLevel); mazeH=Math.min(12, 6+mazeLevel);
-  mazeExit={x:mazeW-1,y:mazeH-1};
-  mazeGrid=[];
-  for(let y=0;y<mazeH;y++){
-    mazeGrid[y]=[];
-    for(let x=0;x<mazeW;x++) mazeGrid[y][x]=Math.random()<0.2&&!(x===0&&y===0)&&!(x===mazeW-1&&y===mazeH-1)?1:0;
+  // Taille impaire pour l'algorithme
+  mazeW = Math.min(15, 7 + (mazeLevel * 2));
+  mazeH = Math.min(15, 7 + (mazeLevel * 2));
+  mazeExit = {x: mazeW - 2, y: mazeH - 2};
+
+  // 1. Remplir de murs
+  mazeGrid = [];
+  for(let y=0; y<mazeH; y++){
+    mazeGrid[y] = [];
+    for(let x=0; x<mazeW; x++) mazeGrid[y][x] = 1;
   }
-  // R1 : Ajouter des ours polaires aléatoires 🐻
-  mazeBears=[];
-  if(mazeLevel>1){
-    // Nombre d'ours augmente avec le niveau (progressivement)
-    const numBears=Math.floor(mazeLevel/2); 
-    for(let i=0;i<numBears;i++){
-      let bx, by;
-      do{bx=rnd(0,mazeW-1);by=rnd(0,mazeH-1);}
-      // Pas sur le pingouin, la sortie ou un mur
-      while((bx===mazePlayer.x&&by===mazePlayer.y)||(bx===mazeExit.x&&by===mazeExit.y)||mazeGrid[by][bx]===1);
-      mazeBears.push({x:bx,y:by});
+
+  // 2. Creuser avec un algorithme DFS pour garantir une issue
+  function carve(x, y) {
+    mazeGrid[y][x] = 0;
+    const dirs = [[0, -2], [0, 2], [-2, 0], [2, 0]].sort(() => Math.random() - 0.5);
+    for (let [dx, dy] of dirs) {
+      const nx = x + dx, ny = y + dy;
+      if (nx > 0 && nx < mazeW - 1 && ny > 0 && ny < mazeH - 1 && mazeGrid[ny][nx] === 1) {
+        mazeGrid[y + dy/2][x + dx/2] = 0; // Casser le mur
+        carve(nx, ny);
+      }
+    }
+  }
+
+  carve(1, 1); // Départ
+  mazeGrid[mazeExit.y][mazeExit.x] = 0; // Sécurité pour la sortie
+
+  // 3. Placer les ours
+  mazeBears = [];
+  if(mazeLevel > 1){
+    const numBears = Math.floor(mazeLevel / 2);
+    for(let i=0; i<numBears; i++){
+      let bx, by, attempts=0;
+      do {
+        bx = rnd(1, mazeW - 2);
+        by = rnd(1, mazeH - 2);
+        attempts++;
+      } while(
+        attempts < 50 && (mazeGrid[by][bx] === 1 || (bx <= 3 && by <= 3) || (bx === mazeExit.x && by === mazeExit.y))
+      );
+      if(mazeGrid[by][bx] === 0) mazeBears.push({x: bx, y: by});
     }
   }
 }
@@ -1543,11 +1574,8 @@ function drawMaze(){
   }
   ctx.font=Math.min(cw,ch)*.7+'px serif';
   ctx.textAlign='center';ctx.textBaseline='middle';
-  // Sortie ⭐
   ctx.fillText('⭐',(mazeExit.x+.5)*cw,(mazeExit.y+.5)*ch);
-  // Ours Polaires 🐻 (Cachés jusqu'à ce qu'on dessine par dessus)
   mazeBears.forEach(b=>{ctx.fillText('🐻',(b.x+.5)*cw,(b.y+.5)*ch);});
-  // Joueur 🐧
   ctx.fillText('🐧',(mazePlayer.x+.5)*cw,(mazePlayer.y+.5)*ch);
 }
 
@@ -1555,12 +1583,12 @@ function moveMaze(dx,dy){
   if(!mazeActive)return;
   const nx=mazePlayer.x+dx, ny=mazePlayer.y+dy;
   if(nx<0||nx>=mazeW||ny<0||ny>=mazeH)return;
-  if(mazeGrid[ny][nx]===1)return; // Mur
+  if(mazeGrid[ny][nx]===1)return;
+  
   mazePlayer={x:nx,y:ny}; drawMaze();
-  // R1 : Vérifier collision avec un ours 🐻
+  
   const bearCaught=mazeBears.find(b=>b.x===nx&&b.y===ny);
   if(bearCaught){endMaze(true);return;}
-  // Sortie ⭐
   if(nx===mazeExit.x&&ny===mazeExit.y){mazeLevelComplete();}
 }
 window.moveMaze=moveMaze;
@@ -1570,7 +1598,12 @@ function mazeLevelComplete(){
   document.getElementById('maze-level-disp').textContent='Niveau '+mazeLevel+' ✓';
   toast('🎉 Niveau '+(mazeLevel-1)+' complété !');
   if(mazeLevel-1>(BEST_SCORES.maze||0)){BEST_SCORES.maze=mazeLevel-1;saveScores();}
-  setTimeout(()=>{mazePlayer={x:0,y:0};generateMaze();drawMaze();document.getElementById('maze-level-disp').textContent='Niveau '+mazeLevel;},800);
+  setTimeout(()=>{
+    generateMaze();
+    mazePlayer = {x: 1, y: 1};
+    drawMaze();
+    document.getElementById('maze-level-disp').textContent='Niveau '+mazeLevel;
+  },800);
 }
 
 function endMaze(dead){
@@ -1578,7 +1611,7 @@ function endMaze(dead){
   if(dead){
     document.getElementById('maze-level-disp').textContent='☠️ MANGÉ PAR L\'OURS';
     toast('💀 Oh non ! L\'ours t\'a mangé… 🐻 Recommence au Niveau 1.');
-    setTimeout(()=>startMaze(),1500); // Recommence auto après 1.5s
+    setTimeout(()=>startMaze(),1500);
   } else {
     document.getElementById('maze-start-btn').style.display='block';
     document.getElementById('maze-start-btn').textContent='▶ Rejouer';
