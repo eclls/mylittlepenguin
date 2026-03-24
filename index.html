@@ -1343,7 +1343,7 @@ window.sendGift=sendGift;
 
 async function checkBadges(){
   if(!SB||!myId())return;
-  const{data}=await SB.from('messages').select('id').eq('to_id',myId()).eq('read',false).limit(1).catch(()=>({data:[]}));
+const { data } = await SB.from('messages').select('id').eq('to_id', myId()).eq('read', false).limit(1);
   const badge=document.getElementById('badge-amis');
   if(badge) badge.classList.toggle('hidden',!data||!data.length);
 }
