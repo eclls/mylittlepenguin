@@ -185,8 +185,13 @@ button{cursor:pointer}
 .expl-path { position: relative; padding: 10px 0 40px; }
 .exp-node { position: relative; display: flex; align-items: center; margin-bottom: 32px; z-index: 1; }
 .exp-node.right { flex-direction: row-reverse; }
-.exp-bubble { width: calc(50% - 32px); background: rgba(255,255,255,.9); border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-md); padding: 12px; backdrop-filter: blur(5px); cursor: pointer; transition: all .2s; color: #0a1628; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
-.exp-bubble:active { transform: scale(.97); border-color: #1a4a8a; }
+.exp-bubble { width: calc(50% - 32px); background: rgba(255,255,255,.9); border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-md); padding: 12px; backdrop-filter: blur(5px); transition: all .2s; color: #0a1628; box-shadow: 0 2px 8px rgba(0,0,0,.1); position: relative; }
+.exp-bubble-inner { cursor: default; }
+.exp-bubble:active { transform: none; border-color: rgba(10,22,40,.1); }
+.exp-actions { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+.exp-node.right .exp-actions { justify-content: flex-start; }
+.exp-edit-btn { font-size: .72rem; font-weight: 800; padding: 5px 10px; border-radius: 999px; border: 1.5px solid rgba(26,74,138,.35); background: rgba(26,74,138,.08); color: #1a4a8a; cursor: pointer; }
+.exp-edit-btn:active { transform: scale(.96); background: rgba(26,74,138,.15); }
 .exp-node.right .exp-bubble { text-align: right; }
 .exp-dot { width: 20px; height: 20px; border-radius: 50%; background: #1a4a8a; border: 3px solid #fff; box-shadow: 0 0 8px rgba(26,74,138,.3); flex-shrink: 0; margin: 0 16px; z-index: 1; }
 .exp-dot.first { background: var(--gold); }
@@ -303,6 +308,13 @@ button{cursor:pointer}
 .notif-sub-item{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .notif-sub-item:last-child{border-bottom:none}
 .nsi-label{font-size:.82rem;color:rgba(255,255,255,.7);font-weight:600}
+.notif-perm-banner{display:none;margin:10px 0 6px;padding:12px 14px;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);border-radius:var(--r-md);font-size:.78rem;color:rgba(255,255,255,.88);line-height:1.5;font-weight:600}
+.notif-perm-banner.warn{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.35)}
+.notif-perm-banner .npb-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.notif-perm-btn{font-size:.76rem;font-weight:800;padding:8px 14px;border-radius:999px;border:none;cursor:pointer;background:linear-gradient(135deg,#1a4a8a,var(--teal));color:#fff}
+.notif-perm-link{background:none;border:none;color:var(--teal);font-weight:700;font-size:.76rem;text-decoration:underline;cursor:pointer;padding:0}
+.notif-help-txt{margin-top:8px;font-size:.72rem;color:rgba(255,255,255,.65);font-weight:600;display:none}
+.notif-help-txt.open{display:block}
 .logout-btn{width:100%;padding:15px;border-radius:var(--r-xl);background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.2);color:#b8e0f7;font-size:1rem;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
 
 /* ══ MODALS ══ */
@@ -316,6 +328,7 @@ button{cursor:pointer}
 .mb{display:flex;gap:10px;width:100%}
 .mcn{flex:1;padding:13px;border-radius:var(--r-xl);background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:.88rem}
 .mck{flex:1;padding:13px;border-radius:var(--r-xl);background:linear-gradient(135deg,#ef4444,#991b1b);color:#fff;font-weight:800;font-size:.88rem}
+.mca{flex:1;padding:13px;border-radius:var(--r-xl);background:linear-gradient(135deg,#1a4a8a,var(--teal));color:#fff;font-weight:800;font-size:.88rem;border:none;cursor:pointer}
 
 /* ══ MINI-JEUX PANELS ══ */
 #game-fishing,#game-maze,#game-memory{background:var(--night)}
@@ -535,14 +548,19 @@ button{cursor:pointer}
         <button class="add-exp-btn" id="toggle-add-exp">+ Nouvelle</button>
       </div>
       <div class="add-exp-form hidden" id="add-exp-form">
-        <h3>Nouvelle expédition</h3>
+        <h3 id="exp-form-title">Nouvelle expédition</h3>
         <div class="ob-inp"><span class="ob-inp-ic">✏️</span><input type="text" id="exp-title-in" placeholder="Titre de l'expédition…" maxlength="40"/></div>
         <div class="ob-inp" style="flex-direction:column;align-items:flex-start;gap:6px">
           <textarea id="exp-note-in" placeholder="Note, souvenir…" maxlength="200" style="width:100%;background:transparent;color:#0a1628;font-size:.9rem;font-weight:600;resize:none;min-height:60px;border:none;outline:none"></textarea>
         </div>
         <div class="ob-inp"><span class="ob-inp-ic">📅</span><input type="date" id="exp-date-in"/></div>
-        <label class="photo-upload-btn" for="exp-photo-input">📷 Ajouter une photo</label>
+        <div class="photo-row">
+          <button type="button" class="photo-upload-btn primary" id="exp-pick-gallery">🖼️ Galerie</button>
+          <button type="button" class="photo-upload-btn" id="exp-pick-camera">📷 Appareil photo</button>
+        </div>
+        <div style="font-size:.72rem;color:rgba(10,22,40,.55);font-weight:600;margin-top:-4px">Par défaut, choisis une photo dans la galerie — l'appareil photo est l'autre option.</div>
         <img id="photo-preview" class="photo-preview" alt="preview"/>
+        <button type="button" class="exp-remove-photo" id="exp-remove-photo-btn" onclick="markExpPhotoRemove()">Retirer la photo</button>
         <div class="ob-err" id="exp-err"></div>
         <button class="ob-btn" id="save-exp-btn">Sauvegarder l'expédition 🚀</button>
         <button class="cn-btn" id="cancel-exp-btn" style="color:#1a4a8a;border-color:rgba(26,74,138,.3)">Annuler</button>
@@ -630,6 +648,14 @@ button{cursor:pointer}
             <div class="tog on" id="notif-tog" onclick="toggleNotif()"><div class="knob"></div></div>
           </div>
           <div class="notif-sub" id="notif-sub">
+            <div class="notif-perm-banner" id="notif-perm-banner">
+              <div class="npb-row">
+                <span id="notif-perm-msg">Les notifications système ne sont pas encore autorisées.</span>
+                <button type="button" class="notif-perm-btn" id="notif-perm-request-btn" onclick="openNotifPermModal()">Autoriser</button>
+              </div>
+              <button type="button" class="notif-perm-link" id="notif-settings-hint-btn" onclick="toggleNotifHelp()">Où activer les notifications ?</button>
+              <div class="notif-help-txt" id="notif-help-txt"></div>
+            </div>
             <div class="notif-sub-item">
               <span class="nsi-label">👥 Demandes d'amis</span>
               <div class="tog on" id="notif-friends-tog" onclick="toggleNotifSub('friends')"><div class="knob"></div></div>
@@ -750,6 +776,15 @@ button{cursor:pointer}
   </div>
 </div>
 
+<div class="mo hidden" id="notif-perm-modal">
+  <div class="mc-card">
+    <div style="font-size:2.5rem">🔔</div>
+    <h3>Autoriser les notifications ?</h3>
+    <p>My Little Penguin peut t'alerter pour les demandes d'amis, les nouveaux messages et quand un ami tue sa banquise.</p>
+    <div class="mb"><button class="mcn" onclick="closeNotifPermModal()">Plus tard</button><button type="button" class="mca" onclick="confirmNotifPermFromModal()">Autoriser</button></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <input type="file" id="exp-photo-input" accept="image/*" style="display:none"/>
@@ -777,16 +812,139 @@ let P = null, SB = null, MODE = 'date', SEL_AV = '🐧';
 let CONV_FID = null, CONV_FNM = null;
 let BEST_SCORES = {fishing:0, maze:0, memory:0};
 let selectedPhotoFile = null, selectedPhotoB64 = null;
+let editingExpeditionId = null;
+let expPhotoRemoved = false;
+let explorationExps = [];
+let notifPollTimer = null;
+let notifWaterline = null;
 
 // ════════════════════════════════════════════════
-//  NOTIFICATIONS PUSH (iOS PWA)
+//  NOTIFICATIONS NAVIGATEUR
 // ════════════════════════════════════════════════
-async function askNotificationPermission() {
+function getNotifHelpHtml() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const lines = isIOS
+    ? ['Réglages iPhone → Notifications → Safari (ou l\'app) → Autoriser les notifications.', 'Si l\'app est installée : écran d\'accueil → app → Réglages intégrés souvent dans le navigateur.']
+    : ['Chrome Android : ⋮ à droite de la barre d\'adresse → Paramètres des informations du site → Notifications → Autoriser.', 'Firefox : menu → Paramètres → Confidentialité → Notifications.'];
+  return lines.join(' ');
+}
+
+function updateNotifPermissionUI() {
+  const banner = document.getElementById('notif-perm-banner');
+  const btn = document.getElementById('notif-perm-request-btn');
+  const msg = document.getElementById('notif-perm-msg');
+  if (!banner || !P) return;
+  if (!('Notification' in window)) {
+    banner.style.display = 'none';
+    return;
+  }
+  if (!P.notif_enabled) {
+    banner.style.display = 'none';
+    return;
+  }
+  banner.style.display = 'block';
+  banner.classList.toggle('warn', Notification.permission === 'denied');
+  if (Notification.permission === 'granted') {
+    banner.style.display = 'none';
+    return;
+  }
+  if (Notification.permission === 'denied') {
+    msg.textContent = 'Les notifications sont bloquées pour ce site. Tu peux les réactiver dans les paramètres du navigateur ou du téléphone.';
+    if (btn) btn.style.display = 'none';
+  } else {
+    msg.textContent = 'Autorise les notifications du navigateur pour recevoir les alertes (amis, messages, banquise…).';
+    if (btn) { btn.style.display = 'inline-block'; btn.textContent = 'Autoriser'; }
+  }
+}
+
+function openNotifPermModal() {
+  document.getElementById('notif-perm-modal').classList.remove('hidden');
+}
+function closeNotifPermModal() {
+  document.getElementById('notif-perm-modal').classList.add('hidden');
+}
+window.openNotifPermModal = openNotifPermModal;
+window.closeNotifPermModal = closeNotifPermModal;
+
+async function confirmNotifPermFromModal() {
+  closeNotifPermModal();
   if (!('Notification' in window)) return;
-  if (Notification.permission === 'default') {
+  try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') toast('🔔 Notifications autorisées !');
+    else if (permission === 'denied') toast('Notifications refusées — tu pourras changer cela dans les paramètres du site.');
+  } catch (e) {}
+  updateNotifPermissionUI();
+}
+window.confirmNotifPermFromModal = confirmNotifPermFromModal;
+
+function toggleNotifHelp() {
+  const el = document.getElementById('notif-help-txt');
+  if (!el) return;
+  const open = el.classList.toggle('open');
+  if (open) el.textContent = getNotifHelpHtml();
+}
+window.toggleNotifHelp = toggleNotifHelp;
+
+async function askNotificationPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') openNotifPermModal();
+  else updateNotifPermissionUI();
+}
+
+function tryShowBrowserNotification(title, body, tag) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  if (!P || !P.notif_enabled) return;
+  try {
+    new Notification(title, { body: body.slice(0, 180), tag: tag || 'mlp', silent: false });
+  } catch (e) {}
+}
+
+function initNotifPolling() {
+  if (notifPollTimer) clearInterval(notifPollTimer);
+  notifPollTimer = null;
+  if (!SB || !myId() || !P?.notif_enabled) return;
+  notifWaterline = localStorage.getItem('mlp_notif_waterline');
+  if (!notifWaterline) {
+    notifWaterline = new Date().toISOString();
+    localStorage.setItem('mlp_notif_waterline', notifWaterline);
   }
+  notifPollTimer = setInterval(scanNotifEvents, 50000);
+  setTimeout(scanNotifEvents, 5000);
+}
+
+async function scanNotifEvents() {
+  if (!P || !P.notif_enabled || !SB || !myId()) return;
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const since = notifWaterline || new Date(0).toISOString();
+  try {
+    if (P.notif_friends !== false) {
+      const { data: pend } = await SB.from('friendships').select('id,user_a').eq('user_b', myId()).eq('status', 'pending');
+      for (const row of pend || []) {
+        const k = 'mlp_nf_' + row.id;
+        if (localStorage.getItem(k)) continue;
+        localStorage.setItem(k, '1');
+        tryShowBrowserNotification('Nouvelle demande d\'ami', 'Un explorateur veut rejoindre ton aventure !', 'friend_' + row.id);
+      }
+    }
+    const { data: msgs } = await SB.from('messages').select('id,text,created_at,from_id,animal').eq('to_id', myId()).gt('created_at', since).order('created_at', { ascending: true });
+    for (const m of msgs || []) {
+      const k = 'mlp_nm_' + m.id;
+      if (localStorage.getItem(k)) continue;
+      localStorage.setItem(k, '1');
+      const kill = m.text && m.text.indexOf('tuer sa banquise') !== -1;
+      if (kill) {
+        if (P.notif_kill === false) continue;
+        tryShowBrowserNotification('Banquise tuée ☠️', m.text || 'Un ami a réinitialisé sa banquise.', 'kill_' + m.id);
+      } else {
+        if (P.notif_messages === false) continue;
+        const preview = m.animal ? ('Cadeau : ' + m.animal) : (m.text || 'Nouveau message');
+        tryShowBrowserNotification('Nouveau message', preview, 'msg_' + m.id);
+      }
+    }
+    notifWaterline = new Date().toISOString();
+    localStorage.setItem('mlp_notif_waterline', notifWaterline);
+  } catch (e) {}
 }
 
 // ════════════════════════════════════════════════
@@ -833,6 +991,8 @@ function enterApp() {
   document.getElementById('splash').classList.remove('active'); document.getElementById('onboarding').classList.remove('active');
   document.getElementById('app').classList.add('active');
   updateScoreDisplay(); updateB(); updateP(); checkBadges();
+  updateNotifPermissionUI();
+  initNotifPolling();
 }
 
 function goPage(name) {
@@ -863,9 +1023,16 @@ function bindAll() {
   document.getElementById('cancel-add').onclick  = () => document.getElementById('add-pnl').classList.add('hidden');
   document.getElementById('search-btn').onclick  = doSearch;
   document.getElementById('conv-send-btn') && (document.getElementById('conv-send-btn').onclick = sendConvMsg);
-  document.getElementById('toggle-add-exp').onclick = () => document.getElementById('add-exp-form').classList.toggle('hidden');
+  document.getElementById('toggle-add-exp').onclick = () => {
+    const f = document.getElementById('add-exp-form');
+    const wasHidden = f.classList.contains('hidden');
+    f.classList.toggle('hidden');
+    if (wasHidden && !f.classList.contains('hidden')) resetExpeditionForm();
+  };
   document.getElementById('save-exp-btn').onclick  = saveExpedition;
-  document.getElementById('cancel-exp-btn').onclick = () => document.getElementById('add-exp-form').classList.add('hidden');
+  document.getElementById('cancel-exp-btn').onclick = () => { resetExpeditionForm(); document.getElementById('add-exp-form').classList.add('hidden'); };
+  document.getElementById('exp-pick-gallery').onclick = () => pickExpPhoto('gallery');
+  document.getElementById('exp-pick-camera').onclick = () => pickExpPhoto('camera');
   document.getElementById('exp-photo-input').addEventListener('change', handlePhotoSelect);
   setupMazeSwipe();
 }
@@ -1029,6 +1196,7 @@ function updateP(){
   document.getElementById('notif-kill-tog').classList.toggle('on',P.notif_kill!==false);
   document.getElementById('priv-tog').classList.toggle('on',!!P.banquise_public);
   document.getElementById('alert-tog').classList.toggle('on',!!P.alert_friends);
+  updateNotifPermissionUI();
 }
 
 function toggleAP(){
@@ -1044,7 +1212,11 @@ async function toggleNotif(){
   document.getElementById('notif-tog').classList.toggle('on',P.notif_enabled);
   document.getElementById('notif-sub').style.display=P.notif_enabled?'flex':'none';
   if(P.notif_enabled) askNotificationPermission();
+  else document.getElementById('notif-perm-modal').classList.add('hidden');
   await syncProfile(); toast(P.notif_enabled?'🔔 Notifications activées':'🔕 Désactivées');
+  updateNotifPermissionUI();
+  if(P.notif_enabled) initNotifPolling();
+  else if(notifPollTimer){ clearInterval(notifPollTimer); notifPollTimer=null; }
 }
 window.toggleNotif=toggleNotif;
 
@@ -1201,12 +1373,74 @@ async function checkBadges(){
 // ════════════════════════════════════════════════
 //  EXPLORATION
 // ════════════════════════════════════════════════
+function resetExpeditionForm(){
+  editingExpeditionId=null;
+  expPhotoRemoved=false;
+  document.getElementById('exp-form-title').textContent='Nouvelle expédition';
+  document.getElementById('save-exp-btn').textContent='Sauvegarder l\'expédition 🚀';
+  document.getElementById('exp-title-in').value='';
+  document.getElementById('exp-note-in').value='';
+  document.getElementById('exp-date-in').value=new Date().toISOString().slice(0,10);
+  document.getElementById('exp-err').textContent='';
+  document.getElementById('photo-preview').style.display='none';
+  document.getElementById('photo-preview').removeAttribute('src');
+  document.getElementById('exp-remove-photo-btn').classList.remove('visible');
+  document.getElementById('exp-photo-input').value='';
+  selectedPhotoFile=null; selectedPhotoB64=null;
+}
+
+function pickExpPhoto(mode){
+  const inp=document.getElementById('exp-photo-input');
+  inp.value='';
+  if(mode==='camera') inp.setAttribute('capture','environment');
+  else inp.removeAttribute('capture');
+  inp.click();
+}
+
+function markExpPhotoRemove(){
+  expPhotoRemoved=true;
+  selectedPhotoFile=null; selectedPhotoB64=null;
+  document.getElementById('exp-photo-input').value='';
+  const prev=document.getElementById('photo-preview');
+  prev.style.display='none';
+  prev.removeAttribute('src');
+  document.getElementById('exp-remove-photo-btn').classList.remove('visible');
+}
+window.markExpPhotoRemove=markExpPhotoRemove;
+
+function beginEditExpedition(id){
+  const exp=explorationExps.find(e=>String(e.id)===String(id));
+  if(!exp){toast('Expédition introuvable');return;}
+  editingExpeditionId=id;
+  expPhotoRemoved=false;
+  document.getElementById('exp-form-title').textContent='Modifier l\'expédition';
+  document.getElementById('save-exp-btn').textContent='Enregistrer les modifications ✓';
+  document.getElementById('exp-title-in').value=exp.title||'';
+  document.getElementById('exp-note-in').value=exp.note||'';
+  document.getElementById('exp-date-in').value=(exp.exp_date||'').slice(0,10);
+  document.getElementById('exp-err').textContent='';
+  document.getElementById('photo-preview').style.display='none';
+  document.getElementById('photo-preview').removeAttribute('src');
+  document.getElementById('exp-remove-photo-btn').classList.toggle('visible',!!exp.photo_url);
+  selectedPhotoFile=null; selectedPhotoB64=null;
+  document.getElementById('exp-photo-input').value='';
+  if(exp.photo_url){
+    const prev=document.getElementById('photo-preview');
+    prev.src=exp.photo_url; prev.style.display='block';
+  }
+  document.getElementById('add-exp-form').classList.remove('hidden');
+  document.getElementById('add-exp-form').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+window.beginEditExpedition=beginEditExpedition;
+
 function handlePhotoSelect(e){
   const file=e.target.files[0]; if(!file)return;
+  expPhotoRemoved=false;
   selectedPhotoFile=file; const reader=new FileReader();
   reader.onload=(ev)=>{
     selectedPhotoB64=ev.target.result;
     const prev=document.getElementById('photo-preview'); prev.src=ev.target.result; prev.style.display='block';
+    document.getElementById('exp-remove-photo-btn').classList.add('visible');
   };
   reader.readAsDataURL(file);
 }
@@ -1221,10 +1455,14 @@ async function saveExpedition(){
   errEl.textContent='';
 
   let photoUrl=null;
+  const prevExp=editingExpeditionId?explorationExps.find(e=>String(e.id)===String(editingExpeditionId)):null;
+  if(prevExp&&prevExp.photo_url) photoUrl=prevExp.photo_url;
+  if(expPhotoRemoved) photoUrl=null;
+
   if(selectedPhotoFile&&SB){
     try{
       const fname=`${myId()}_${Date.now()}.jpg`;
-      const{data:upData,error:upErr}=await SB.storage.from('expedition-photos').upload(fname,selectedPhotoFile,{contentType:'image/jpeg',upsert:true});
+      const{error:upErr}=await SB.storage.from('expedition-photos').upload(fname,selectedPhotoFile,{contentType:'image/jpeg',upsert:true});
       if(!upErr){
         const{data:urlData}=SB.storage.from('expedition-photos').getPublicUrl(fname);
         photoUrl=urlData?.publicUrl||null;
@@ -1233,26 +1471,40 @@ async function saveExpedition(){
   }
 
   const exp={title,note:note||null,exp_date:date,photo_url:photoUrl};
+  const isEdit=!!editingExpeditionId;
+
   if(SB){
     try{
-      const{error}=await SB.from('expeditions').insert({user_id:myId(),...exp});
-      if(error)throw error;
+      if(isEdit){
+        const{error}=await SB.from('expeditions').update(exp).eq('id',editingExpeditionId).eq('user_id',myId());
+        if(error)throw error;
+      }else{
+        const{error}=await SB.from('expeditions').insert({user_id:myId(),...exp});
+        if(error)throw error;
+      }
     }catch(e){
       const local=JSON.parse(localStorage.getItem('mlp_exps')||'[]');
+      if(isEdit){
+        const ix=local.findIndex(x=>String(x.id)===String(editingExpeditionId));
+        if(ix>=0){ local[ix]={...local[ix],...exp}; localStorage.setItem('mlp_exps',JSON.stringify(local)); }
+      }else{
+        local.unshift({id:Date.now().toString(),...exp,created_at:new Date().toISOString()});
+        localStorage.setItem('mlp_exps',JSON.stringify(local));
+      }
+    }
+  }else{
+    const local=JSON.parse(localStorage.getItem('mlp_exps')||'[]');
+    if(isEdit){
+      const ix=local.findIndex(x=>String(x.id)===String(editingExpeditionId));
+      if(ix>=0){ local[ix]={...local[ix],...exp}; localStorage.setItem('mlp_exps',JSON.stringify(local)); }
+    }else{
       local.unshift({id:Date.now().toString(),...exp,created_at:new Date().toISOString()});
       localStorage.setItem('mlp_exps',JSON.stringify(local));
     }
-  } else {
-    const local=JSON.parse(localStorage.getItem('mlp_exps')||'[]');
-    local.unshift({id:Date.now().toString(),...exp,created_at:new Date().toISOString()});
-    localStorage.setItem('mlp_exps',JSON.stringify(local));
   }
-  document.getElementById('exp-title-in').value=''; document.getElementById('exp-note-in').value='';
-  document.getElementById('exp-date-in').value=new Date().toISOString().slice(0,10);
-  document.getElementById('photo-preview').style.display='none';
-  selectedPhotoFile=null; selectedPhotoB64=null;
+  resetExpeditionForm();
   document.getElementById('add-exp-form').classList.add('hidden');
-  toast('Expédition sauvegardée ! 🗺️');
+  toast(isEdit?'Expédition mise à jour ! 🗺️':'Expédition sauvegardée ! 🗺️');
   loadExploration();
 }
 
@@ -1260,7 +1512,8 @@ async function loadExploration(){
   const nodesEl=document.getElementById('expl-nodes'); let exps=[];
   if(SB){ try{ const{data}=await SB.from('expeditions').select('*').eq('user_id',myId()).order('exp_date',{ascending:true}); exps=data||[]; }catch(e){} }
   if(!exps.length) exps=JSON.parse(localStorage.getItem('mlp_exps')||'[]').reverse();
-  
+  explorationExps=exps;
+
   if(!exps.length){
     nodesEl.innerHTML=`<div style="text-align:center;color:#1a4a8a;padding:30px 20px;font-size:.88rem;font-weight:600">Aucune expédition pour l'instant.<br/>Ajoute ta première aventure ! 🗺️</div>`;
     document.getElementById('expl-wait-label').textContent='En attente de la première aventure… ✨'; return;
@@ -1270,19 +1523,25 @@ async function loadExploration(){
 
   nodesEl.innerHTML=exps.map((exp,i)=>{
     const side=i%2===0?'left':'right'; const isFirst=i===0;
-    const photoHtml=exp.photo_url?`<img class="exp-photo" src="${exp.photo_url}" alt="" loading="lazy"/>`:`<div class="exp-photo-placeholder">🏔️</div>`;
+    const photoHtml=exp.photo_url?`<img class="exp-photo" src="${String(exp.photo_url).replace(/"/g,'&quot;')}" alt="" loading="lazy"/>`:`<div class="exp-photo-placeholder">🏔️</div>`;
     const dateStr=new Date(exp.exp_date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
     return`
       <div class="exp-node ${side}" style="animation:slideIn .4s ease ${i*0.1}s both">
         <div class="exp-dot${isFirst?' first':''}"></div>
         <div class="exp-bubble">
+          <div class="exp-actions"><button type="button" class="exp-edit-btn" data-exp-id="${escHTML(String(exp.id))}">Modifier</button></div>
+          <div class="exp-bubble-inner">
           ${photoHtml}
           <div class="exp-title">${escHTML(exp.title)}</div>
           <div class="exp-date">📅 ${dateStr}</div>
           ${exp.note?`<div class="exp-note">${escHTML(exp.note)}</div>`:''}
+          </div>
         </div>
       </div>`;
   }).join('');
+  nodesEl.querySelectorAll('.exp-edit-btn').forEach(btn=>{
+    btn.addEventListener('click', (ev)=>{ ev.stopPropagation(); beginEditExpedition(btn.getAttribute('data-exp-id')); });
+  });
 }
 
 // ════════════════════════════════════════════════
