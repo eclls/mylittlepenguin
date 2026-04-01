@@ -184,12 +184,16 @@ button{cursor:pointer}
 .add-exp-btn:active { transform: scale(.98); }
 .expl-edit-flow-btn { background: #fff; color: #1a4a8a; font-weight: 800; padding: 10px 14px; border-radius: var(--r-xl); font-size: .78rem; border: 2px solid rgba(26,74,138,.45); cursor: pointer; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
 .expl-edit-flow-btn:active { transform: scale(.98); background: rgba(26,74,138,.06); }
-.exp-edit-picker { background: #fff; border: 1.5px solid rgba(10,22,40,.12); border-radius: var(--r-lg); padding: 16px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
-.exp-edit-picker.hidden { display: none; }
-.exp-edit-picker label { font-size: .82rem; font-weight: 800; color: #1a4a8a; }
+.expl-delete-flow-btn { background: #fff; color: #b91c1c; font-weight: 800; padding: 10px 14px; border-radius: var(--r-xl); font-size: .78rem; border: 2px solid rgba(220,38,38,.45); cursor: pointer; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.expl-delete-flow-btn:active { transform: scale(.98); background: rgba(220,38,38,.08); }
+.exp-edit-picker, .exp-delete-picker { background: #fff; border: 1.5px solid rgba(10,22,40,.12); border-radius: var(--r-lg); padding: 16px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+.exp-edit-picker.hidden, .exp-delete-picker.hidden { display: none; }
+.exp-edit-picker label, .exp-delete-picker label { font-size: .82rem; font-weight: 800; color: #1a4a8a; }
+.exp-delete-picker label { color: #991b1b; }
 .exp-edit-select { width: 100%; padding: 12px 14px; border-radius: var(--r-md); border: 1.5px solid rgba(10,22,40,.15); font-size: .88rem; font-weight: 600; color: #0a1628; background: rgba(10,22,40,.04); }
 .exp-open-edit-btn { margin-top: 4px; }
 .exp-cancel-picker-btn { align-self: flex-start; font-size: .84rem !important; padding: 8px 14px !important; }
+.exp-confirm-delete-btn { background: linear-gradient(135deg,#ef4444,#b91c1c) !important; color: #fff !important; border: none !important; margin-top: 4px; }
 
 .expl-path { position: relative; padding: 10px 0 40px; }
 .exp-node { position: relative; display: flex; align-items: center; margin-bottom: 32px; z-index: 1; }
@@ -223,8 +227,6 @@ button{cursor:pointer}
 .photo-preview { width: 100%; height: 120px; object-fit: cover; border-radius: var(--r-sm); display: none; }
 .exp-remove-photo { font-size: .8rem; font-weight: 700; color: #b45309; background: rgba(251,191,36,.15); border: 1px solid rgba(251,191,36,.4); padding: 8px 12px; border-radius: var(--r-md); cursor: pointer; width: 100%; display: none; }
 .exp-remove-photo.visible { display: block; }
-.exp-delete-form-btn { width: 100%; padding: 12px; border-radius: var(--r-md); border: 1.5px solid rgba(220,38,38,.45); background: rgba(220,38,38,.06); color: #b91c1c; font-weight: 800; font-size: .88rem; cursor: pointer; margin-top: 4px; }
-.exp-delete-form-btn.hidden { display: none !important; }
 #exp-photo-input { display: none; }
 
 /* ══ PAGE AMIS ══ */
@@ -557,8 +559,9 @@ button{cursor:pointer}
       <div class="expl-header">
         <h1>Expéditions 🗺️</h1>
         <div class="expl-header-stack">
-          <button type="button" class="add-exp-btn" id="toggle-add-exp">+ Nouvelle</button>
-          <button type="button" class="expl-edit-flow-btn" id="show-exp-edit-picker">Modifier une expédition</button>
+          <button type="button" class="add-exp-btn" id="toggle-add-exp">Nouvelle</button>
+          <button type="button" class="expl-edit-flow-btn" id="show-exp-edit-picker">Modifier</button>
+          <button type="button" class="expl-delete-flow-btn" id="show-exp-delete-picker">Supprimer</button>
         </div>
       </div>
       <div class="exp-edit-picker hidden" id="exp-edit-picker">
@@ -566,6 +569,12 @@ button{cursor:pointer}
         <select id="exp-edit-select" class="exp-edit-select" aria-label="Expédition à modifier"></select>
         <button type="button" class="ob-btn exp-open-edit-btn" id="exp-open-edit-btn">Ouvrir le formulaire ✎</button>
         <button type="button" class="cn-btn exp-cancel-picker-btn" id="exp-cancel-picker-btn" style="color:#1a4a8a;border-color:rgba(26,74,138,.3)">Fermer</button>
+      </div>
+      <div class="exp-delete-picker hidden" id="exp-delete-picker">
+        <label for="exp-delete-select">Choisir une expédition à supprimer</label>
+        <select id="exp-delete-select" class="exp-edit-select" aria-label="Expédition à supprimer"></select>
+        <button type="button" class="ob-btn exp-confirm-delete-btn" id="exp-confirm-delete-btn">Supprimer définitivement</button>
+        <button type="button" class="cn-btn exp-cancel-picker-btn" id="exp-cancel-delete-picker-btn" style="color:#1a4a8a;border-color:rgba(26,74,138,.3)">Fermer</button>
       </div>
       <div class="add-exp-form hidden" id="add-exp-form">
         <h3 id="exp-form-title">Nouvelle expédition</h3>
@@ -583,7 +592,6 @@ button{cursor:pointer}
         <button type="button" class="exp-remove-photo" id="exp-remove-photo-btn" onclick="markExpPhotoRemove()">Retirer la photo</button>
         <div class="ob-err" id="exp-err"></div>
         <button class="ob-btn" id="save-exp-btn">Sauvegarder l'expédition 🚀</button>
-        <button type="button" class="exp-delete-form-btn hidden" id="exp-delete-form-btn">Supprimer cette expédition</button>
         <button class="cn-btn" id="cancel-exp-btn" style="color:#1a4a8a;border-color:rgba(26,74,138,.3)">Annuler</button>
       </div>
       <div class="expl-path" id="expl-path">
@@ -1048,7 +1056,7 @@ function bindAll() {
     const f = document.getElementById('add-exp-form');
     const wasHidden = f.classList.contains('hidden');
     f.classList.toggle('hidden');
-    hideExpEditPicker();
+    hideAllExpPickers();
     if (wasHidden && !f.classList.contains('hidden')) resetExpeditionForm();
   };
   document.getElementById('show-exp-edit-picker').onclick = async () => {
@@ -1057,23 +1065,43 @@ function bindAll() {
       toast('Aucune expédition à modifier. Crée-en une d\'abord ! 🗺️');
       return;
     }
-    populateExpeditionEditSelect();
+    document.getElementById('exp-delete-picker').classList.add('hidden');
+    populateExpeditionSelectors();
     document.getElementById('exp-edit-picker').classList.remove('hidden');
     document.getElementById('exp-edit-picker').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  document.getElementById('show-exp-delete-picker').onclick = async () => {
+    await loadExploration();
+    if (!explorationExps.length) {
+      toast('Aucune expédition à supprimer.');
+      return;
+    }
+    document.getElementById('exp-edit-picker').classList.add('hidden');
+    populateExpeditionSelectors();
+    document.getElementById('exp-delete-picker').classList.remove('hidden');
+    document.getElementById('exp-delete-picker').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   };
   document.getElementById('exp-open-edit-btn').onclick = () => {
     const sel = document.getElementById('exp-edit-select');
     const id = sel && sel.value;
     if (!id) { toast('Choisis une expédition dans la liste.'); return; }
-    hideExpEditPicker();
+    hideAllExpPickers();
     beginEditExpedition(id);
   };
-  document.getElementById('exp-cancel-picker-btn').onclick = hideExpEditPicker;
+  document.getElementById('exp-confirm-delete-btn').onclick = () => {
+    const sel = document.getElementById('exp-delete-select');
+    const id = sel && sel.value;
+    if (!id) { toast('Choisis une expédition dans la liste.'); return; }
+    if (!confirm('Supprimer définitivement cette expédition ?')) return;
+    hideAllExpPickers();
+    deleteExpedition(id, true);
+  };
+  document.getElementById('exp-cancel-picker-btn').onclick = hideAllExpPickers;
+  document.getElementById('exp-cancel-delete-picker-btn').onclick = hideAllExpPickers;
   document.getElementById('save-exp-btn').onclick  = saveExpedition;
-  document.getElementById('cancel-exp-btn').onclick = () => { hideExpEditPicker(); resetExpeditionForm(); document.getElementById('add-exp-form').classList.add('hidden'); };
+  document.getElementById('cancel-exp-btn').onclick = () => { hideAllExpPickers(); resetExpeditionForm(); document.getElementById('add-exp-form').classList.add('hidden'); };
   document.getElementById('exp-pick-gallery').onclick = () => pickExpPhoto('gallery');
   document.getElementById('exp-pick-camera').onclick = () => pickExpPhoto('camera');
-  document.getElementById('exp-delete-form-btn').onclick = () => { if (editingExpeditionId) deleteExpedition(editingExpeditionId); };
   document.getElementById('exp-photo-input').addEventListener('change', handlePhotoSelect);
   setupMazeSwipe();
 }
@@ -1414,21 +1442,25 @@ async function checkBadges(){
 // ════════════════════════════════════════════════
 //  EXPLORATION
 // ════════════════════════════════════════════════
-function hideExpEditPicker(){
-  const p=document.getElementById('exp-edit-picker');
-  if(p)p.classList.add('hidden');
+function hideAllExpPickers(){
+  const e=document.getElementById('exp-edit-picker');
+  const d=document.getElementById('exp-delete-picker');
+  if(e)e.classList.add('hidden');
+  if(d)d.classList.add('hidden');
 }
 
-function populateExpeditionEditSelect(){
-  const sel=document.getElementById('exp-edit-select');
-  if(!sel)return;
-  sel.innerHTML='';
-  explorationExps.forEach(exp=>{
-    const opt=document.createElement('option');
-    opt.value=String(exp.id);
-    const ds=new Date(exp.exp_date).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
-    opt.textContent=ds+' — '+(exp.title||'Sans titre').slice(0,58);
-    sel.appendChild(opt);
+function populateExpeditionSelectors(){
+  const sels=[document.getElementById('exp-edit-select'),document.getElementById('exp-delete-select')];
+  sels.forEach(sel=>{
+    if(!sel)return;
+    sel.innerHTML='';
+    explorationExps.forEach(exp=>{
+      const opt=document.createElement('option');
+      opt.value=String(exp.id);
+      const ds=new Date(exp.exp_date).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+      opt.textContent=ds+' — '+(exp.title||'Sans titre').slice(0,58);
+      sel.appendChild(opt);
+    });
   });
 }
 
@@ -1437,7 +1469,6 @@ function resetExpeditionForm(){
   expPhotoRemoved=false;
   document.getElementById('exp-form-title').textContent='Nouvelle expédition';
   document.getElementById('save-exp-btn').textContent='Sauvegarder l\'expédition 🚀';
-  document.getElementById('exp-delete-form-btn').classList.add('hidden');
   document.getElementById('exp-title-in').value='';
   document.getElementById('exp-note-in').value='';
   document.getElementById('exp-date-in').value=new Date().toISOString().slice(0,10);
@@ -1469,14 +1500,13 @@ function markExpPhotoRemove(){
 window.markExpPhotoRemove=markExpPhotoRemove;
 
 function beginEditExpedition(id){
-  hideExpEditPicker();
+  hideAllExpPickers();
   const exp=explorationExps.find(e=>String(e.id)===String(id));
   if(!exp){toast('Expédition introuvable');return;}
   editingExpeditionId=id;
   expPhotoRemoved=false;
   document.getElementById('exp-form-title').textContent='Modifier l\'expédition';
   document.getElementById('save-exp-btn').textContent='Enregistrer les modifications ✓';
-  document.getElementById('exp-delete-form-btn').classList.remove('hidden');
   document.getElementById('exp-title-in').value=exp.title||'';
   document.getElementById('exp-note-in').value=exp.note||'';
   document.getElementById('exp-date-in').value=(exp.exp_date||'').slice(0,10);
@@ -1570,9 +1600,9 @@ async function saveExpedition(){
   loadExploration();
 }
 
-async function deleteExpedition(id){
+async function deleteExpedition(id, skipConfirm){
   if(!id)return;
-  if(!confirm('Supprimer cette expédition ? Cette action est définitive.'))return;
+  if(!skipConfirm && !confirm('Supprimer cette expédition ? Cette action est définitive.'))return;
   const exp=explorationExps.find(e=>String(e.id)===String(id));
   if(!exp){toast('Expédition introuvable');return;}
   if(SB){
@@ -1592,7 +1622,7 @@ async function deleteExpedition(id){
   if(String(editingExpeditionId)===String(id)){
     resetExpeditionForm();
     document.getElementById('add-exp-form').classList.add('hidden');
-    hideExpEditPicker();
+    hideAllExpPickers();
   }
   toast('Expédition supprimée 🗑️');
   loadExploration();
@@ -1618,7 +1648,7 @@ async function loadExploration(){
   if(!exps.length){
     nodesEl.innerHTML=`<div style="text-align:center;color:#1a4a8a;padding:30px 20px;font-size:.88rem;font-weight:600">Aucune expédition pour l'instant.<br/>Ajoute ta première aventure ! 🗺️</div>`;
     document.getElementById('expl-wait-label').textContent='En attente de la première aventure… ✨';
-    populateExpeditionEditSelect();
+    populateExpeditionSelectors();
     return;
   }
   const lastExp=exps[exps.length-1]; const daysWaiting=calcDF(lastExp.exp_date,null);
@@ -1641,7 +1671,7 @@ async function loadExploration(){
         </div>
       </div>`;
   }).join('');
-  populateExpeditionEditSelect();
+  populateExpeditionSelectors();
 }
 
 // ════════════════════════════════════════════════
