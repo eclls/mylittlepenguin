@@ -177,10 +177,19 @@ button{cursor:pointer}
 }
 .path-line { display: none; }
 .expl-content { padding: 20px 16px; position: relative; z-index: 1; }
-.expl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.expl-header h1 { font-family: var(--fd); font-size: 1.75rem; font-weight: 700; color: #0a1628; text-shadow: 0 1px 0 #fff; }
-.add-exp-btn { background: #1a4a8a; color: #fff; font-weight: 800; padding: 10px 18px; border-radius: var(--r-xl); font-size: .88rem; border: none; }
-.add-exp-btn:active { transform: scale(.95); }
+.expl-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 14px; flex-wrap: wrap; }
+.expl-header h1 { font-family: var(--fd); font-size: 1.75rem; font-weight: 700; color: #0a1628; text-shadow: 0 1px 0 #fff; margin: 0; flex: 1; min-width: 140px; }
+.expl-header-stack { display: flex; flex-direction: column; align-items: stretch; gap: 8px; min-width: 170px; }
+.add-exp-btn { background: #1a4a8a; color: #fff; font-weight: 800; padding: 10px 18px; border-radius: var(--r-xl); font-size: .88rem; border: none; cursor: pointer; width: 100%; }
+.add-exp-btn:active { transform: scale(.98); }
+.expl-edit-flow-btn { background: #fff; color: #1a4a8a; font-weight: 800; padding: 10px 16px; border-radius: var(--r-xl); font-size: .84rem; border: 2px solid rgba(26,74,138,.45); cursor: pointer; width: 100%; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.expl-edit-flow-btn:active { transform: scale(.98); background: rgba(26,74,138,.06); }
+.exp-edit-picker { background: #fff; border: 1.5px solid rgba(10,22,40,.12); border-radius: var(--r-lg); padding: 16px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+.exp-edit-picker.hidden { display: none; }
+.exp-edit-picker label { font-size: .82rem; font-weight: 800; color: #1a4a8a; }
+.exp-edit-select { width: 100%; padding: 12px 14px; border-radius: var(--r-md); border: 1.5px solid rgba(10,22,40,.15); font-size: .88rem; font-weight: 600; color: #0a1628; background: rgba(10,22,40,.04); }
+.exp-open-edit-btn { margin-top: 4px; }
+.exp-cancel-picker-btn { align-self: flex-start; font-size: .84rem !important; padding: 8px 14px !important; }
 
 .expl-path { position: relative; padding: 10px 0 40px; }
 .exp-node { position: relative; display: flex; align-items: center; margin-bottom: 32px; z-index: 1; }
@@ -188,12 +197,6 @@ button{cursor:pointer}
 .exp-bubble { width: calc(50% - 32px); background: rgba(255,255,255,.9); border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-md); padding: 12px; backdrop-filter: blur(5px); transition: all .2s; color: #0a1628; box-shadow: 0 2px 8px rgba(0,0,0,.1); position: relative; }
 .exp-bubble-inner { cursor: default; }
 .exp-bubble:active { transform: none; border-color: rgba(10,22,40,.1); }
-.exp-actions { display: flex; justify-content: flex-end; margin-bottom: 6px; gap: 8px; flex-wrap: wrap; align-items: center; }
-.exp-node.right .exp-actions { justify-content: flex-start; }
-.exp-edit-btn { font-size: .72rem; font-weight: 800; padding: 5px 10px; border-radius: 999px; border: 1.5px solid rgba(26,74,138,.35); background: rgba(26,74,138,.08); color: #1a4a8a; cursor: pointer; }
-.exp-edit-btn:active { transform: scale(.96); background: rgba(26,74,138,.15); }
-.exp-delete-btn { font-size: .72rem; font-weight: 800; padding: 5px 10px; border-radius: 999px; border: 1.5px solid rgba(220,38,38,.4); background: rgba(220,38,38,.08); color: #b91c1c; cursor: pointer; }
-.exp-delete-btn:active { transform: scale(.96); background: rgba(220,38,38,.15); }
 .exp-node.right .exp-bubble { text-align: right; }
 .exp-dot { width: 20px; height: 20px; border-radius: 50%; background: #1a4a8a; border: 3px solid #fff; box-shadow: 0 0 8px rgba(26,74,138,.3); flex-shrink: 0; margin: 0 16px; z-index: 1; }
 .exp-dot.first { background: var(--gold); }
@@ -553,7 +556,16 @@ button{cursor:pointer}
     <div class="expl-content">
       <div class="expl-header">
         <h1>Expéditions 🗺️</h1>
-        <button class="add-exp-btn" id="toggle-add-exp">+ Nouvelle</button>
+        <div class="expl-header-stack">
+          <button type="button" class="add-exp-btn" id="toggle-add-exp">+ Nouvelle</button>
+          <button type="button" class="expl-edit-flow-btn" id="show-exp-edit-picker">Modifier une expédition</button>
+        </div>
+      </div>
+      <div class="exp-edit-picker hidden" id="exp-edit-picker">
+        <label for="exp-edit-select">Choisir une expédition à modifier</label>
+        <select id="exp-edit-select" class="exp-edit-select" aria-label="Expédition à modifier"></select>
+        <button type="button" class="ob-btn exp-open-edit-btn" id="exp-open-edit-btn">Ouvrir le formulaire ✎</button>
+        <button type="button" class="cn-btn exp-cancel-picker-btn" id="exp-cancel-picker-btn" style="color:#1a4a8a;border-color:rgba(26,74,138,.3)">Fermer</button>
       </div>
       <div class="add-exp-form hidden" id="add-exp-form">
         <h3 id="exp-form-title">Nouvelle expédition</h3>
@@ -1036,10 +1048,29 @@ function bindAll() {
     const f = document.getElementById('add-exp-form');
     const wasHidden = f.classList.contains('hidden');
     f.classList.toggle('hidden');
+    hideExpEditPicker();
     if (wasHidden && !f.classList.contains('hidden')) resetExpeditionForm();
   };
+  document.getElementById('show-exp-edit-picker').onclick = async () => {
+    await loadExploration();
+    if (!explorationExps.length) {
+      toast('Aucune expédition à modifier. Crée-en une d\'abord ! 🗺️');
+      return;
+    }
+    populateExpeditionEditSelect();
+    document.getElementById('exp-edit-picker').classList.remove('hidden');
+    document.getElementById('exp-edit-picker').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  };
+  document.getElementById('exp-open-edit-btn').onclick = () => {
+    const sel = document.getElementById('exp-edit-select');
+    const id = sel && sel.value;
+    if (!id) { toast('Choisis une expédition dans la liste.'); return; }
+    hideExpEditPicker();
+    beginEditExpedition(id);
+  };
+  document.getElementById('exp-cancel-picker-btn').onclick = hideExpEditPicker;
   document.getElementById('save-exp-btn').onclick  = saveExpedition;
-  document.getElementById('cancel-exp-btn').onclick = () => { resetExpeditionForm(); document.getElementById('add-exp-form').classList.add('hidden'); };
+  document.getElementById('cancel-exp-btn').onclick = () => { hideExpEditPicker(); resetExpeditionForm(); document.getElementById('add-exp-form').classList.add('hidden'); };
   document.getElementById('exp-pick-gallery').onclick = () => pickExpPhoto('gallery');
   document.getElementById('exp-pick-camera').onclick = () => pickExpPhoto('camera');
   document.getElementById('exp-delete-form-btn').onclick = () => { if (editingExpeditionId) deleteExpedition(editingExpeditionId); };
@@ -1383,9 +1414,22 @@ async function checkBadges(){
 // ════════════════════════════════════════════════
 //  EXPLORATION
 // ════════════════════════════════════════════════
-function parseExpIdFromAttr(s){
-  if(s==null||s==='')return'';
-  try{ return decodeURIComponent(s); }catch(e){ return s; }
+function hideExpEditPicker(){
+  const p=document.getElementById('exp-edit-picker');
+  if(p)p.classList.add('hidden');
+}
+
+function populateExpeditionEditSelect(){
+  const sel=document.getElementById('exp-edit-select');
+  if(!sel)return;
+  sel.innerHTML='';
+  explorationExps.forEach(exp=>{
+    const opt=document.createElement('option');
+    opt.value=String(exp.id);
+    const ds=new Date(exp.exp_date).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'});
+    opt.textContent=ds+' — '+(exp.title||'Sans titre').slice(0,58);
+    sel.appendChild(opt);
+  });
 }
 
 function resetExpeditionForm(){
@@ -1425,6 +1469,7 @@ function markExpPhotoRemove(){
 window.markExpPhotoRemove=markExpPhotoRemove;
 
 function beginEditExpedition(id){
+  hideExpEditPicker();
   const exp=explorationExps.find(e=>String(e.id)===String(id));
   if(!exp){toast('Expédition introuvable');return;}
   editingExpeditionId=id;
@@ -1547,6 +1592,7 @@ async function deleteExpedition(id){
   if(String(editingExpeditionId)===String(id)){
     resetExpeditionForm();
     document.getElementById('add-exp-form').classList.add('hidden');
+    hideExpEditPicker();
   }
   toast('Expédition supprimée 🗑️');
   loadExploration();
@@ -1571,7 +1617,9 @@ async function loadExploration(){
 
   if(!exps.length){
     nodesEl.innerHTML=`<div style="text-align:center;color:#1a4a8a;padding:30px 20px;font-size:.88rem;font-weight:600">Aucune expédition pour l'instant.<br/>Ajoute ta première aventure ! 🗺️</div>`;
-    document.getElementById('expl-wait-label').textContent='En attente de la première aventure… ✨'; return;
+    document.getElementById('expl-wait-label').textContent='En attente de la première aventure… ✨';
+    populateExpeditionEditSelect();
+    return;
   }
   const lastExp=exps[exps.length-1]; const daysWaiting=calcDF(lastExp.exp_date,null);
   document.getElementById('expl-wait-label').textContent=daysWaiting===0?'Expédition du jour ! 🎉':daysWaiting===1?'Hier… les empreintes sont encore fraîches 🐾':`Depuis ${daysWaiting} jours… le pingouin attend patiemment 🎒`;
@@ -1580,15 +1628,10 @@ async function loadExploration(){
     const side=i%2===0?'left':'right'; const isFirst=i===0;
     const photoHtml=exp.photo_url?`<img class="exp-photo" src="${String(exp.photo_url).replace(/"/g,'&quot;')}" alt="" loading="lazy"/>`:`<div class="exp-photo-placeholder">🏔️</div>`;
     const dateStr=new Date(exp.exp_date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
-    const idAttr=encodeURIComponent(String(exp.id));
     return`
       <div class="exp-node ${side}" style="animation:slideIn .4s ease ${i*0.1}s both">
         <div class="exp-dot${isFirst?' first':''}"></div>
         <div class="exp-bubble">
-          <div class="exp-actions">
-            <button type="button" class="exp-edit-btn" data-exp-id="${idAttr}">Modifier</button>
-            <button type="button" class="exp-delete-btn" data-exp-id="${idAttr}">Supprimer</button>
-          </div>
           <div class="exp-bubble-inner">
           ${photoHtml}
           <div class="exp-title">${escHTML(exp.title)}</div>
@@ -1598,12 +1641,7 @@ async function loadExploration(){
         </div>
       </div>`;
   }).join('');
-  nodesEl.querySelectorAll('.exp-edit-btn').forEach(btn=>{
-    btn.addEventListener('click', (ev)=>{ ev.stopPropagation(); beginEditExpedition(parseExpIdFromAttr(btn.getAttribute('data-exp-id'))); });
-  });
-  nodesEl.querySelectorAll('.exp-delete-btn').forEach(btn=>{
-    btn.addEventListener('click', (ev)=>{ ev.stopPropagation(); deleteExpedition(parseExpIdFromAttr(btn.getAttribute('data-exp-id'))); });
-  });
+  populateExpeditionEditSelect();
 }
 
 // ════════════════════════════════════════════════
