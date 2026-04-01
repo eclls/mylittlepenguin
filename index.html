@@ -169,18 +169,13 @@ button{cursor:pointer}
 
 /* ══ PAGE EXPLORATION Givrée ══ */
 #page-exploration { background: #e0f2fe; overflow-y: auto; }
-
-/* Motif SVG : Empreintes de pingouin sur fond neige */
 .expl-bg {
   position: fixed; inset: 0;
   background-color: #e0f2fe;
   background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23bae6fd' opacity='0.7'%3E%3Cpath d='M20 30 Q15 20 20 10 Q25 20 20 30 M12 25 Q8 18 12 12 Q16 18 12 25 M28 25 Q32 18 28 12 Q24 18 28 25' transform='rotate(15 20 20)'/%3E%3Cpath d='M70 70 Q65 60 70 50 Q75 60 70 70 M62 65 Q58 58 62 52 Q66 58 62 65 M78 65 Q82 58 78 52 Q74 58 78 65' transform='rotate(-20 70 60)'/%3E%3C/g%3E%3C/svg%3E");
   pointer-events: none;
 }
-
-/* On cache la ligne du milieu */
 .path-line { display: none; }
-
 .expl-content { padding: 20px 16px; position: relative; z-index: 1; }
 .expl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .expl-header h1 { font-family: var(--fd); font-size: 1.75rem; font-weight: 700; color: #0a1628; text-shadow: 0 1px 0 #fff; }
@@ -547,7 +542,6 @@ button{cursor:pointer}
         </div>
         <div class="ob-inp"><span class="ob-inp-ic">📅</span><input type="date" id="exp-date-in"/></div>
         <label class="photo-upload-btn" for="exp-photo-input">📷 Ajouter une photo</label>
-        <input type="file" id="exp-photo-input" accept="image/*" capture="environment"/>
         <img id="photo-preview" class="photo-preview" alt="preview"/>
         <div class="ob-err" id="exp-err"></div>
         <button class="ob-btn" id="save-exp-btn">Sauvegarder l'expédition 🚀</button>
@@ -708,9 +702,7 @@ button{cursor:pointer}
     <div class="fishing-scene" id="fishing-scene">
       <div class="fisher-pingu">🐧</div>
       <div class="fishing-water-line"></div>
-      <div class="fishing-rod" id="fishing-rod">
-        <div class="hook" id="fishing-hook" style="position:absolute;bottom:-8px;left:-3px">🪝</div>
-      </div>
+      <div class="fishing-rod" id="fishing-rod"><div class="hook" id="fishing-hook" style="position:absolute;bottom:-8px;left:-3px">🪝</div></div>
       <div id="fishing-splash" class="fishing-splash" style="left:40%;top:55%">💦</div>
     </div>
     <div class="game-instructions">Tape sur les poissons pour les attraper !<br/>Évite les 💀 et les 🦑</div>
@@ -727,12 +719,8 @@ button{cursor:pointer}
     <div class="game-score-display" id="maze-level-disp">Niveau 1</div>
     <canvas class="maze-container" id="maze-canvas" width="320" height="320" style="touch-action:none"></canvas>
     <div class="maze-controls">
-      <div></div>
-      <button class="maze-btn" onclick="moveMaze(0,-1)">↑</button>
-      <div></div>
-      <button class="maze-btn" onclick="moveMaze(-1,0)">←</button>
-      <button class="maze-btn" onclick="moveMaze(0,1)">↓</button>
-      <button class="maze-btn" onclick="moveMaze(1,0)">→</button>
+      <div></div><button class="maze-btn" onclick="moveMaze(0,-1)">↑</button><div></div>
+      <button class="maze-btn" onclick="moveMaze(-1,0)">←</button><button class="maze-btn" onclick="moveMaze(0,1)">↓</button><button class="maze-btn" onclick="moveMaze(1,0)">→</button>
     </div>
     <div class="game-instructions">Guide le pingouin 🐧 jusqu'à la sortie ⭐<br/>Swipe ou utilise les flèches.<br/>⚠️ Attention aux ours cachés ! 🐻</div>
     <button class="game-start-btn" id="maze-start-btn" onclick="startMaze()">▶ Commencer</button>
@@ -758,17 +746,15 @@ button{cursor:pointer}
     <div style="font-size:3rem">💀</div>
     <h3>Tu es sûr·e ?</h3>
     <p>Tous tes animaux vont disparaître.<br/>Le compte repart de zéro demain.</p>
-    <div class="mb">
-      <button class="mcn" onclick="closeKill()">Annuler</button>
-      <button class="mck" onclick="doKill()">Oui ☠️</button>
-    </div>
+    <div class="mb"><button class="mcn" onclick="closeKill()">Annuler</button><button class="mck" onclick="doKill()">Oui ☠️</button></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<input type="file" id="exp-photo-input" accept="image/*" style="display:none"/>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ════════════════════════════════════════════════
 //  CONFIG
@@ -776,9 +762,6 @@ button{cursor:pointer}
 const SUPABASE_URL  = 'https://cirdtmjrsgbqbstwrgzx.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcmR0bWpyc2dicWJzdHdyZ3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDMxMjMsImV4cCI6MjA4OTYxOTEyM30.g0wYu9rQ75KZStirsfFV9JV-1V2tmWGy9zftEOzbQIU';
 
-// ════════════════════════════════════════════════
-//  NIVEAUX
-// ════════════════════════════════════════════════
 const LVL = [
   {min:0,  max:29,  i:'🐣', n:'Poussin Polaire',       nx:30},
   {min:30, max:59,  i:'🐦', n:'Maître des Mouettes',   nx:60},
@@ -790,26 +773,28 @@ const LVL = [
 ];
 const AVS = ['🐧','🐦','🐋','🦈','🦭','🐟','❄️','🌊','🏔️','⭐','🔥','🎯'];
 
-// ════════════════════════════════════════════════
-//  STATE
-// ════════════════════════════════════════════════
-let P    = null;
-let SB   = null;
-let MODE = 'date';
-let SEL_AV = '🐧';
-let CONV_FID = null; 
-let CONV_FNM = null;
+let P = null, SB = null, MODE = 'date', SEL_AV = '🐧';
+let CONV_FID = null, CONV_FNM = null;
 let BEST_SCORES = {fishing:0, maze:0, memory:0};
-let selectedPhotoFile = null;
-let selectedPhotoB64 = null;
+let selectedPhotoFile = null, selectedPhotoB64 = null;
+
+// ════════════════════════════════════════════════
+//  NOTIFICATIONS PUSH (iOS PWA)
+// ════════════════════════════════════════════════
+async function askNotificationPermission() {
+  if (!('Notification' in window)) return;
+  if (Notification.permission === 'default') {
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') toast('🔔 Notifications autorisées !');
+  }
+}
 
 // ════════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════════
 function initSB() {
   if (SB) return;
-  try { SB = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON); }
-  catch(e) { console.error('SB init:', e); }
+  try { SB = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON); } catch(e) {}
 }
 function genUUID() { return 'mlp_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
 function myId()    { return P?.id || localStorage.getItem('mlp_id'); }
@@ -828,8 +813,7 @@ window.addEventListener('DOMContentLoaded', () => {
 async function boot() {
   const saved = localStorage.getItem('mlp_v2');
   if (saved) {
-    try { P = JSON.parse(saved); await syncProfile(); enterApp(); return; }
-    catch(e) {}
+    try { P = JSON.parse(saved); await syncProfile(); enterApp(); return; } catch(e) {}
   }
   showOB();
 }
@@ -838,51 +822,33 @@ async function syncProfile() {
   if (!SB || !P) return;
   try {
     await SB.from('profiles').upsert({
-      id: P.id, pseudo: P.pseudo, start_date: P.start_date,
-      last_kill_date: P.last_kill_date||null, kills: P.kills||0,
-      avatar: P.avatar||'🐧', notif_enabled: P.notif_enabled!==false,
-      banquise_public: P.banquise_public!==false, alert_friends: P.alert_friends!==false,
+      id: P.id, pseudo: P.pseudo, start_date: P.start_date, last_kill_date: P.last_kill_date||null, kills: P.kills||0,
+      avatar: P.avatar||'🐧', notif_enabled: P.notif_enabled!==false, banquise_public: P.banquise_public!==false, alert_friends: P.alert_friends!==false,
     }, {onConflict:'id'});
-  } catch(e) { console.warn('syncProfile:', e.message); }
+  } catch(e) {}
 }
 
-function showOB() {
-  document.getElementById('splash').classList.remove('active');
-  document.getElementById('onboarding').classList.add('active');
-}
+function showOB() { document.getElementById('splash').classList.remove('active'); document.getElementById('onboarding').classList.add('active'); }
 function enterApp() {
-  document.getElementById('splash').classList.remove('active');
-  document.getElementById('onboarding').classList.remove('active');
+  document.getElementById('splash').classList.remove('active'); document.getElementById('onboarding').classList.remove('active');
   document.getElementById('app').classList.add('active');
-  updateScoreDisplay();
-  updateB(); updateP(); checkBadges();
+  updateScoreDisplay(); updateB(); updateP(); checkBadges();
 }
 
-// ════════════════════════════════════════════════
-//  NAVIGATION
-// ════════════════════════════════════════════════
 function goPage(name) {
   document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nb').forEach(b => b.classList.toggle('on', b.dataset.page===name));
-  if (name==='profil')     updateP();
-  if (name==='amis')       loadF();
-  if (name==='exploration') loadExploration();
+  if (name==='profil') updateP(); if (name==='amis') loadF(); if (name==='exploration') loadExploration();
 }
 window.goPage = goPage;
 
-function openPanel(id) {
-  document.getElementById(id).classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closePanel(id) {
-  document.getElementById(id).classList.remove('open');
-  document.body.style.overflow = '';
-}
+function openPanel(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+function closePanel(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
 window.closePanel = closePanel;
 
 // ════════════════════════════════════════════════
-//  ONBOARDING
+//  ONBOARDING & BINDINGS
 // ════════════════════════════════════════════════
 function bindAll() {
   document.getElementById('pseudo-next').onclick = onPN;
@@ -897,13 +863,9 @@ function bindAll() {
   document.getElementById('cancel-add').onclick  = () => document.getElementById('add-pnl').classList.add('hidden');
   document.getElementById('search-btn').onclick  = doSearch;
   document.getElementById('conv-send-btn') && (document.getElementById('conv-send-btn').onclick = sendConvMsg);
-  document.getElementById('toggle-add-exp').onclick = () => {
-    document.getElementById('add-exp-form').classList.toggle('hidden');
-  };
+  document.getElementById('toggle-add-exp').onclick = () => document.getElementById('add-exp-form').classList.toggle('hidden');
   document.getElementById('save-exp-btn').onclick  = saveExpedition;
-  document.getElementById('cancel-exp-btn').onclick = () => {
-    document.getElementById('add-exp-form').classList.add('hidden');
-  };
+  document.getElementById('cancel-exp-btn').onclick = () => document.getElementById('add-exp-form').classList.add('hidden');
   document.getElementById('exp-photo-input').addEventListener('change', handlePhotoSelect);
   setupMazeSwipe();
 }
@@ -919,45 +881,36 @@ function setMode(m) {
 window.setMode = setMode;
 
 function upPrev() {
-  const el = document.getElementById('ob-prev');
-  let d = 0;
+  const el = document.getElementById('ob-prev'); let d = 0;
   if (MODE==='date') {
-    const v = document.getElementById('date-in').value;
-    if (!v) { el.textContent=''; return; }
+    const v = document.getElementById('date-in').value; if (!v) { el.textContent=''; return; }
     const dt=new Date(v),now=new Date(); now.setHours(0,0,0,0); dt.setHours(0,0,0,0);
     d = Math.max(0,Math.floor((now-dt)/86400000));
   } else { d = parseInt(document.getElementById('days-in').value)||0; }
-  const {r,o,p,m} = bd(d);
-  const pts=[];
+  const {r,o,p,m} = bd(d); const pts=[];
   if(r)pts.push(r+' 🦈'); if(o)pts.push(o+' 🐋'); if(p)pts.push(p+' 🐧'); if(m)pts.push(m+' 🐦');
   el.textContent = d===0 ? 'Ça commence aujourd\'hui ! 🎉' : d+' jours → '+(pts.join(' + ')||'🐣');
 }
 
 function onPN() {
-  const v=document.getElementById('pseudo-in').value.trim();
-  const e=document.getElementById('pseudo-err');
+  const v=document.getElementById('pseudo-in').value.trim(); const e=document.getElementById('pseudo-err');
   if(v.length<2){e.textContent='Au moins 2 caractères !';return;}
   if(v.length>20){e.textContent='Max 20 caractères.';return;}
-  e.textContent='';
-  window._pseudo=v;
+  e.textContent=''; window._pseudo=v;
   document.getElementById('ob-speech').innerHTML=`Top, ${v} ! 🎉<br/>Depuis quand tiens-tu bon ?`;
-  document.getElementById('ob-s1').classList.add('hidden');
-  document.getElementById('ob-s2').classList.remove('hidden');
+  document.getElementById('ob-s1').classList.add('hidden'); document.getElementById('ob-s2').classList.remove('hidden');
   upPrev();
 }
 
 async function onDN() {
-  const e=document.getElementById('date-err');
-  let sd;
+  const e=document.getElementById('date-err'); let sd;
   if(MODE==='date'){
-    const v=document.getElementById('date-in').value;
-    if(!v){e.textContent='Choisis une date !';return;}
+    const v=document.getElementById('date-in').value; if(!v){e.textContent='Choisis une date !';return;}
     const dt=new Date(v),now=new Date(); now.setHours(0,0,0,0); dt.setHours(0,0,0,0);
     if(dt>now){e.textContent='Pas dans le futur !';return;}
     sd=v;
   } else {
-    const d=parseInt(document.getElementById('days-in').value);
-    if(isNaN(d)||d<0){e.textContent='Nombre invalide !';return;}
+    const d=parseInt(document.getElementById('days-in').value); if(isNaN(d)||d<0){e.textContent='Nombre invalide !';return;}
     const dt=new Date(); dt.setDate(dt.getDate()-d); sd=dt.toISOString().slice(0,10);
   }
   e.textContent='';
@@ -967,20 +920,17 @@ async function onDN() {
     if(data&&data.length>0){e.textContent='Ce pseudo est déjà pris 😬';return;}
     e.textContent='';
   }
-  const uid=genUUID();
-  localStorage.setItem('mlp_id',uid);
+  const uid=genUUID(); localStorage.setItem('mlp_id',uid);
   P={id:uid,pseudo:window._pseudo,start_date:sd,avatar:'🐧',notif_enabled:true,notif_friends:true,notif_messages:true,notif_kill:true,banquise_public:true,alert_friends:true,last_kill_date:null,kills:0};
   localStorage.setItem('mlp_v2',JSON.stringify(P));
   await syncProfile();
+  
+  if(P.notif_enabled) askNotificationPermission();
   enterApp();
 }
 
-// ════════════════════════════════════════════════
-//  CALCULS
-// ════════════════════════════════════════════════
 function calcD(){
-  if(!P)return 0;
-  const ref=P.last_kill_date||P.start_date;
+  if(!P)return 0; const ref=P.last_kill_date||P.start_date;
   const d=new Date(ref),now=new Date(); now.setHours(0,0,0,0); d.setHours(0,0,0,0);
   return Math.max(0,Math.floor((now-d)/86400000));
 }
@@ -988,41 +938,30 @@ function calcDF(sd,kd){
   const ref=kd||sd; const d=new Date(ref),now=new Date(); now.setHours(0,0,0,0); d.setHours(0,0,0,0);
   return Math.max(0,Math.floor((now-d)/86400000));
 }
-function bd(days){
-  let r=days; const rq=Math.floor(r/360);r%=360; const oq=Math.floor(r/180);r%=180; const pq=Math.floor(r/30);r%=30;
-  return{r:rq,o:oq,p:pq,m:r};
-}
+function bd(days){ let r=days; const rq=Math.floor(r/360);r%=360; const oq=Math.floor(r/180);r%=180; const pq=Math.floor(r/30);r%=30; return{r:rq,o:oq,p:pq,m:r}; }
 function lvl(d){return LVL.find(l=>d>=l.min&&d<=l.max)||LVL[0];}
 
 // ════════════════════════════════════════════════
 //  BANQUISE
 // ════════════════════════════════════════════════
 function updateB(){
-  const d=calcD();
-  renderAL(d); renderACD(d);
-  document.getElementById('days-num').textContent=d;
-  document.getElementById('streak-num').textContent=d;
+  const d=calcD(); renderAL(d); renderACD(d);
+  document.getElementById('days-num').textContent=d; document.getElementById('streak-num').textContent=d;
 }
-
 function renderAL(days){
   const layer=document.getElementById('al'); layer.innerHTML='';
-  const{r,o,p,m}=bd(days);
-  const air=[]; const sea=[];
-  for(let i=0;i<Math.min(p,10);i++) air.push('pg');
-  for(let i=0;i<Math.min(m,20);i++) air.push('mt');
-  for(let i=0;i<Math.min(r,3);i++)  sea.push('rq');
-  for(let i=0;i<Math.min(o,6);i++)  sea.push('oq');
+  const{r,o,p,m}=bd(days); const air=[]; const sea=[];
+  for(let i=0;i<Math.min(p,10);i++) air.push('pg'); for(let i=0;i<Math.min(m,20);i++) air.push('mt');
+  for(let i=0;i<Math.min(r,3);i++)  sea.push('rq'); for(let i=0;i<Math.min(o,6);i++)  sea.push('oq');
   air.forEach((t,idx)=>{
     const w=document.createElement('div'); w.className='atk';
-    const x=idx%2===0?rnd(2,28):rnd(68,94); const y=rnd(5,50);
-    const dur=(3+Math.random()*3).toFixed(1);
+    const x=idx%2===0?rnd(2,28):rnd(68,94); const y=rnd(5,50); const dur=(3+Math.random()*3).toFixed(1);
     w.style.cssText=`left:${x}%;top:${y}%;--fd:${dur}s;--fdl:${(Math.random()*3).toFixed(1)}s;--r0:${rv(-4,4)}deg;--r1:${rv(-4,4)}deg;--r2:${rv(-4,4)}deg;--x1:${rv(-5,5)}px;--y1:${rv(-7,2)}px;--x2:${rv(-5,5)}px;--y2:${rv(-4,3)}px`;
     w.innerHTML=aHTML(t); layer.appendChild(w);
   });
   sea.forEach((t,idx)=>{
     const w=document.createElement('div'); w.className='atk';
-    const x=idx%2===0?rnd(2,32):rnd(60,92); const y=rnd(60,80);
-    const dur=(5+Math.random()*4).toFixed(1);
+    const x=idx%2===0?rnd(2,32):rnd(60,92); const y=rnd(60,80); const dur=(5+Math.random()*4).toFixed(1);
     w.style.cssText=`left:${x}%;top:${y}%;--fd:${dur}s;--fdl:${(Math.random()*3).toFixed(1)}s;--r0:${rv(-3,3)}deg;--r1:${rv(-3,3)}deg;--r2:${rv(-3,3)}deg;--x1:${rv(-8,8)}px;--y1:${rv(-3,3)}px;--x2:${rv(-6,6)}px;--y2:${rv(-3,3)}px`;
     w.innerHTML=aHTML(t); layer.appendChild(w);
   });
@@ -1049,55 +988,42 @@ function renderACD(days){
 function closeKill(){document.getElementById('kill-modal').classList.add('hidden');}
 window.closeKill=closeKill;
 async function doKill(){
-  closeKill();
-  const today=new Date().toISOString().slice(0,10);
-  P.last_kill_date=today; P.kills=(P.kills||0)+1;
-  localStorage.setItem('mlp_v2',JSON.stringify(P));
+  closeKill(); const today=new Date().toISOString().slice(0,10);
+  P.last_kill_date=today; P.kills=(P.kills||0)+1; localStorage.setItem('mlp_v2',JSON.stringify(P));
   if(SB&&P.alert_friends){
     try{
       const{data:fs}=await SB.from('friendships').select('user_a,user_b').or(`user_a.eq.${myId()},user_b.eq.${myId()}`).eq('status','accepted');
       if(fs){
         const friendIds=fs.map(f=>f.user_a===myId()?f.user_b:f.user_a);
-        for(const fid of friendIds){
-          await SB.from('messages').insert({from_id:myId(),to_id:fid,text:`☠️ ${P.pseudo} vient de tuer sa banquise ! Courage à demain…`,animal:null});
-        }
+        for(const fid of friendIds){ await SB.from('messages').insert({from_id:myId(),to_id:fid,text:`☠️ ${P.pseudo} vient de tuer sa banquise ! Courage à demain…`,animal:null}); }
       }
     }catch(e){}
   }
   await syncProfile();
-  const l=document.getElementById('al');
-  l.style.transition='opacity .6s'; l.style.opacity='0';
+  const l=document.getElementById('al'); l.style.transition='opacity .6s'; l.style.opacity='0';
   setTimeout(()=>{updateB();l.style.opacity='1';},660);
   toast('☠️ Pingouin tué ! Demain on recommence…');
 }
 window.doKill=doKill;
 
 // ════════════════════════════════════════════════
-//  PROFIL
+//  PROFIL & REGLAGES
 // ════════════════════════════════════════════════
 function updateP(){
   if(!P)return;
-  const d=calcD(); const lv=lvl(d); const{r,o,p,m}=bd(d);
-  const nl=LVL.find(l=>l.min===lv.nx);
-  const pct=lv.nx?Math.min(100,Math.round(((d-lv.min)/(lv.nx-lv.min))*100)):100;
-  const rem=lv.nx?lv.nx-d:0;
-  document.getElementById('p-un').textContent=P.pseudo||'—';
-  document.getElementById('av-d').textContent=P.avatar||'🐧';
-  document.getElementById('p-lvl-i').textContent=lv.i;
-  document.getElementById('p-lvl-n').textContent=lv.n;
-  document.getElementById('lp-i').textContent=lv.i;
-  document.getElementById('lp-cn').textContent=lv.n;
+  const d=calcD(); const lv=lvl(d); const{r,o,p,m}=bd(d); const nl=LVL.find(l=>l.min===lv.nx);
+  const pct=lv.nx?Math.min(100,Math.round(((d-lv.min)/(lv.nx-lv.min))*100)):100; const rem=lv.nx?lv.nx-d:0;
+  document.getElementById('p-un').textContent=P.pseudo||'—'; document.getElementById('av-d').textContent=P.avatar||'🐧';
+  document.getElementById('p-lvl-i').textContent=lv.i; document.getElementById('p-lvl-n').textContent=lv.n;
+  document.getElementById('lp-i').textContent=lv.i; document.getElementById('lp-cn').textContent=lv.n;
   document.getElementById('lp-fill').style.width=pct+'%';
   document.getElementById('lp-info').textContent=rem>0?rem+' jours avant le prochain niveau':'Niveau max ! 🏆';
   document.getElementById('lp-nn').textContent=nl?nl.n:'—';
-  document.getElementById('st-d').textContent=d;
-  document.getElementById('st-m').textContent=m;
-  document.getElementById('st-p').textContent=p;
-  document.getElementById('st-o').textContent=o;
-  document.getElementById('st-r').textContent=r;
+  document.getElementById('st-d').textContent=d; document.getElementById('st-m').textContent=m;
+  document.getElementById('st-p').textContent=p; document.getElementById('st-o').textContent=o; document.getElementById('st-r').textContent=r;
+  
   document.getElementById('notif-tog').classList.toggle('on',!!P.notif_enabled);
   document.getElementById('notif-sub').style.display=P.notif_enabled!==false?'flex':'none';
-  document.getElementById('notif-sub').style.flexDirection='column';
   document.getElementById('notif-friends-tog').classList.toggle('on',P.notif_friends!==false);
   document.getElementById('notif-messages-tog').classList.toggle('on',P.notif_messages!==false);
   document.getElementById('notif-kill-tog').classList.toggle('on',P.notif_kill!==false);
@@ -1107,9 +1033,7 @@ function updateP(){
 
 function toggleAP(){
   const pk=document.getElementById('av-picker'); pk.classList.toggle('hidden');
-  if(!pk.classList.contains('hidden')){
-    document.getElementById('av-gr').innerHTML=AVS.map(a=>`<div class="av-op${a===(P?.avatar||'🐧')?' sel':''}" onclick="pickAv('${a}')">${a}</div>`).join('');
-  }
+  if(!pk.classList.contains('hidden')) document.getElementById('av-gr').innerHTML=AVS.map(a=>`<div class="av-op${a===(P?.avatar||'🐧')?' sel':''}" onclick="pickAv('${a}')">${a}</div>`).join('');
 }
 function pickAv(a){SEL_AV=a;document.querySelectorAll('.av-op').forEach(el=>el.classList.toggle('sel',el.textContent===a));}
 window.pickAv=pickAv;
@@ -1119,6 +1043,7 @@ async function toggleNotif(){
   P.notif_enabled=!P.notif_enabled; localStorage.setItem('mlp_v2',JSON.stringify(P));
   document.getElementById('notif-tog').classList.toggle('on',P.notif_enabled);
   document.getElementById('notif-sub').style.display=P.notif_enabled?'flex':'none';
+  if(P.notif_enabled) askNotificationPermission();
   await syncProfile(); toast(P.notif_enabled?'🔔 Notifications activées':'🔕 Désactivées');
 }
 window.toggleNotif=toggleNotif;
@@ -1149,11 +1074,10 @@ window.toggleAlert=toggleAlert;
 function doLogout(){if(!confirm('Quitter la banquise ?'))return;localStorage.clear();location.reload();}
 
 // ════════════════════════════════════════════════
-//  AMIS
+//  AMIS & RECHERCHE
 // ════════════════════════════════════════════════
 async function doSearch(){
-  const ps=document.getElementById('search-in').value.trim();
-  const re=document.getElementById('search-res');
+  const ps=document.getElementById('search-in').value.trim(); const re=document.getElementById('search-res');
   if(!ps){re.textContent='Écris un pseudo !';return;}
   if(!SB){re.innerHTML='<span style="color:#fbbf24">⚠️ Supabase non connecté</span>';return;}
   if(ps===P?.pseudo){re.innerHTML='<span style="color:#fbbf24">C\'est toi ! 😄</span>';return;}
@@ -1175,23 +1099,19 @@ async function addFriend(toId,toPseudo){
     const{error}=await SB.from('friendships').insert({user_a:myId(),user_b:toId,status:'pending'});
     if(error)throw error;
     toast('Demande envoyée à '+toPseudo+' ! 🐧✉️');
-    document.getElementById('add-pnl').classList.add('hidden');
-    document.getElementById('search-in').value='';
-    document.getElementById('search-res').innerHTML='';
+    document.getElementById('add-pnl').classList.add('hidden'); document.getElementById('search-in').value=''; document.getElementById('search-res').innerHTML='';
   }catch(e){toast('Erreur : '+e.message);}
 }
 window.addFriend=addFriend;
 
 async function loadF(){
   if(!SB||!myId())return;
-  const listEl=document.getElementById('fl');
-  listEl.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:20px;font-size:.85rem">Chargement…</div>';
+  const listEl=document.getElementById('fl'); listEl.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:20px;font-size:.85rem">Chargement…</div>';
   try{
     const{data:fs,error}=await SB.from('friendships').select('id,status,user_a,user_b').or(`user_a.eq.${myId()},user_b.eq.${myId()}`);
     if(error)throw error;
     if(!fs||!fs.length){
-      listEl.innerHTML='<div class="ef"><div style="font-size:3rem">🐧</div><p>Ton expédition est encore solitaire…<br/>Ajoute des amis pour partager l\'aventure !</p></div>';
-      return;
+      listEl.innerHTML='<div class="ef"><div style="font-size:3rem">🐧</div><p>Ton expédition est encore solitaire…<br/>Ajoute des amis pour partager l\'aventure !</p></div>'; return;
     }
     const otherIds=fs.map(f=>f.user_a===myId()?f.user_b:f.user_a);
     const{data:profiles}=await SB.from('profiles').select('id,pseudo,avatar,start_date,last_kill_date').in('id',otherIds);
@@ -1201,8 +1121,7 @@ async function loadF(){
 
     listEl.innerHTML=fs.map(f=>{
       const oid=f.user_a===myId()?f.user_b:f.user_a; const ot=pm[oid]; if(!ot)return'';
-      const d=calcDF(ot.start_date,ot.last_kill_date);
-      const isPending=f.status==='pending'; const iReceived=isPending&&f.user_b===myId();
+      const d=calcDF(ot.start_date,ot.last_kill_date); const isPending=f.status==='pending'; const iReceived=isPending&&f.user_b===myId();
       const hasUnread=unreadSet.has(oid);
       return`<div class="fc" onclick="${!isPending?`openConv('${ot.id}','${ot.pseudo}','${ot.avatar||'🐧'}')`:''}" style="${isPending?'cursor:default':''}">
         <div class="fc-av">${ot.avatar||'🐧'}</div>
@@ -1219,19 +1138,9 @@ async function loadF(){
   }catch(e){listEl.innerHTML=`<div class="ef"><p style="color:#f87171">Erreur : ${e.message}</p></div>`;}
 }
 
-async function acceptF(id){
-  if(!SB)return;
-  await SB.from('friendships').update({status:'accepted'}).eq('id',id);
-  toast('Ami accepté ! 🎉'); loadF();
-}
+async function acceptF(id){ if(!SB)return; await SB.from('friendships').update({status:'accepted'}).eq('id',id); toast('Ami accepté ! 🎉'); loadF(); }
 window.acceptF=acceptF;
-
-async function removeF(id){
-  if(!confirm('Retirer cet ami ?'))return;
-  if(!SB)return;
-  await SB.from('friendships').delete().eq('id',id);
-  toast('Ami retiré'); loadF();
-}
+async function removeF(id){ if(!confirm('Retirer cet ami ?'))return; if(!SB)return; await SB.from('friendships').delete().eq('id',id); toast('Ami retiré'); loadF(); }
 window.removeF=removeF;
 
 // ════════════════════════════════════════════════
@@ -1239,31 +1148,23 @@ window.removeF=removeF;
 // ════════════════════════════════════════════════
 async function openConv(fid,fnm,fav){
   CONV_FID=fid; CONV_FNM=fnm;
-  document.getElementById('conv-title').textContent=fnm;
-  document.getElementById('conv-subtitle').textContent=fav+' En ligne';
-  openPanel('conv-panel');
-  await loadConvMessages(fid);
+  document.getElementById('conv-title').textContent=fnm; document.getElementById('conv-subtitle').textContent=fav+' En ligne';
+  openPanel('conv-panel'); await loadConvMessages(fid);
   if(SB) SB.from('messages').update({read:true}).eq('to_id',myId()).eq('from_id',fid).then(()=>checkBadges());
 }
 window.openConv=openConv;
 
 async function loadConvMessages(fid){
-  const body=document.getElementById('conv-body');
-  body.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.3);padding:20px;font-size:.85rem">Chargement…</div>';
+  const body=document.getElementById('conv-body'); body.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.3);padding:20px;font-size:.85rem">Chargement…</div>';
   if(!SB||!myId()){body.innerHTML='';return;}
   try{
-    const{data:msgs}=await SB.from('messages').select('*')
-      .or(`and(from_id.eq.${myId()},to_id.eq.${fid}),and(from_id.eq.${fid},to_id.eq.${myId()})`)
-      .order('created_at',{ascending:true}).limit(50);
+    const{data:msgs}=await SB.from('messages').select('*').or(`and(from_id.eq.${myId()},to_id.eq.${fid}),and(from_id.eq.${fid},to_id.eq.${myId()})`).order('created_at',{ascending:true}).limit(50);
     if(!msgs||!msgs.length){body.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.25);padding:40px 20px;font-size:.85rem;font-weight:600">Aucun message encore 🐧<br/>Dis bonjour !</div>';return;}
     const animalEmoji={mouette:'🐦',pingouin:'🐧',orque:'🐋',requin:'🦈',iceberg:'🧊'};
     body.innerHTML=msgs.map(m=>{
-      const isMine=m.from_id===myId();
-      const cls=isMine?'sent':'recv';
-      const time=tAgo(new Date(m.created_at));
+      const isMine=m.from_id===myId(); const cls=isMine?'sent':'recv'; const time=tAgo(new Date(m.created_at));
       if(m.animal){
-        const emoji=animalEmoji[m.animal]||'🎁';
-        const label=m.animal.charAt(0).toUpperCase()+m.animal.slice(1);
+        const emoji=animalEmoji[m.animal]||'🎁'; const label=m.animal.charAt(0).toUpperCase()+m.animal.slice(1);
         return`<div class="msg-bubble-wrap ${cls}"><div class="msg-bubble animal">${emoji} ${label} offert${isMine?' !':' par '+CONV_FNM+' !'}</div><div class="msg-time">${time}</div></div>`;
       }
       return`<div class="msg-bubble-wrap ${cls}"><div class="msg-bubble ${cls}">${escHTML(m.text||'')}</div><div class="msg-time">${time}</div></div>`;
@@ -1273,13 +1174,11 @@ async function loadConvMessages(fid){
 }
 
 async function sendConvMsg(){
-  const inp=document.getElementById('conv-msg-input');
-  const t=inp.value.trim(); if(!t)return;
+  const inp=document.getElementById('conv-msg-input'); const t=inp.value.trim(); if(!t)return;
   if(!SB||!CONV_FID){toast('Non connecté');return;}
   const{error}=await SB.from('messages').insert({from_id:myId(),to_id:CONV_FID,text:t});
   if(error){toast('Erreur envoi');return;}
-  inp.value=''; inp.style.height='auto';
-  await loadConvMessages(CONV_FID);
+  inp.value=''; inp.style.height='auto'; await loadConvMessages(CONV_FID);
 }
 window.sendConvMsg=sendConvMsg;
 
@@ -1288,8 +1187,7 @@ async function sendGift(animal){
   const{error}=await SB.from('messages').insert({from_id:myId(),to_id:CONV_FID,animal});
   if(error){toast('Erreur');return;}
   const labels={mouette:'🐦 Mouette',pingouin:'🐧 Pingouin',orque:'🐋 Orque',requin:'🦈 Requin',iceberg:'🧊 Iceberg'};
-  toast(labels[animal]+' envoyé·e !');
-  await loadConvMessages(CONV_FID);
+  toast(labels[animal]+' envoyé·e !'); await loadConvMessages(CONV_FID);
 }
 window.sendGift=sendGift;
 
@@ -1301,16 +1199,14 @@ async function checkBadges(){
 }
 
 // ════════════════════════════════════════════════
-//  EXPLORATION (Look Givré + Pas de pingouin 🐾)
+//  EXPLORATION
 // ════════════════════════════════════════════════
 function handlePhotoSelect(e){
   const file=e.target.files[0]; if(!file)return;
-  selectedPhotoFile=file;
-  const reader=new FileReader();
+  selectedPhotoFile=file; const reader=new FileReader();
   reader.onload=(ev)=>{
     selectedPhotoB64=ev.target.result;
-    const prev=document.getElementById('photo-preview');
-    prev.src=ev.target.result; prev.style.display='block';
+    const prev=document.getElementById('photo-preview'); prev.src=ev.target.result; prev.style.display='block';
   };
   reader.readAsDataURL(file);
 }
@@ -1351,8 +1247,7 @@ async function saveExpedition(){
     local.unshift({id:Date.now().toString(),...exp,created_at:new Date().toISOString()});
     localStorage.setItem('mlp_exps',JSON.stringify(local));
   }
-  document.getElementById('exp-title-in').value='';
-  document.getElementById('exp-note-in').value='';
+  document.getElementById('exp-title-in').value=''; document.getElementById('exp-note-in').value='';
   document.getElementById('exp-date-in').value=new Date().toISOString().slice(0,10);
   document.getElementById('photo-preview').style.display='none';
   selectedPhotoFile=null; selectedPhotoB64=null;
@@ -1362,35 +1257,20 @@ async function saveExpedition(){
 }
 
 async function loadExploration(){
-  const nodesEl=document.getElementById('expl-nodes');
-  let exps=[];
-  if(SB){
-    try{
-      const{data}=await SB.from('expeditions').select('*').eq('user_id',myId()).order('exp_date',{ascending:true});
-      exps=data||[];
-    }catch(e){}
-  }
-  if(!exps.length){
-    exps=JSON.parse(localStorage.getItem('mlp_exps')||'[]').reverse();
-  }
+  const nodesEl=document.getElementById('expl-nodes'); let exps=[];
+  if(SB){ try{ const{data}=await SB.from('expeditions').select('*').eq('user_id',myId()).order('exp_date',{ascending:true}); exps=data||[]; }catch(e){} }
+  if(!exps.length) exps=JSON.parse(localStorage.getItem('mlp_exps')||'[]').reverse();
+  
   if(!exps.length){
     nodesEl.innerHTML=`<div style="text-align:center;color:#1a4a8a;padding:30px 20px;font-size:.88rem;font-weight:600">Aucune expédition pour l'instant.<br/>Ajoute ta première aventure ! 🗺️</div>`;
-    document.getElementById('expl-wait-label').textContent='En attente de la première aventure… ✨';
-    return;
+    document.getElementById('expl-wait-label').textContent='En attente de la première aventure… ✨'; return;
   }
-  const lastExp=exps[exps.length-1];
-  const daysWaiting=calcDF(lastExp.exp_date,null);
-  document.getElementById('expl-wait-label').textContent=
-    daysWaiting===0?'Expédition du jour ! 🎉':
-    daysWaiting===1?'Hier… les empreintes sont encore fraîches 🐾':
-    `Depuis ${daysWaiting} jours… le pingouin attend patiemment 🎒`;
+  const lastExp=exps[exps.length-1]; const daysWaiting=calcDF(lastExp.exp_date,null);
+  document.getElementById('expl-wait-label').textContent=daysWaiting===0?'Expédition du jour ! 🎉':daysWaiting===1?'Hier… les empreintes sont encore fraîches 🐾':`Depuis ${daysWaiting} jours… le pingouin attend patiemment 🎒`;
 
   nodesEl.innerHTML=exps.map((exp,i)=>{
-    const side=i%2===0?'left':'right';
-    const isFirst=i===0;
-    const photoHtml=exp.photo_url
-      ?`<img class="exp-photo" src="${exp.photo_url}" alt="" loading="lazy"/>`
-      :`<div class="exp-photo-placeholder">🏔️</div>`;
+    const side=i%2===0?'left':'right'; const isFirst=i===0;
+    const photoHtml=exp.photo_url?`<img class="exp-photo" src="${exp.photo_url}" alt="" loading="lazy"/>`:`<div class="exp-photo-placeholder">🏔️</div>`;
     const dateStr=new Date(exp.exp_date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
     return`
       <div class="exp-node ${side}" style="animation:slideIn .4s ease ${i*0.1}s both">
@@ -1406,7 +1286,7 @@ async function loadExploration(){
 }
 
 // ════════════════════════════════════════════════
-//  JEUX UTILS
+//  MINI-JEUX COMMUNS
 // ════════════════════════════════════════════════
 function openGame(name){
   openPanel('game-'+name);
@@ -1426,7 +1306,7 @@ function saveScores(){
   if(SB&&myId()){
     Object.entries(BEST_SCORES).forEach(async ([game,score])=>{
       const { error } = await SB.from('scores').upsert({user_id:myId(),game,score},{onConflict:'user_id,game'});
-      if (error) console.error("Erreur sauvegarde jeu :", error);
+      if(error) console.error(error);
     });
   }
   updateScoreDisplay();
@@ -1436,70 +1316,53 @@ function saveScores(){
 //  MINI-JEU : PÊCHE
 // ════════════════════════════════════════════════
 let fishingActive=false; let fishScore=0; let fishLives=3; let fishTimer=null; let fishInterval=null;
-const FISH_ITEMS=['🐟','🐠','🐡','🦐','🦞','🐙'];
-const BAD_ITEMS=['💀','🦑','🪨'];
+const FISH_ITEMS=['🐟','🐠','🐡','🦐','🦞','🐙']; const BAD_ITEMS=['💀','🦑','🪨'];
 
 function startFishing(){
   fishScore=0; fishLives=3; fishingActive=true;
   document.getElementById('fishing-start-btn').style.display='none';
   document.getElementById('fishing-score-disp').textContent='0';
   document.getElementById('fishing-lives').textContent='❤️❤️❤️';
-  const scene=document.getElementById('fishing-scene');
-  scene.querySelectorAll('.fish-item').forEach(f=>f.remove());
+  const scene=document.getElementById('fishing-scene'); scene.querySelectorAll('.fish-item').forEach(f=>f.remove());
   fishInterval=setInterval(()=>{
     if(!fishingActive)return;
-    const isBad=Math.random()<0.2;
-    const items=isBad?BAD_ITEMS:FISH_ITEMS;
+    const isBad=Math.random()<0.2; const items=isBad?BAD_ITEMS:FISH_ITEMS;
     const emoji=items[Math.floor(Math.random()*items.length)];
-    const fish=document.createElement('div');
-    fish.className='fish-item';
-    fish.textContent=emoji;
-    const x=rnd(5,80); const y=rnd(45,88);
-    fish.style.cssText=`left:${x}%;top:${y}%;`;
+    const fish=document.createElement('div'); fish.className='fish-item'; fish.textContent=emoji;
+    const x=rnd(5,80); const y=rnd(45,88); fish.style.cssText=`left:${x}%;top:${y}%;`;
     fish.addEventListener('click',()=>{
       if(!fishingActive)return;
       if(isBad){
-        fishLives--;
-        const hearts='❤️'.repeat(Math.max(0,fishLives));
-        document.getElementById('fishing-lives').textContent=hearts||'💔';
+        fishLives--; document.getElementById('fishing-lives').textContent='❤️'.repeat(Math.max(0,fishLives))||'💔';
         fish.style.animation='none'; fish.style.transform='scale(1.5)';
         setTimeout(()=>fish.remove(),300);
         if(fishLives<=0) endFishing(true);
       } else {
-        fishScore+=10;
-        document.getElementById('fishing-score-disp').textContent=fishScore;
+        fishScore+=10; document.getElementById('fishing-score-disp').textContent=fishScore;
         const splash=document.getElementById('fishing-splash');
-        splash.style.left=x+'%'; splash.style.top=(y-5)+'%';
-        splash.style.opacity='1'; setTimeout(()=>splash.style.opacity='0',400);
+        splash.style.left=x+'%'; splash.style.top=(y-5)+'%'; splash.style.opacity='1'; setTimeout(()=>splash.style.opacity='0',400);
         fish.remove();
       }
     });
-    scene.appendChild(fish);
-    setTimeout(()=>{ if(fish.parentNode) fish.remove(); },2500);
+    scene.appendChild(fish); setTimeout(()=>{ if(fish.parentNode) fish.remove(); },2500);
   },800);
   fishTimer=setTimeout(()=>endFishing(false),30000);
 }
 
 function endFishing(gameOver){
-  fishingActive=false;
-  clearInterval(fishInterval); clearTimeout(fishTimer);
-  document.getElementById('fishing-start-btn').style.display='block';
-  document.getElementById('fishing-start-btn').textContent='▶ Rejouer';
+  fishingActive=false; clearInterval(fishInterval); clearTimeout(fishTimer);
+  document.getElementById('fishing-start-btn').style.display='block'; document.getElementById('fishing-start-btn').textContent='▶ Rejouer';
   if(gameOver) document.getElementById('fishing-lives').textContent='💔 Game Over';
-  if(fishScore>BEST_SCORES.fishing){
-    BEST_SCORES.fishing=fishScore; saveScores();
-    toast('🏆 Nouveau record pêche : '+fishScore+' pts !');
-  } else { toast('Score : '+fishScore+' pts 🎣'); }
+  if(fishScore>BEST_SCORES.fishing){ BEST_SCORES.fishing=fishScore; saveScores(); toast('🏆 Nouveau record pêche : '+fishScore+' pts !'); } else { toast('Score : '+fishScore+' pts 🎣'); }
   document.getElementById('fishing-scene').querySelectorAll('.fish-item').forEach(f=>f.remove());
 }
 function stopFishing(){ if(fishingActive) endFishing(false); }
 
 // ════════════════════════════════════════════════
-//  MINI-JEU : LABYRINTHE 🐻 (ALGORITHME PARFAIT)
+//  MINI-JEU : LABYRINTHE 🐻 (ALGO DFS)
 // ════════════════════════════════════════════════
 let mazeGrid=[], mazeW=8, mazeH=8, mazePlayer={x:1,y:1}, mazeExit={x:7,y:7}, mazeLevel=1, mazeActive=false;
-let mazeBears=[]; 
-let mazeTouchStart=null;
+let mazeBears=[]; let mazeTouchStart=null;
 
 function initMazeBoard(){ drawMaze(); }
 
@@ -1507,64 +1370,44 @@ function startMaze(){
   mazeActive=true; mazeLevel=1;
   document.getElementById('maze-start-btn').style.display='none';
   document.getElementById('maze-level-disp').textContent='Niveau '+mazeLevel;
-  generateMaze();
-  mazePlayer = {x: 1, y: 1};
-  drawMaze();
+  generateMaze(); mazePlayer = {x: 1, y: 1}; drawMaze();
 }
 
 function generateMaze(){
-  // Taille impaire pour l'algorithme
-  mazeW = Math.min(15, 7 + (mazeLevel * 2));
-  mazeH = Math.min(15, 7 + (mazeLevel * 2));
+  mazeW = Math.min(15, 7 + (mazeLevel * 2)); mazeH = Math.min(15, 7 + (mazeLevel * 2));
   mazeExit = {x: mazeW - 2, y: mazeH - 2};
-
-  // 1. Remplir de murs
   mazeGrid = [];
-  for(let y=0; y<mazeH; y++){
-    mazeGrid[y] = [];
-    for(let x=0; x<mazeW; x++) mazeGrid[y][x] = 1;
-  }
+  for(let y=0; y<mazeH; y++){ mazeGrid[y] = []; for(let x=0; x<mazeW; x++) mazeGrid[y][x] = 1; }
 
-  // 2. Creuser avec un algorithme DFS pour garantir une issue
   function carve(x, y) {
     mazeGrid[y][x] = 0;
     const dirs = [[0, -2], [0, 2], [-2, 0], [2, 0]].sort(() => Math.random() - 0.5);
     for (let [dx, dy] of dirs) {
       const nx = x + dx, ny = y + dy;
       if (nx > 0 && nx < mazeW - 1 && ny > 0 && ny < mazeH - 1 && mazeGrid[ny][nx] === 1) {
-        mazeGrid[y + dy/2][x + dx/2] = 0; // Casser le mur
-        carve(nx, ny);
+        mazeGrid[y + dy/2][x + dx/2] = 0; carve(nx, ny);
       }
     }
   }
+  carve(1, 1);
+  mazeGrid[mazeExit.y][mazeExit.x] = 0;
 
-  carve(1, 1); // Départ
-  mazeGrid[mazeExit.y][mazeExit.x] = 0; // Sécurité pour la sortie
-
-  // 3. Placer les ours
   mazeBears = [];
   if(mazeLevel > 1){
     const numBears = Math.floor(mazeLevel / 2);
     for(let i=0; i<numBears; i++){
       let bx, by, attempts=0;
-      do {
-        bx = rnd(1, mazeW - 2);
-        by = rnd(1, mazeH - 2);
-        attempts++;
-      } while(
-        attempts < 50 && (mazeGrid[by][bx] === 1 || (bx <= 3 && by <= 3) || (bx === mazeExit.x && by === mazeExit.y))
-      );
+      do { bx = rnd(1, mazeW - 2); by = rnd(1, mazeH - 2); attempts++; } 
+      while(attempts < 50 && (mazeGrid[by][bx] === 1 || (bx <= 3 && by <= 3) || (bx === mazeExit.x && by === mazeExit.y)));
       if(mazeGrid[by][bx] === 0) mazeBears.push({x: bx, y: by});
     }
   }
 }
 
 function drawMaze(){
-  const canvas=document.getElementById('maze-canvas');
-  const ctx=canvas.getContext('2d');
+  const canvas=document.getElementById('maze-canvas'); const ctx=canvas.getContext('2d');
   if(!mazeGrid.length){ctx.fillStyle='#0a1628';ctx.fillRect(0,0,320,320);return;}
-  const cw=320/mazeW, ch=320/mazeH;
-  ctx.clearRect(0,0,320,320);
+  const cw=320/mazeW, ch=320/mazeH; ctx.clearRect(0,0,320,320);
   for(let y=0;y<mazeH;y++){
     for(let x=0;x<mazeW;x++){
       if(mazeGrid[y][x]===1){ctx.fillStyle='rgba(168,218,240,.6)';ctx.fillRect(x*cw,y*ch,cw,ch);}
@@ -1572,8 +1415,7 @@ function drawMaze(){
       ctx.strokeStyle='rgba(10,22,40,.05)';ctx.strokeRect(x*cw,y*ch,cw,ch);
     }
   }
-  ctx.font=Math.min(cw,ch)*.7+'px serif';
-  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font=Math.min(cw,ch)*.7+'px serif'; ctx.textAlign='center';ctx.textBaseline='middle';
   ctx.fillText('⭐',(mazeExit.x+.5)*cw,(mazeExit.y+.5)*ch);
   mazeBears.forEach(b=>{ctx.fillText('🐻',(b.x+.5)*cw,(b.y+.5)*ch);});
   ctx.fillText('🐧',(mazePlayer.x+.5)*cw,(mazePlayer.y+.5)*ch);
@@ -1584,7 +1426,6 @@ function moveMaze(dx,dy){
   const nx=mazePlayer.x+dx, ny=mazePlayer.y+dy;
   if(nx<0||nx>=mazeW||ny<0||ny>=mazeH)return;
   if(mazeGrid[ny][nx]===1)return;
-  
   mazePlayer={x:nx,y:ny}; drawMaze();
   
   const bearCaught=mazeBears.find(b=>b.x===nx&&b.y===ny);
@@ -1594,16 +1435,9 @@ function moveMaze(dx,dy){
 window.moveMaze=moveMaze;
 
 function mazeLevelComplete(){
-  mazeLevel++;
-  document.getElementById('maze-level-disp').textContent='Niveau '+mazeLevel+' ✓';
-  toast('🎉 Niveau '+(mazeLevel-1)+' complété !');
+  mazeLevel++; document.getElementById('maze-level-disp').textContent='Niveau '+mazeLevel+' ✓'; toast('🎉 Niveau '+(mazeLevel-1)+' complété !');
   if(mazeLevel-1>(BEST_SCORES.maze||0)){BEST_SCORES.maze=mazeLevel-1;saveScores();}
-  setTimeout(()=>{
-    generateMaze();
-    mazePlayer = {x: 1, y: 1};
-    drawMaze();
-    document.getElementById('maze-level-disp').textContent='Niveau '+mazeLevel;
-  },800);
+  setTimeout(()=>{ generateMaze(); mazePlayer = {x: 1, y: 1}; drawMaze(); document.getElementById('maze-level-disp').textContent='Niveau '+mazeLevel; },800);
 }
 
 function endMaze(dead){
@@ -1612,10 +1446,7 @@ function endMaze(dead){
     document.getElementById('maze-level-disp').textContent='☠️ MANGÉ PAR L\'OURS';
     toast('💀 Oh non ! L\'ours t\'a mangé… 🐻 Recommence au Niveau 1.');
     setTimeout(()=>startMaze(),1500);
-  } else {
-    document.getElementById('maze-start-btn').style.display='block';
-    document.getElementById('maze-start-btn').textContent='▶ Rejouer';
-  }
+  } else { document.getElementById('maze-start-btn').style.display='block'; document.getElementById('maze-start-btn').textContent='▶ Rejouer'; }
 }
 function stopMaze(){if(mazeActive)endMaze(false);}
 
@@ -1624,8 +1455,7 @@ function setupMazeSwipe(){
   canvas.addEventListener('touchstart',e=>{e.preventDefault();mazeTouchStart={x:e.touches[0].clientX,y:e.touches[0].clientY};},{passive:false});
   canvas.addEventListener('touchend',e=>{
     if(!mazeTouchStart)return;
-    const dx=e.changedTouches[0].clientX-mazeTouchStart.x;
-    const dy=e.changedTouches[0].clientY-mazeTouchStart.y;
+    const dx=e.changedTouches[0].clientX-mazeTouchStart.x; const dy=e.changedTouches[0].clientY-mazeTouchStart.y;
     if(Math.abs(dx)>Math.abs(dy)){if(Math.abs(dx)>20)moveMaze(dx>0?1:-1,0);}else{if(Math.abs(dy)>20)moveMaze(0,dy>0?1:-1);}
     mazeTouchStart=null;
   },{passive:false});
@@ -1659,33 +1489,25 @@ function renderMemoryGrid(active){
 }
 
 function flipMemCard(id){
-  if(!memActive||memLock)return;
-  const card=memCards[id];
+  if(!memActive||memLock)return; const card=memCards[id];
   if(card.flipped||card.matched)return;
-  card.flipped=true; memFlipped.push(id);
-  renderMemoryGrid(true);
+  card.flipped=true; memFlipped.push(id); renderMemoryGrid(true);
   if(memFlipped.length===2){
-    memMoves++; document.getElementById('memory-moves').textContent=memMoves+' coup'+(memMoves>1?'s':'');
-    memLock=true;
+    memMoves++; document.getElementById('memory-moves').textContent=memMoves+' coup'+(memMoves>1?'s':''); memLock=true;
     const [a,b]=memFlipped;
     if(memCards[a].emoji===memCards[b].emoji){
       memCards[a].matched=memCards[b].matched=true; memMatched++;
       document.getElementById('memory-score-disp').textContent=memMatched+' paire'+(memMatched>1?'s':'');
       memFlipped=[]; memLock=false; renderMemoryGrid(true);
       if(memMatched===8) endMemory();
-    } else {
-      setTimeout(()=>{memCards[a].flipped=memCards[b].flipped=false;memFlipped=[];memLock=false;renderMemoryGrid(true);},900);
-    }
+    } else { setTimeout(()=>{memCards[a].flipped=memCards[b].flipped=false;memFlipped=[];memLock=false;renderMemoryGrid(true);},900); }
   }
 }
 window.flipMemCard=flipMemCard;
 
 function endMemory(){
-  memActive=false;
-  document.getElementById('memory-start-btn').style.display='block';
-  document.getElementById('memory-start-btn').textContent='▶ Rejouer';
-  const sc=Math.max(0,500-memMoves*10);
-  document.getElementById('memory-score-disp').textContent='🏆 '+sc+' pts !';
+  memActive=false; document.getElementById('memory-start-btn').style.display='block'; document.getElementById('memory-start-btn').textContent='▶ Rejouer';
+  const sc=Math.max(0,500-memMoves*10); document.getElementById('memory-score-disp').textContent='🏆 '+sc+' pts !';
   if(!BEST_SCORES.memory||sc>BEST_SCORES.memory){BEST_SCORES.memory=sc;saveScores();toast('🏆 Nouveau record mémoire : '+sc+' pts !');}
   else toast('Terminé en '+memMoves+' coups ! 🃏');
 }
@@ -1704,6 +1526,5 @@ function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
 function rv(a,b){return(Math.random()*(b-a)+a).toFixed(0);}
 function escHTML(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 </script>
-
 </body>
 </html>
