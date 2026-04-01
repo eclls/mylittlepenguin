@@ -188,10 +188,12 @@ button{cursor:pointer}
 .exp-bubble { width: calc(50% - 32px); background: rgba(255,255,255,.9); border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-md); padding: 12px; backdrop-filter: blur(5px); transition: all .2s; color: #0a1628; box-shadow: 0 2px 8px rgba(0,0,0,.1); position: relative; }
 .exp-bubble-inner { cursor: default; }
 .exp-bubble:active { transform: none; border-color: rgba(10,22,40,.1); }
-.exp-actions { display: flex; justify-content: flex-end; margin-bottom: 6px; }
+.exp-actions { display: flex; justify-content: flex-end; margin-bottom: 6px; gap: 8px; flex-wrap: wrap; align-items: center; }
 .exp-node.right .exp-actions { justify-content: flex-start; }
 .exp-edit-btn { font-size: .72rem; font-weight: 800; padding: 5px 10px; border-radius: 999px; border: 1.5px solid rgba(26,74,138,.35); background: rgba(26,74,138,.08); color: #1a4a8a; cursor: pointer; }
 .exp-edit-btn:active { transform: scale(.96); background: rgba(26,74,138,.15); }
+.exp-delete-btn { font-size: .72rem; font-weight: 800; padding: 5px 10px; border-radius: 999px; border: 1.5px solid rgba(220,38,38,.4); background: rgba(220,38,38,.08); color: #b91c1c; cursor: pointer; }
+.exp-delete-btn:active { transform: scale(.96); background: rgba(220,38,38,.15); }
 .exp-node.right .exp-bubble { text-align: right; }
 .exp-dot { width: 20px; height: 20px; border-radius: 50%; background: #1a4a8a; border: 3px solid #fff; box-shadow: 0 0 8px rgba(26,74,138,.3); flex-shrink: 0; margin: 0 16px; z-index: 1; }
 .exp-dot.first { background: var(--gold); }
@@ -212,8 +214,14 @@ button{cursor:pointer}
 .add-exp-form .ob-inp input[type=date]::-webkit-calendar-picker-indicator { filter: none; }
 .add-exp-form .ob-inp input[type=date] { color-scheme: light; }
 
-.photo-upload-btn { width: 100%; padding: 14px; border-radius: var(--r-md); background: rgba(10,22,40,.05); border: 1.5px dashed rgba(10,22,40,.2); color: #1a4a8a; font-weight: 700; font-size: .9rem; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+.photo-row { display: flex; gap: 8px; width: 100%; }
+.photo-upload-btn { flex: 1; padding: 12px 10px; border-radius: var(--r-md); background: rgba(10,22,40,.05); border: 1.5px dashed rgba(10,22,40,.2); color: #1a4a8a; font-weight: 700; font-size: .78rem; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; text-align: center; line-height: 1.25; }
+.photo-upload-btn.primary { border-style: solid; border-color: rgba(26,74,138,.35); background: rgba(26,74,138,.1); }
 .photo-preview { width: 100%; height: 120px; object-fit: cover; border-radius: var(--r-sm); display: none; }
+.exp-remove-photo { font-size: .8rem; font-weight: 700; color: #b45309; background: rgba(251,191,36,.15); border: 1px solid rgba(251,191,36,.4); padding: 8px 12px; border-radius: var(--r-md); cursor: pointer; width: 100%; display: none; }
+.exp-remove-photo.visible { display: block; }
+.exp-delete-form-btn { width: 100%; padding: 12px; border-radius: var(--r-md); border: 1.5px solid rgba(220,38,38,.45); background: rgba(220,38,38,.06); color: #b91c1c; font-weight: 800; font-size: .88rem; cursor: pointer; margin-top: 4px; }
+.exp-delete-form-btn.hidden { display: none !important; }
 #exp-photo-input { display: none; }
 
 /* ══ PAGE AMIS ══ */
@@ -563,6 +571,7 @@ button{cursor:pointer}
         <button type="button" class="exp-remove-photo" id="exp-remove-photo-btn" onclick="markExpPhotoRemove()">Retirer la photo</button>
         <div class="ob-err" id="exp-err"></div>
         <button class="ob-btn" id="save-exp-btn">Sauvegarder l'expédition 🚀</button>
+        <button type="button" class="exp-delete-form-btn hidden" id="exp-delete-form-btn">Supprimer cette expédition</button>
         <button class="cn-btn" id="cancel-exp-btn" style="color:#1a4a8a;border-color:rgba(26,74,138,.3)">Annuler</button>
       </div>
       <div class="expl-path" id="expl-path">
@@ -1033,6 +1042,7 @@ function bindAll() {
   document.getElementById('cancel-exp-btn').onclick = () => { resetExpeditionForm(); document.getElementById('add-exp-form').classList.add('hidden'); };
   document.getElementById('exp-pick-gallery').onclick = () => pickExpPhoto('gallery');
   document.getElementById('exp-pick-camera').onclick = () => pickExpPhoto('camera');
+  document.getElementById('exp-delete-form-btn').onclick = () => { if (editingExpeditionId) deleteExpedition(editingExpeditionId); };
   document.getElementById('exp-photo-input').addEventListener('change', handlePhotoSelect);
   setupMazeSwipe();
 }
@@ -1373,11 +1383,17 @@ async function checkBadges(){
 // ════════════════════════════════════════════════
 //  EXPLORATION
 // ════════════════════════════════════════════════
+function parseExpIdFromAttr(s){
+  if(s==null||s==='')return'';
+  try{ return decodeURIComponent(s); }catch(e){ return s; }
+}
+
 function resetExpeditionForm(){
   editingExpeditionId=null;
   expPhotoRemoved=false;
   document.getElementById('exp-form-title').textContent='Nouvelle expédition';
   document.getElementById('save-exp-btn').textContent='Sauvegarder l\'expédition 🚀';
+  document.getElementById('exp-delete-form-btn').classList.add('hidden');
   document.getElementById('exp-title-in').value='';
   document.getElementById('exp-note-in').value='';
   document.getElementById('exp-date-in').value=new Date().toISOString().slice(0,10);
@@ -1415,6 +1431,7 @@ function beginEditExpedition(id){
   expPhotoRemoved=false;
   document.getElementById('exp-form-title').textContent='Modifier l\'expédition';
   document.getElementById('save-exp-btn').textContent='Enregistrer les modifications ✓';
+  document.getElementById('exp-delete-form-btn').classList.remove('hidden');
   document.getElementById('exp-title-in').value=exp.title||'';
   document.getElementById('exp-note-in').value=exp.note||'';
   document.getElementById('exp-date-in').value=(exp.exp_date||'').slice(0,10);
@@ -1508,10 +1525,48 @@ async function saveExpedition(){
   loadExploration();
 }
 
+async function deleteExpedition(id){
+  if(!id)return;
+  if(!confirm('Supprimer cette expédition ? Cette action est définitive.'))return;
+  const exp=explorationExps.find(e=>String(e.id)===String(id));
+  if(!exp){toast('Expédition introuvable');return;}
+  if(SB){
+    try{
+      const{error}=await SB.from('expeditions').delete().eq('id',id).eq('user_id',myId());
+      if(error)throw error;
+    }catch(e){
+      toast('Impossible de supprimer pour l\'instant (réseau ou droits). Réessaie plus tard.');
+      return;
+    }
+  }
+  try{
+    const local=JSON.parse(localStorage.getItem('mlp_exps')||'[]');
+    const filtered=local.filter(x=>String(x.id)!==String(id));
+    localStorage.setItem('mlp_exps',JSON.stringify(filtered));
+  }catch(e){}
+  if(String(editingExpeditionId)===String(id)){
+    resetExpeditionForm();
+    document.getElementById('add-exp-form').classList.add('hidden');
+  }
+  toast('Expédition supprimée 🗑️');
+  loadExploration();
+}
+window.deleteExpedition=deleteExpedition;
+
 async function loadExploration(){
-  const nodesEl=document.getElementById('expl-nodes'); let exps=[];
-  if(SB){ try{ const{data}=await SB.from('expeditions').select('*').eq('user_id',myId()).order('exp_date',{ascending:true}); exps=data||[]; }catch(e){} }
-  if(!exps.length) exps=JSON.parse(localStorage.getItem('mlp_exps')||'[]').reverse();
+  const nodesEl=document.getElementById('expl-nodes');
+  let remote=[];
+  if(SB){
+    try{
+      const{data}=await SB.from('expeditions').select('*').eq('user_id',myId()).order('exp_date',{ascending:true});
+      remote=data||[];
+    }catch(e){}
+  }
+  const local=JSON.parse(localStorage.getItem('mlp_exps')||'[]');
+  const byId=new Map();
+  remote.forEach(e=>{ if(e&&e.id!=null) byId.set(String(e.id),e); });
+  local.forEach(e=>{ if(e&&e.id!=null&&!byId.has(String(e.id))) byId.set(String(e.id),e); });
+  const exps=[...byId.values()].sort((a,b)=>new Date(a.exp_date)-new Date(b.exp_date));
   explorationExps=exps;
 
   if(!exps.length){
@@ -1525,11 +1580,15 @@ async function loadExploration(){
     const side=i%2===0?'left':'right'; const isFirst=i===0;
     const photoHtml=exp.photo_url?`<img class="exp-photo" src="${String(exp.photo_url).replace(/"/g,'&quot;')}" alt="" loading="lazy"/>`:`<div class="exp-photo-placeholder">🏔️</div>`;
     const dateStr=new Date(exp.exp_date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+    const idAttr=encodeURIComponent(String(exp.id));
     return`
       <div class="exp-node ${side}" style="animation:slideIn .4s ease ${i*0.1}s both">
         <div class="exp-dot${isFirst?' first':''}"></div>
         <div class="exp-bubble">
-          <div class="exp-actions"><button type="button" class="exp-edit-btn" data-exp-id="${escHTML(String(exp.id))}">Modifier</button></div>
+          <div class="exp-actions">
+            <button type="button" class="exp-edit-btn" data-exp-id="${idAttr}">Modifier</button>
+            <button type="button" class="exp-delete-btn" data-exp-id="${idAttr}">Supprimer</button>
+          </div>
           <div class="exp-bubble-inner">
           ${photoHtml}
           <div class="exp-title">${escHTML(exp.title)}</div>
@@ -1540,7 +1599,10 @@ async function loadExploration(){
       </div>`;
   }).join('');
   nodesEl.querySelectorAll('.exp-edit-btn').forEach(btn=>{
-    btn.addEventListener('click', (ev)=>{ ev.stopPropagation(); beginEditExpedition(btn.getAttribute('data-exp-id')); });
+    btn.addEventListener('click', (ev)=>{ ev.stopPropagation(); beginEditExpedition(parseExpIdFromAttr(btn.getAttribute('data-exp-id'))); });
+  });
+  nodesEl.querySelectorAll('.exp-delete-btn').forEach(btn=>{
+    btn.addEventListener('click', (ev)=>{ ev.stopPropagation(); deleteExpedition(parseExpIdFromAttr(btn.getAttribute('data-exp-id'))); });
   });
 }
 
