@@ -358,29 +358,7 @@ button{cursor:pointer}
 .mca{flex:1;padding:13px;border-radius:var(--r-xl);background:linear-gradient(135deg,#1a4a8a,var(--teal));color:#fff;font-weight:800;font-size:.88rem;border:none;cursor:pointer}
 
 /* ══ MINI-JEUX PANELS ══ */
-#game-fishing,#game-maze,#game-memory,#game-crossword{background:var(--night)}
-.crossword-panel-body{display:flex;flex-direction:column;flex:1;min-height:0;padding:0 0 12px;overflow:hidden}
-.crossword-toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px 8px}
-.crossword-src-row{display:flex;gap:6px;flex:1;min-width:min(100%,220px)}
-.crossword-src-btn{flex:1;min-width:0;padding:8px 8px;border-radius:99px;border:1.5px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#b8e0f7;font-size:.68rem;font-weight:800;line-height:1.2;text-align:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s}
-.crossword-src-btn.active{background:rgba(78,205,196,.22);border-color:rgba(78,205,196,.45);color:#fff}
-.crossword-note{font-size:.7rem;color:rgba(255,255,255,.5);padding:8px 16px 12px;line-height:1.45;font-weight:600}
-.crossword-shell{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden}
-.cw-top-hint{font-size:.72rem;color:var(--teal);font-weight:800;padding:0 14px 6px}
-.cw-solved-banner{display:none;padding:10px 14px;background:rgba(78,205,196,.18);border-bottom:1px solid rgba(78,205,196,.3);font-weight:800;font-size:.88rem;color:#fff;text-align:center}
-.cw-solved-banner.show{display:block}
-.cw-grid-wrap{overflow:auto;padding:6px 12px 10px;flex:0 1 auto;max-height:min(42vh,320px)}
-.cw-grid{display:grid;gap:2px;background:rgba(0,0,0,.22);padding:8px;border-radius:var(--r-md);border:1.5px solid rgba(255,255,255,.1);width:max-content;margin:0 auto}
-.cw-cell{width:min(12.5vw,46px);height:min(12.5vw,46px);position:relative;background:#fff;color:#0a1628;border-radius:4px;font-weight:800;font-size:clamp(.65rem,3.2vw,.95rem);display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-user-select:none}
-.cw-cell.block{background:#0d1f35;border:none;cursor:default}
-.cw-cell.sel{outline:3px solid var(--teal);outline-offset:1px;z-index:1}
-.cw-num{position:absolute;top:2px;left:3px;font-size:.45rem;font-weight:900;color:#64748b;line-height:1}
-.cw-clues-wrap{flex:1;min-height:0;overflow-y:auto;padding:0 12px 8px;display:flex;flex-direction:column;gap:10px}
-.cw-clues-h{font-size:.68rem;font-weight:800;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.08em}
-.cw-clue{padding:8px 10px;border-radius:var(--r-sm);background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.08);font-size:.78rem;font-weight:700;color:#e2f4ff;line-height:1.35;cursor:pointer}
-.cw-clue.on{border-color:rgba(78,205,196,.5);background:rgba(78,205,196,.12)}
-.cw-clue b{color:var(--gold);margin-right:6px}
-.cw-key-hack{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px;left:-99px}
+#game-fishing,#game-maze,#game-memory{background:var(--night)}
 .game-panel-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:calc(100vh - 80px)}
 .game-score-display{font-family:var(--fd);font-size:2.5rem;font-weight:700;color:var(--gold);text-align:center}
 .game-lives{font-size:1.5rem;letter-spacing:4px}
@@ -581,11 +559,6 @@ button{cursor:pointer}
             <div class="game-icon">🃏</div>
             <div class="game-name">Mémoire</div>
             <div class="game-score" id="score-memory">0</div>
-          </div>
-          <div class="game-card" onclick="openGame('crossword')">
-            <div class="game-icon">📰</div>
-            <div class="game-name">Mots fléchés</div>
-            <div class="game-score" id="crossword-day-hint" style="font-size:.65rem;font-weight:700;color:var(--teal)">—</div>
           </div>
         </div>
       </div>
@@ -919,33 +892,6 @@ button{cursor:pointer}
   </div>
 </div>
 
-<div class="panel" id="game-crossword">
-  <div class="panel-header" style="flex-wrap:wrap">
-    <button class="panel-back" onclick="closePanel('game-crossword')">←</button>
-    <div style="flex:1;min-width:0">
-      <div class="panel-title">Mots fléchés 📰</div>
-      <div id="crossword-date-lbl" style="font-size:.72rem;color:#b8e0f7;font-weight:600">Grille du jour</div>
-    </div>
-  </div>
-  <div class="crossword-panel-body">
-    <div class="cw-solved-banner" id="cw-solved-banner">Grille complétée — tu gagnes un glaçon 🧊</div>
-    <div class="crossword-toolbar">
-      <div class="crossword-src-row" role="tablist" aria-label="Mots fléchés matin ou après-midi">
-        <button type="button" class="crossword-src-btn cross-src-of active" data-cross-src="of" onclick="setCrosswordSrc('of')">Mots fléchés<br/>du matin</button>
-        <button type="button" class="crossword-src-btn cross-src-fi" data-cross-src="fi" onclick="setCrosswordSrc('fi')">Mots fléchés<br/>de l’après-midi</button>
-      </div>
-      <button type="button" class="gs-btn" onclick="reloadCrossword()">🔄 Nouvelle grille</button>
-    </div>
-    <div class="cw-top-hint" id="cw-hint">Tape au clavier · ← → pour naviguer</div>
-    <input type="text" class="cw-key-hack" id="cw-key-hack" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-hidden="true"/>
-    <div class="crossword-shell">
-      <div class="cw-grid-wrap"><div class="cw-grid" id="cw-grid"></div></div>
-      <div class="cw-clues-wrap" id="cw-clues"></div>
-    </div>
-    <p class="crossword-note" id="crossword-note">Grille intégrée dans l’app (style presse). Remplis chaque case : quand tout est bon, tu reçois un glaçon 🧊 (une fois par jour et par grille).</p>
-  </div>
-</div>
-
 <div class="mo hidden" id="kill-modal">
   <div class="mc-card">
     <div style="font-size:3rem">💀</div>
@@ -1145,24 +1091,6 @@ window.addEventListener('DOMContentLoaded', () => {
   bindAll();
   initSB();
   updateScoreDisplay();
-  window.addEventListener('keydown', cwOnKey);
-  const cwh = document.getElementById('cw-key-hack');
-  if (cwh) {
-    cwh.addEventListener('input', e => {
-      const v = e.target.value;
-      e.target.value = '';
-      if (!v.length || !crossState || crossState.solved) return;
-      const ch = v.slice(-1);
-      if (/[a-zA-ZÀ-ÿ]/.test(ch)) {
-        const { user, focus } = crossState;
-        const { r, c } = focus;
-        user[r][c] = ch.toUpperCase();
-        cwAdvance();
-        renderCrosswordUI();
-        cwMaybeWin();
-      }
-    });
-  }
   setTimeout(boot, 2000);
 });
 
@@ -1924,13 +1852,6 @@ async function loadExploration(){
 function parisDateStrYYYYMMDD(){
   return new Date().toLocaleDateString('sv-SE', { timeZone: 'Europe/Paris' });
 }
-function parisDateLabelFr(){
-  try {
-    return new Date().toLocaleDateString('fr-FR', { timeZone: 'Europe/Paris', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  } catch (e) {
-    return parisDateStrYYYYMMDD();
-  }
-}
 
 function tryAwardIce(gameKey){
   if (!P) return false;
@@ -1946,278 +1867,10 @@ function tryAwardIce(gameKey){
   return true;
 }
 
-function cwNormLetter(ch){
-  if (!ch) return '';
-  return String(ch).toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-}
-
-const PUZZLES_MATIN = [
-  { rows: ['MERLU#','O#####','U#####','L#####','E#####','######'], across: [{ num: 1, clue: 'Poisson des grands fonds', word: 'MERLU', r: 0, c: 0 }], down: [{ num: 1, clue: 'Coquillage', word: 'MOULE', r: 0, c: 0 }] },
-  { rows: ['NEIGE#','E#####','I#####','G#####','E#####','######'], across: [{ num: 1, clue: 'Ce qui tombe sur la banquise', word: 'NEIGE', r: 0, c: 0 }], down: [{ num: 1, clue: 'Même blancheur', word: 'NEIGE', r: 0, c: 0 }] },
-  { rows: ['GLACE#','I#####','V#####','R#####','E#####','######'], across: [{ num: 1, clue: 'Ça fond au soleil', word: 'GLACE', r: 0, c: 0 }], down: [{ num: 1, clue: 'Givre du matin', word: 'GIVRE', r: 0, c: 0 }] },
-  { rows: ['BARRE#','A#####','R#####','R#####','E#####','######'], across: [{ num: 1, clue: 'Obstacle', word: 'BARRE', r: 0, c: 0 }], down: [{ num: 1, clue: 'Ligne de barre', word: 'BARRE', r: 0, c: 0 }] },
-  { rows: ['ETOILE','T#####','O#####','I#####','L#####','E#####'], across: [{ num: 1, clue: 'On en voit la nuit', word: 'ETOILE', r: 0, c: 0 }], down: [{ num: 1, clue: 'Brille au ciel', word: 'ETOILE', r: 0, c: 0 }] },
-  { rows: ['OLIVE#','L#####','I#####','V#####','E#####','######'], across: [{ num: 1, clue: 'Fruit du midi', word: 'OLIVE', r: 0, c: 0 }], down: [{ num: 1, clue: 'Même mot à la verticale', word: 'OLIVE', r: 0, c: 0 }] },
-];
-
-const PUZZLES_APREM = [
-  { rows: ['MERLU#','O#####','U#####','L#####','E#####','######'], across: [{ num: 1, clue: 'À servir au déjeuner', word: 'MERLU', r: 0, c: 0 }], down: [{ num: 1, clue: 'Coquille de l’après-midi', word: 'MOULE', r: 0, c: 0 }] },
-  { rows: ['NEIGE#','E#####','I#####','G#####','E#####','######'], across: [{ num: 1, clue: 'Saison froide', word: 'NEIGE', r: 0, c: 0 }], down: [{ num: 1, clue: 'Même mot à la verticale', word: 'NEIGE', r: 0, c: 0 }] },
-  { rows: ['GLACE#','I#####','V#####','R#####','E#####','######'], across: [{ num: 1, clue: 'Glace dans le verre', word: 'GLACE', r: 0, c: 0 }], down: [{ num: 1, clue: 'Givre du soir', word: 'GIVRE', r: 0, c: 0 }] },
-  { rows: ['BARRE#','A#####','R#####','R#####','E#####','######'], across: [{ num: 1, clue: 'Barre de sport', word: 'BARRE', r: 0, c: 0 }], down: [{ num: 1, clue: 'Barre de fer', word: 'BARRE', r: 0, c: 0 }] },
-  { rows: ['ETOILE','T#####','O#####','I#####','L#####','E#####'], across: [{ num: 1, clue: 'Étoile du jour', word: 'ETOILE', r: 0, c: 0 }], down: [{ num: 1, clue: 'Étoile du berger', word: 'ETOILE', r: 0, c: 0 }] },
-  { rows: ['OLIVE#','L#####','I#####','V#####','E#####','######'], across: [{ num: 1, clue: 'Apéro salé', word: 'OLIVE', r: 0, c: 0 }], down: [{ num: 1, clue: 'Verte ou noire', word: 'OLIVE', r: 0, c: 0 }] },
-];
-
-function crosswordDayIndex(){
-  const d = parisDateStrYYYYMMDD();
-  const p = d.split('-').map(Number);
-  return p[0] * 372 + p[1] * 31 + p[2];
-}
-
-function cwBuildMatrices(puzzle){
-  const h = puzzle.rows.length;
-  const w = puzzle.rows[0].length;
-  const sol = [];
-  const block = [];
-  for (let r = 0; r < h; r++) {
-    sol[r] = [];
-    block[r] = [];
-    for (let c = 0; c < w; c++) {
-      const ch = puzzle.rows[r][c];
-      if (ch === '#') { block[r][c] = true; sol[r][c] = null; }
-      else { block[r][c] = false; sol[r][c] = ''; }
-    }
-  }
-  puzzle.across.forEach(wd => { for (let i = 0; i < wd.word.length; i++) sol[wd.r][wd.c + i] = wd.word[i]; });
-  puzzle.down.forEach(wd => { for (let i = 0; i < wd.word.length; i++) sol[wd.r + i][wd.c] = wd.word[i]; });
-  return { w, h, sol, block };
-}
-
-function cwCellNum(puzzle, r, c){
-  let n = null;
-  puzzle.across.forEach(w=>{ if (w.r === r && w.c === c) n = n == null ? w.num : Math.min(n, w.num); });
-  puzzle.down.forEach(w=>{ if (w.r === r && w.c === c) n = n == null ? w.num : Math.min(n, w.num); });
-  return n;
-}
-
-let crossState = null;
-
-function pickCrosswordPuzzle(){
-  const list = getCrosswordSrc() === 'fi' ? PUZZLES_APREM : PUZZLES_MATIN;
-  return list[crosswordDayIndex() % list.length];
-}
-
-function cwFirstEmpty(){
-  if (!crossState) return;
-  const { w, h, user, block } = crossState;
-  for (let r = 0; r < h; r++) {
-    for (let c = 0; c < w; c++) {
-      if (!block[r][c]) { crossState.focus = { r, c }; return; }
-    }
-  }
-}
-
-function initCrosswordGrid(){
-  syncCrosswordSrcButtons();
-  const puzzle = pickCrosswordPuzzle();
-  const { w, h, sol, block } = cwBuildMatrices(puzzle);
-  const user = [];
-  for (let r = 0; r < h; r++) {
-    user[r] = [];
-    for (let c = 0; c < w; c++) user[r][c] = block[r][c] ? null : '';
-  }
-  crossState = { user, sol, block, w, h, puzzle, solved: false, focus: { r: 0, c: 0 } };
-  cwFirstEmpty();
-  const ban = document.getElementById('cw-solved-banner');
-  if (ban) ban.classList.remove('show');
-  renderCrosswordUI();
-  updateCrosswordHeader();
-  const n = document.getElementById('crossword-note');
-  if (n) n.textContent = 'Grille intégrée dans l’app (style presse). Remplis chaque case : quand tout est bon, tu reçois un glaçon 🧊 (une fois par jour et par grille matin/après-midi).';
-}
-
-function updateCrosswordHeader(){
-  const lbl = document.getElementById('crossword-date-lbl');
-  if (lbl) lbl.textContent = (getCrosswordSrc() === 'fi' ? 'Après-midi' : 'Matin') + ' · ' + parisDateLabelFr();
-}
-
-function renderCrosswordUI(){
-  if (!crossState) return;
-  const { w, h, user, sol, block, focus, puzzle } = crossState;
-  const grid = document.getElementById('cw-grid');
-  if (!grid) return;
-  grid.style.gridTemplateColumns = 'repeat(' + w + ', 1fr)';
-  let html = '';
-  for (let r = 0; r < h; r++) {
-    for (let c = 0; c < w; c++) {
-      if (block[r][c]) { html += '<div class="cw-cell block"></div>'; continue; }
-      const num = cwCellNum(puzzle, r, c);
-      const letter = user[r][c];
-      const sel = focus.r === r && focus.c === c ? ' sel' : '';
-      const disp = letter ? escHTML(letter) : '';
-      html += '<div class="cw-cell' + sel + '" data-r="' + r + '" data-c="' + c + '" onclick="cwFocus(' + r + ',' + c + ')">' +
-        (num ? '<span class="cw-num">' + num + '</span>' : '') + disp + '</div>';
-    }
-  }
-  grid.innerHTML = html;
-  const cluesWrap = document.getElementById('cw-clues');
-  if (cluesWrap) {
-    let htmlC = '<div class="cw-clues-h">Horizontal</div>';
-    puzzle.across.forEach(wd => { htmlC += '<div class="cw-clue" onclick="cwClueGo(' + wd.r + ',' + wd.c + ')"><b>' + wd.num + '.</b> ' + escHTML(wd.clue) + '</div>'; });
-    htmlC += '<div class="cw-clues-h">Vertical</div>';
-    puzzle.down.forEach(wd => { htmlC += '<div class="cw-clue" onclick="cwClueGo(' + wd.r + ',' + wd.c + ')"><b>' + wd.num + '.</b> ' + escHTML(wd.clue) + '</div>'; });
-    cluesWrap.innerHTML = htmlC;
-  }
-}
-
-function cwClueGo(r, c){
-  const hack = document.getElementById('cw-key-hack');
-  if (hack) hack.focus();
-  cwFocus(r, c);
-}
-window.cwClueGo = cwClueGo;
-
-function cwFocus(r, c){
-  if (!crossState || crossState.solved || crossState.block[r][c]) return;
-  crossState.focus = { r, c };
-  const hack = document.getElementById('cw-key-hack');
-  if (hack) hack.focus();
-  renderCrosswordUI();
-}
-window.cwFocus = cwFocus;
-
-function cwAdvance(){
-  if (!crossState) return;
-  const { w, h, block } = crossState;
-  let { r, c } = crossState.focus;
-  let nc = c + 1;
-  let nr = r;
-  while (nr < h) {
-    while (nc < w) {
-      if (!block[nr][nc]) { crossState.focus = { r: nr, c: nc }; return; }
-      nc++;
-    }
-    nr++;
-    nc = 0;
-  }
-}
-
-function cwBack(){
-  if (!crossState) return;
-  const { w, h, block } = crossState;
-  let { r, c } = crossState.focus;
-  let nc = c - 1;
-  let nr = r;
-  while (nr >= 0) {
-    while (nc >= 0) {
-      if (!block[nr][nc]) { crossState.focus = { r: nr, c: nc }; return; }
-      nc--;
-    }
-    nr--;
-    nc = w - 1;
-  }
-}
-
-function cwMove(dr, dc){
-  if (!crossState) return;
-  const { w, h, block } = crossState;
-  let { r, c } = crossState.focus;
-  let nr = r + dr;
-  let nc = c + dc;
-  while (nr >= 0 && nr < h && nc >= 0 && nc < w) {
-    if (!block[nr][nc]) { crossState.focus = { r: nr, c: nc }; renderCrosswordUI(); return; }
-    nr += dr;
-    nc += dc;
-  }
-}
-
-function cwMaybeWin(){
-  if (!crossState || crossState.solved) return;
-  const { user, sol, block, w, h } = crossState;
-  for (let r = 0; r < h; r++) {
-    for (let c = 0; c < w; c++) {
-      if (block[r][c]) continue;
-      if (!user[r][c] || cwNormLetter(user[r][c]) !== cwNormLetter(sol[r][c])) return;
-    }
-  }
-  crossState.solved = true;
-  const ban = document.getElementById('cw-solved-banner');
-  if (ban) ban.classList.add('show');
-  if (tryAwardIce(getCrosswordSrc() === 'fi' ? 'crossword_aprem' : 'crossword_matin')) toast('🧊 +1 glaçon !');
-}
-
-function cwOnKey(e){
-  if (!document.getElementById('game-crossword').classList.contains('open')) return;
-  if (!crossState || crossState.solved) return;
-  const { user, sol, block, focus } = crossState;
-  let { r, c } = focus;
-  if (e.key === 'Backspace') {
-    if (user[r][c]) user[r][c] = '';
-    else cwBack();
-    e.preventDefault();
-    renderCrosswordUI();
-    cwMaybeWin();
-    return;
-  }
-  if (e.key === 'ArrowRight') { cwMove(0, 1); e.preventDefault(); return; }
-  if (e.key === 'ArrowLeft') { cwMove(0, -1); e.preventDefault(); return; }
-  if (e.key === 'ArrowDown') { cwMove(1, 0); e.preventDefault(); return; }
-  if (e.key === 'ArrowUp') { cwMove(-1, 0); e.preventDefault(); return; }
-  if (e.key.length === 1 && /[a-zA-ZÀ-ÿ]/.test(e.key)) {
-    user[r][c] = e.key.toUpperCase();
-    cwAdvance();
-    e.preventDefault();
-    renderCrosswordUI();
-    cwMaybeWin();
-  }
-}
-
-function loadCrossword(){
-  initCrosswordGrid();
-}
-function reloadCrossword(){
-  if (!crossState) { initCrosswordGrid(); toast('Grille chargée'); return; }
-  crossState.solved = false;
-  for (let r = 0; r < crossState.h; r++) {
-    for (let c = 0; c < crossState.w; c++) {
-      if (!crossState.block[r][c]) crossState.user[r][c] = '';
-    }
-  }
-  cwFirstEmpty();
-  const ban = document.getElementById('cw-solved-banner');
-  if (ban) ban.classList.remove('show');
-  renderCrosswordUI();
-  toast('Grille effacée');
-}
-function loadOFMotsFleches(){ loadCrossword(); }
-function reloadOFMotsFleches(){ reloadCrossword(); }
-window.loadCrossword = loadCrossword;
-window.reloadCrossword = reloadCrossword;
-window.loadOFMotsFleches = loadOFMotsFleches;
-window.reloadOFMotsFleches = reloadOFMotsFleches;
-
-function getCrosswordSrc(){
-  return localStorage.getItem('mlp_crossword_src') === 'fi' ? 'fi' : 'of';
-}
-function syncCrosswordSrcButtons(){
-  const src = getCrosswordSrc();
-  document.querySelectorAll('.crossword-src-btn').forEach(b => {
-    b.classList.toggle('active', b.getAttribute('data-cross-src') === src);
-  });
-}
-function setCrosswordSrc(src){
-  if (src !== 'of' && src !== 'fi') return;
-  localStorage.setItem('mlp_crossword_src', src);
-  initCrosswordGrid();
-}
-window.setCrosswordSrc = setCrosswordSrc;
-
 function openGame(name){
   openPanel('game-'+name);
   if(name==='memory') initMemoryBoard();
   if(name==='maze')   initMazeBoard();
-  if(name==='crossword') loadCrossword();
 }
 window.openGame=openGame;
 
@@ -2225,8 +1878,6 @@ function updateScoreDisplay(){
   document.getElementById('score-fishing').textContent=BEST_SCORES.fishing||0;
   document.getElementById('score-maze').textContent=BEST_SCORES.maze||0;
   document.getElementById('score-memory').textContent=BEST_SCORES.memory||0;
-  const ch = document.getElementById('crossword-day-hint');
-  if (ch) ch.textContent = (getCrosswordSrc() === 'fi' ? 'Après-midi' : 'Matin') + ' · ' + parisDateStrYYYYMMDD();
 }
 
 function saveScores(){
