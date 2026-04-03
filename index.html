@@ -961,7 +961,12 @@ button{cursor:pointer}
 const SUPABASE_URL  = 'https://cirdtmjrsgbqbstwrgzx.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcmR0bWpyc2dicWJzdHdyZ3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDMxMjMsImV4cCI6MjA4OTYxOTEyM30.g0wYu9rQ75KZStirsfFV9JV-1V2tmWGy9zftEOzbQIU';
 
-/** Clé MapTiler Cloud — vide = repli OSM. Restriction origine : l’URL où la page tourne (ex. GitHub Pages https://eclls.github.io/mylittlepenguin/*), pas https://github.com/... */
+/**
+ * Clé MapTiler Cloud (copier-coller depuis cloud.maptiler.com → ton compte → clés API).
+ * Vide = carte OpenStreetMap sans MapTiler.
+ * Si « clé invalide » : régénère la clé, colle-la ici sans espace ; dans la clé, ajoute les origines exactes
+ * (ex. https://eclls.github.io/*, http://localhost:*, file://* si tu testes en local fichier).
+ */
 const MAPTILER_API_KEY = 'MLTeVLFY1E3v4gxdSDKB';
 
 /** Style de fond MapTiler (tuiles raster PNG). Ici : aquarelle-v4 (rendu « Aquarelle »). Voir TileJSON : /maps/{id}/tiles.json */
@@ -1721,9 +1726,10 @@ function setExplorationView(mode, silent){
 function addExplorationMapTiles(map){
   const osmOnly = '&copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a>';
   const maptilerAttr = '&copy; <a href="https://www.maptiler.com/copyright/" rel="noopener">MapTiler</a> ' + osmOnly;
-  if (MAPTILER_API_KEY) {
-    L.tileLayer(
-      'https://api.maptiler.com/maps/' + encodeURIComponent(MAPTILER_MAP_STYLE) + '/{z}/{x}/{y}.png?key=' + encodeURIComponent(MAPTILER_API_KEY),
+  const mtKey = String(MAPTILER_API_KEY || '').trim();
+  if (mtKey) {
+    const mtLayer = L.tileLayer(
+      'https://api.maptiler.com/maps/' + encodeURIComponent(MAPTILER_MAP_STYLE) + '/{z}/{x}/{y}.png?key=' + encodeURIComponent(mtKey),
       {
         tileSize: 512,
         zoomOffset: -1,
@@ -1733,6 +1739,12 @@ function addExplorationMapTiles(map){
         crossOrigin: true
       }
     ).addTo(map);
+    let mtTileErrOnce = false;
+    mtLayer.on('tileerror', function(){
+      if (mtTileErrOnce) return;
+      mtTileErrOnce = true;
+      toast('MapTiler : clé refusée ou origine interdite. Vérifie la clé sur cloud.maptiler.com et les URL autorisées pour cette clé.');
+    });
   } else {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
