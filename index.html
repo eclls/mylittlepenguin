@@ -1741,7 +1741,15 @@ async function toggleAlert(){
 }
 window.toggleAlert=toggleAlert;
 
-function doLogout(){if(!confirm('Quitter la banquise ?'))return;localStorage.clear();location.reload();}
+function doLogout(){
+  if(!confirm('Quitter la banquise ?'))return;
+  const keep=['mlp_exp_geo','mlp_expl_view'];
+  const backup={};
+  keep.forEach(k=>{ const v=localStorage.getItem(k); if(v!==null) backup[k]=v; });
+  localStorage.clear();
+  keep.forEach(k=>{ if(backup[k]!==undefined) localStorage.setItem(k, backup[k]); });
+  location.reload();
+}
 
 // ════════════════════════════════════════════════
 //  AMIS & RECHERCHE
@@ -1937,14 +1945,27 @@ function deleteExpGeo(id){
 }
 function mergeExpGeoInto(exps){
   const geo = readExpGeoMap();
+  let changed = false;
   exps.forEach(e => {
-    const g = geo[String(e.id)];
-    if (g && typeof g.lat === 'number' && typeof g.lng === 'number' && !isNaN(g.lat) && !isNaN(g.lng)) {
-      e._lat = g.lat; e._lng = g.lng; e._placeLabel = g.label || '';
+    const fromRow = e.geo_lat != null && e.geo_lng != null && !isNaN(+e.geo_lat) && !isNaN(+e.geo_lng);
+    if (fromRow) {
+      e._lat = +e.geo_lat; e._lng = +e.geo_lng; e._placeLabel = (e.geo_label != null && String(e.geo_label)) || '';
+      const id = String(e.id);
+      const prev = geo[id];
+      if (!prev || prev.lat !== e._lat || prev.lng !== e._lng || (prev.label || '') !== (e._placeLabel || '')) {
+        geo[id] = { lat: e._lat, lng: e._lng, label: e._placeLabel };
+        changed = true;
+      }
     } else {
-      delete e._lat; delete e._lng; delete e._placeLabel;
+      const g = geo[String(e.id)];
+      if (g && typeof g.lat === 'number' && typeof g.lng === 'number' && !isNaN(g.lat) && !isNaN(g.lng)) {
+        e._lat = g.lat; e._lng = g.lng; e._placeLabel = g.label || '';
+      } else {
+        delete e._lat; delete e._lng; delete e._placeLabel;
+      }
     }
   });
+  if (changed) writeExpGeoMap(geo);
 }
 
 function getExplorationView(){
@@ -2288,7 +2309,15 @@ async function saveExpedition(){
   }
   if(!photoUrl&&selectedPhotoB64) photoUrl=selectedPhotoB64;
 
+  const placeEl=document.getElementById('exp-place-in');
+  const placeTxt=placeEl?placeEl.value.trim():'';
   const exp={title,note:note||null,exp_date:date,photo_url:photoUrl};
+  if(expPendingLat!=null&&expPendingLng!=null){
+    exp.geo_lat=expPendingLat; exp.geo_lng=expPendingLng;
+    exp.geo_label=(placeTxt||expPlaceLabel||'').trim()||null;
+  }else{
+    exp.geo_lat=null; exp.geo_lng=null; exp.geo_label=null;
+  }
   const isEdit=!!editingExpeditionId;
   let savedId=null;
 
@@ -2329,8 +2358,6 @@ async function saveExpedition(){
   }
 
   if(savedId!=null){
-    const placeEl=document.getElementById('exp-place-in');
-    const placeTxt=placeEl?placeEl.value.trim():'';
     if(expPendingLat!=null&&expPendingLng!=null){
       setExpGeo(savedId,expPendingLat,expPendingLng,placeTxt||expPlaceLabel);
     }else{
