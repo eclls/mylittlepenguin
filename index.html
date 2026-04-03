@@ -11,6 +11,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous"/>
 <style>
 /* ══ ROOT ══ */
 :root{
@@ -190,8 +191,10 @@ button{cursor:pointer}
 .expl-view-btn { flex: 1; padding: 10px 12px; border-radius: var(--r-xl); border: 2px solid rgba(26,74,138,.35); background: #fff; color: #1a4a8a; font-weight: 800; font-size: .82rem; cursor: pointer; transition: all .2s; }
 .expl-view-btn.on { background: linear-gradient(135deg,#1a4a8a,#2563eb); color: #fff; border-color: transparent; box-shadow: 0 4px 14px rgba(26,74,138,.25); }
 .expl-view-btn:active { transform: scale(.98); }
-.expl-panel-globe { margin-bottom: 16px; }
-.expl-globe-viz { width: 100%; min-height: min(52vh,420px); border-radius: var(--r-lg); overflow: hidden; border: 2px solid rgba(26,74,138,.2); background: linear-gradient(180deg,#e0f2fe,#bae6fd); box-shadow: 0 8px 28px rgba(0,0,0,.08); }
+.expl-panel-map { margin-bottom: 16px; }
+.expl-map-viz { width: 100%; min-height: min(52vh,420px); border-radius: var(--r-lg); overflow: hidden; border: 2px solid rgba(26,74,138,.2); background: linear-gradient(180deg,#e0f2fe,#bae6fd); box-shadow: 0 8px 28px rgba(0,0,0,.08); z-index: 0; }
+.expl-map-viz .leaflet-container { font-family: var(--fb); border-radius: inherit; }
+.expl-map-viz .leaflet-control-attribution { font-size: 10px; max-width: calc(100% - 56px); line-height: 1.35; }
 .expl-globe-hint { font-size: .72rem; color: rgba(10,22,40,.6); font-weight: 600; margin-top: 10px; line-height: 1.45; }
 .expl-globe-empty { text-align: center; padding: 24px 16px; font-size: .86rem; font-weight: 700; color: #1a4a8a; background: rgba(255,255,255,.75); border-radius: var(--r-md); border: 1.5px dashed rgba(26,74,138,.25); }
 .expl-geocode-btn { padding: 10px 14px; border-radius: var(--r-md); border: 2px solid rgba(26,74,138,.35); background: #fff; color: #1a4a8a; font-weight: 800; font-size: .78rem; cursor: pointer; white-space: nowrap; }
@@ -591,7 +594,7 @@ button{cursor:pointer}
       </div>
       <div class="expl-view-seg" role="tablist" aria-label="Affichage des expéditions">
         <button type="button" class="expl-view-btn on" id="expl-view-btn-timeline" data-expl-view="timeline">Frise</button>
-        <button type="button" class="expl-view-btn" id="expl-view-btn-globe" data-expl-view="globe">Globe</button>
+        <button type="button" class="expl-view-btn" id="expl-view-btn-map" data-expl-view="map">Carte</button>
       </div>
       <div class="exp-edit-picker hidden" id="exp-edit-picker">
         <label for="exp-edit-select">Choisir une expédition à modifier</label>
@@ -613,7 +616,7 @@ button{cursor:pointer}
         </div>
         <div class="ob-inp"><span class="ob-inp-ic">📅</span><input type="date" id="exp-date-in"/></div>
         <div class="ob-inp" style="flex-direction:column;align-items:stretch;gap:8px">
-          <span style="font-size:.74rem;font-weight:800;color:#1a4a8a">Lieu sur le globe (optionnel)</span>
+          <span style="font-size:.74rem;font-weight:800;color:#1a4a8a">Lieu sur la carte (optionnel)</span>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;width:100%">
             <input type="text" id="exp-place-in" placeholder="Ville, région, pays…" maxlength="90" style="flex:1;min-width:140px;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid rgba(10,22,40,.12);font-size:.88rem;font-weight:600;color:#0a1628;background:rgba(10,22,40,.03)"/>
             <button type="button" class="expl-geocode-btn" id="exp-geocode-btn">Placer</button>
@@ -659,10 +662,10 @@ button{cursor:pointer}
         </div>
       </div>
       </div>
-      <div id="expl-panel-globe" class="expl-panel-globe hidden">
-        <div class="expl-globe-viz" id="expl-globe-viz" aria-label="Globe des expéditions"></div>
-        <p class="expl-globe-hint">Fais tourner le globe du doigt ou à la souris. Chaque point correspond à une expédition dont tu as indiqué le lieu (bouton « Placer » dans le formulaire). Données cartographiques : OpenStreetMap / Photon.</p>
-        <div id="expl-globe-empty" class="expl-globe-empty hidden">Aucun lieu renseigné pour tes expéditions. Édite une expédition et utilise « Placer » après avoir saisi un lieu.</div>
+      <div id="expl-panel-map" class="expl-panel-map hidden">
+        <div class="expl-map-viz" id="expl-map-viz" aria-label="Carte des expéditions"></div>
+        <div id="expl-map-empty" class="expl-globe-empty hidden">Aucun lieu renseigné pour tes expéditions. Édite une expédition et utilise « Placer » après avoir saisi un lieu.</div>
+        <p class="expl-globe-hint">Zoome et déplace la carte (Leaflet + MapTiler <em>streets-v2</em>). Chaque marqueur correspond à une expédition dont tu as indiqué le lieu (bouton « Placer »). Géocodage « Placer » : Photon (OSM).</p>
       </div>
       <div class="bsp"></div>
     </div>
@@ -945,7 +948,7 @@ button{cursor:pointer}
 
 <input type="file" id="exp-photo-input" accept="image/*" style="display:none"/>
 
-<script src="https://cdn.jsdelivr.net/npm/globe.gl@2.32.1/dist/globe.gl.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ════════════════════════════════════════════════
@@ -953,6 +956,9 @@ button{cursor:pointer}
 // ════════════════════════════════════════════════
 const SUPABASE_URL  = 'https://cirdtmjrsgbqbstwrgzx.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcmR0bWpyc2dicWJzdHdyZ3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDMxMjMsImV4cCI6MjA4OTYxOTEyM30.g0wYu9rQ75KZStirsfFV9JV-1V2tmWGy9zftEOzbQIU';
+
+/** Clé MapTiler Cloud — vide = repli OSM. Restriction origine : l’URL où la page tourne (ex. GitHub Pages https://eclls.github.io/mylittlepenguin/*), pas https://github.com/... */
+const MAPTILER_API_KEY = '13SQbvT304EPapvHhy9F';
 
 const LVL = [
   {min:0,  max:29,  i:'🐣', n:'Poussin Polaire',       nx:30},
@@ -972,7 +978,9 @@ let selectedPhotoFile = null, selectedPhotoB64 = null;
 let editingExpeditionId = null;
 let expPhotoRemoved = false;
 let explorationExps = [];
-let explorationGlobe = null;
+let explorationMap = null;
+let explorationMapMarkers = [];
+let explorationMapLoading = false;
 let expPendingLat = null, expPendingLng = null, expPlaceLabel = '';
 let notifPollTimer = null;
 let notifWaterline = null;
@@ -1243,14 +1251,14 @@ function bindAll() {
   document.getElementById('exp-pick-camera').onclick = () => pickExpPhoto('camera');
   document.getElementById('exp-photo-input').addEventListener('change', handlePhotoSelect);
   const evT = document.getElementById('expl-view-btn-timeline');
-  const evG = document.getElementById('expl-view-btn-globe');
+  const evMap = document.getElementById('expl-view-btn-map');
   if (evT) evT.onclick = () => setExplorationView('timeline');
-  if (evG) evG.onclick = () => setExplorationView('globe');
+  if (evMap) evMap.onclick = () => setExplorationView('map');
   const egc = document.getElementById('exp-geocode-btn');
   if (egc) egc.onclick = () => geocodeExpPlace();
   const ecp = document.getElementById('exp-clear-place-btn');
   if (ecp) ecp.onclick = () => clearExpPlace();
-  window.addEventListener('resize', () => { if (getExplorationView() === 'globe') resizeExplorationGlobe(); });
+  window.addEventListener('resize', () => { if (getExplorationView() === 'map') resizeExplorationMap(); });
   setupMazeSwipe();
 }
 
@@ -1673,87 +1681,120 @@ function mergeExpGeoInto(exps){
 }
 
 function getExplorationView(){
-  return localStorage.getItem('mlp_expl_view') === 'globe' ? 'globe' : 'timeline';
+  const v = localStorage.getItem('mlp_expl_view');
+  if (v === 'map' || v === 'globe') return 'map';
+  return 'timeline';
 }
 function setExplorationView(mode, silent){
   const tl = document.getElementById('expl-panel-timeline');
-  const gl = document.getElementById('expl-panel-globe');
+  const mp = document.getElementById('expl-panel-map');
   const btl = document.getElementById('expl-view-btn-timeline');
-  const bgl = document.getElementById('expl-view-btn-globe');
-  if (!tl || !gl) return;
-  if (mode === 'globe' && typeof Globe === 'undefined') {
-    if (!silent) toast('Globe 3D indisponible (script bloqué ou hors ligne).');
-    mode = 'timeline';
-  }
-  localStorage.setItem('mlp_expl_view', mode === 'globe' ? 'globe' : 'timeline');
-  const isG = mode === 'globe';
-  tl.classList.toggle('hidden', isG);
-  gl.classList.toggle('hidden', !isG);
-  if (btl) btl.classList.toggle('on', !isG);
-  if (bgl) bgl.classList.toggle('on', isG);
-  if (isG) {
+  const bmap = document.getElementById('expl-view-btn-map');
+  if (!tl || !mp) return;
+  localStorage.setItem('mlp_expl_view', mode === 'map' ? 'map' : 'timeline');
+  const isM = mode === 'map';
+  tl.classList.toggle('hidden', isM);
+  mp.classList.toggle('hidden', !isM);
+  if (btl) btl.classList.toggle('on', !isM);
+  if (bmap) bmap.classList.toggle('on', isM);
+  if (isM) {
     requestAnimationFrame(() => {
-      initExplorationGlobe();
-      refreshExplorationGlobe();
-      setTimeout(() => { resizeExplorationGlobe(); }, 120);
+      initExplorationMap();
+      refreshExplorationMap();
+      setTimeout(() => { resizeExplorationMap(); }, 120);
     });
   }
 }
 
-function initExplorationGlobe(){
-  if (typeof Globe === 'undefined' || explorationGlobe) return;
-  const el = document.getElementById('expl-globe-viz');
-  if (!el) return;
-  const W = Math.max(280, el.clientWidth || 320);
-  const H = Math.min(520, Math.max(300, Math.floor(window.innerHeight * 0.48)));
-  try {
-    explorationGlobe = Globe()(el)
-      .width(W)
-      .height(H)
-      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-      .backgroundColor('rgba(224,242,254,0.97)')
-      .showAtmosphere(true)
-      .atmosphereColor('#5ba8d4')
-      .atmosphereAltitude(0.12)
-      .pointsData([])
-      .pointLat('lat')
-      .pointLng('lng')
-      .pointColor('color')
-      .pointAltitude(0.04)
-      .pointRadius(0.55)
-      .pointLabel('label')
-      .onPointClick(p => { if (p && p.label) toast(p.label); });
-    const ctr = explorationGlobe.controls && explorationGlobe.controls();
-    if (ctr) { ctr.autoRotate = true; ctr.autoRotateSpeed = 0.35; }
-  } catch (e) { console.warn('Globe init', e); explorationGlobe = null; }
+function addExplorationMapTiles(map){
+  const osmOnly = '&copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a>';
+  const maptilerAttr = '&copy; <a href="https://www.maptiler.com/copyright/" rel="noopener">MapTiler</a> ' + osmOnly;
+  if (MAPTILER_API_KEY) {
+    L.tileLayer(
+      'https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=' + encodeURIComponent(MAPTILER_API_KEY),
+      {
+        tileSize: 512,
+        zoomOffset: -1,
+        minZoom: 0,
+        maxZoom: 22,
+        attribution: maptilerAttr,
+        crossOrigin: true
+      }
+    ).addTo(map);
+  } else {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: osmOnly
+    }).addTo(map);
+  }
 }
 
-function resizeExplorationGlobe(){
-  if (!explorationGlobe) return;
-  const el = document.getElementById('expl-globe-viz');
-  if (!el) return;
-  const W = Math.max(280, el.clientWidth);
-  const H = Math.min(520, Math.max(300, Math.floor(window.innerHeight * 0.48)));
-  try { explorationGlobe.width(W).height(H); } catch (e) {}
-}
-
-function refreshExplorationGlobe(){
-  const empty = document.getElementById('expl-globe-empty');
-  if (typeof Globe === 'undefined') {
-    if (empty) empty.classList.remove('hidden');
+function initExplorationMap(){
+  const el = document.getElementById('expl-map-viz');
+  if (!el || typeof L === 'undefined') {
+    if (typeof L === 'undefined') toast('Carte indisponible (script Leaflet bloqué ou hors ligne).');
     return;
   }
+  if (explorationMap) return;
+  if (explorationMapLoading) return;
+  explorationMapLoading = true;
+  try {
+    explorationMap = L.map(el, { scrollWheelZoom: true, zoomControl: true }).setView([20, 0], 2);
+    addExplorationMapTiles(explorationMap);
+  } catch (err) {
+    explorationMapLoading = false;
+    explorationMap = null;
+    console.warn('Leaflet map', err);
+    toast('Impossible d’afficher la carte.');
+    return;
+  }
+  explorationMapLoading = false;
+  refreshExplorationMap();
+  setTimeout(() => {
+    if (explorationMap) explorationMap.invalidateSize(true);
+    resizeExplorationMap();
+  }, 100);
+}
+
+function resizeExplorationMap(){
+  if (!explorationMap || typeof L === 'undefined') return;
+  explorationMap.invalidateSize(true);
+  mergeExpGeoInto(explorationExps);
+  const pts = explorationExps.filter(e => typeof e._lat === 'number' && typeof e._lng === 'number');
+  if (pts.length === 0) return;
+  if (pts.length === 1) {
+    explorationMap.setView([pts[0]._lat, pts[0]._lng], 8);
+    return;
+  }
+  const bounds = L.latLngBounds(pts.map(p => [p._lat, p._lng]));
+  explorationMap.fitBounds(bounds, { padding: [48, 48], maxZoom: 12 });
+}
+
+function refreshExplorationMap(){
+  const empty = document.getElementById('expl-map-empty');
   mergeExpGeoInto(explorationExps);
   const pts = explorationExps.filter(e => typeof e._lat === 'number' && typeof e._lng === 'number').map(e => ({
     lat: e._lat,
     lng: e._lng,
-    color: '#1a4a8a',
     label: (e.title || 'Expédition') + ' · ' + new Date(e.exp_date).toLocaleDateString('fr-FR'),
     id: e.id
   }));
   if (empty) empty.classList.toggle('hidden', pts.length > 0);
-  if (!explorationGlobe) return;
-  try { explorationGlobe.pointsData(pts); } catch (e) { console.warn('Globe points', e); }
+  if (!explorationMap || typeof L === 'undefined') return;
+  explorationMapMarkers.forEach(m => { explorationMap.removeLayer(m); });
+  explorationMapMarkers = [];
+  pts.forEach(p => {
+    const m = L.marker([p.lat, p.lng]).addTo(explorationMap);
+    m.bindTooltip(p.label, { direction: 'top', offset: [0, -28] });
+    m.on('click', () => { toast(p.label); });
+    explorationMapMarkers.push(m);
+  });
+  if (pts.length === 1) {
+    explorationMap.setView([pts[0].lat, pts[0].lng], 8);
+  } else if (pts.length > 1) {
+    const bounds = L.latLngBounds(pts.map(p => [p.lat, p.lng]));
+    explorationMap.fitBounds(bounds, { padding: [48, 48], maxZoom: 12 });
+  }
 }
 
 async function geocodeExpPlace(){
@@ -2045,7 +2086,7 @@ async function loadExploration(){
     nodesEl.innerHTML=`<div style="text-align:center;color:#1a4a8a;padding:30px 20px;font-size:.88rem;font-weight:600">Aucune expédition pour l'instant.<br/>Ajoute ta première aventure ! 🗺️</div>`;
     document.getElementById('expl-wait-label').textContent='En attente de la première aventure… ✨';
     populateExpeditionSelectors();
-    refreshExplorationGlobe();
+    refreshExplorationMap();
     return;
   }
   const lastExp=exps[exps.length-1]; const daysWaiting=calcDF(lastExp.exp_date,null);
@@ -2070,8 +2111,8 @@ async function loadExploration(){
       </div>`;
   }).join('');
   populateExpeditionSelectors();
-  refreshExplorationGlobe();
-  if(getExplorationView()==='globe')setTimeout(resizeExplorationGlobe,100);
+  refreshExplorationMap();
+  if (getExplorationView() === 'map') setTimeout(resizeExplorationMap, 100);
 }
 
 // ════════════════════════════════════════════════
