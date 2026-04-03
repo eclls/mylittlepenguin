@@ -474,12 +474,19 @@ button{cursor:pointer}
         </svg>
       </div>
     </div>
-    <div class="ob-card" id="ob-s1">
+    <div class="ob-card" id="ob-choice">
+      <h2>Bienvenue</h2>
+      <p class="ob-hint">Nouveau compte ou connexion avec ton pseudo et ton mot de passe.</p>
+      <button type="button" class="ob-btn" id="ob-new-btn">Nouveau compte</button>
+      <button type="button" class="cn-btn" id="ob-login-btn" style="margin-top:10px;width:100%">J’ai déjà un compte</button>
+    </div>
+    <div class="ob-card hidden" id="ob-s1">
       <h2>Choisis ton pseudo</h2>
       <p class="ob-hint">Unique, sans email. Promis.</p>
-      <div class="ob-inp"><span class="ob-inp-ic">🐧</span><input type="text" id="pseudo-in" placeholder="ex: IceExplorer42" maxlength="20" autocomplete="off"/></div>
+      <div class="ob-inp"><span class="ob-inp-ic">🐧</span><input type="text" id="pseudo-in" placeholder="ex: IceExplorer42" maxlength="20" autocomplete="username"/></div>
       <div class="ob-err" id="pseudo-err"></div>
       <button class="ob-btn" id="pseudo-next">Continuer →</button>
+      <button type="button" class="cn-btn" id="ob-back-choice" style="margin-top:0.75rem;width:100%">← Retour</button>
     </div>
     <div class="ob-card hidden" id="ob-s2">
       <h2>Depuis quand tiens-tu bon ?</h2>
@@ -492,7 +499,26 @@ button{cursor:pointer}
       <div class="ob-inp hidden" id="wrap-days"><span class="ob-inp-ic">🔢</span><input type="number" id="days-in" placeholder="ex: 42" min="0" max="9999"/></div>
       <div class="ob-prev" id="ob-prev"></div>
       <div class="ob-err" id="date-err"></div>
-      <button class="ob-btn" id="date-next">Commencer l'expédition 🚀</button>
+      <button class="ob-btn" id="date-next">Continuer →</button>
+      <button type="button" class="cn-btn" id="ob-back-s1" style="margin-top:0.75rem;width:100%">← Retour</button>
+    </div>
+    <div class="ob-card hidden" id="ob-s3">
+      <h2>Mot de passe</h2>
+      <p class="ob-hint">Pour te reconnecter sur un autre téléphone ou ordinateur (min. 8 caractères).</p>
+      <div class="ob-inp"><span class="ob-inp-ic">🔐</span><input type="password" id="pass-new" placeholder="Mot de passe" minlength="8" autocomplete="new-password"/></div>
+      <div class="ob-inp"><span class="ob-inp-ic">🔁</span><input type="password" id="pass-new2" placeholder="Confirmer" minlength="8" autocomplete="new-password"/></div>
+      <div class="ob-err" id="pass-err"></div>
+      <button type="button" class="ob-btn" id="pass-done">Commencer l’expédition 🚀</button>
+      <button type="button" class="cn-btn" id="ob-back-s2" style="margin-top:0.75rem;width:100%">← Retour</button>
+    </div>
+    <div class="ob-card hidden" id="ob-login">
+      <h2>Connexion</h2>
+      <p class="ob-hint">Pseudo + mot de passe définis lors de l’inscription.</p>
+      <div class="ob-inp"><span class="ob-inp-ic">🐧</span><input type="text" id="login-pseudo" placeholder="Pseudo" maxlength="20" autocomplete="username"/></div>
+      <div class="ob-inp"><span class="ob-inp-ic">🔐</span><input type="password" id="login-pass" placeholder="Mot de passe" autocomplete="current-password"/></div>
+      <div class="ob-err" id="login-err"></div>
+      <button type="button" class="ob-btn" id="login-submit">Entrer</button>
+      <button type="button" class="cn-btn" id="ob-login-back" style="margin-top:0.75rem;width:100%">← Retour</button>
     </div>
   </div>
 </div>
@@ -728,6 +754,13 @@ button{cursor:pointer}
       <div class="psec">
         <div class="sl">Paramètres</div>
         <div class="slist">
+          <div class="si pass-recovery-banner hidden" id="pass-recovery-banner" style="flex-direction:column;align-items:stretch;gap:10px;padding:14px;border-radius:var(--r-md);background:rgba(91,168,212,.12);border:1.5px solid rgba(26,74,138,.2)">
+            <div class="si-l" style="margin-bottom:0"><span class="si-ic">🔐</span><div><div class="si-lb">Autre appareil</div><div class="si-sb">Définis un mot de passe pour te reconnecter ailleurs</div></div></div>
+            <div class="ob-inp"><input type="password" id="pass-setup" placeholder="Nouveau mot de passe (8+ car.)" minlength="8" autocomplete="new-password" style="width:100%;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid rgba(10,22,40,.12);font-size:.88rem;font-weight:600"/></div>
+            <div class="ob-inp"><input type="password" id="pass-setup2" placeholder="Confirmer" minlength="8" autocomplete="new-password" style="width:100%;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid rgba(10,22,40,.12);font-size:.88rem;font-weight:600"/></div>
+            <div class="ob-err" id="pass-setup-err" style="min-height:1em"></div>
+            <button type="button" class="ob-btn" id="pass-setup-btn" style="width:100%">Enregistrer le mot de passe</button>
+          </div>
           <div class="si">
             <div class="si-l"><span class="si-ic">🔔</span><div><div class="si-lb">Notifications</div><div class="si-sb">Tout activer / désactiver</div></div></div>
             <div class="tog on" id="notif-tog" onclick="toggleNotif()"><div class="knob"></div></div>
@@ -1143,6 +1176,124 @@ function initSB() {
 }
 function genUUID() { return 'mlp_' + Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
 function myId()    { return P?.id || localStorage.getItem('mlp_id'); }
+const MIN_PASSWORD_LENGTH = 8;
+
+async function pbkdf2HashPassword(password) {
+  const enc = new TextEncoder();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+    keyMaterial,
+    256
+  );
+  const saltB64 = btoa(String.fromCharCode(...salt));
+  const hashB64 = btoa(String.fromCharCode(...new Uint8Array(bits)));
+  return 'v1$100000$' + saltB64 + '$' + hashB64;
+}
+async function verifyPasswordStored(stored, password) {
+  if (!stored || typeof stored !== 'string') return false;
+  const parts = stored.split('$');
+  if (parts[0] !== 'v1' || parts.length !== 4) return false;
+  const iterations = parseInt(parts[1], 10);
+  if (!iterations) return false;
+  let salt;
+  try { salt = Uint8Array.from(atob(parts[2]), c => c.charCodeAt(0)); } catch (e) { return false; }
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits(
+    { name: 'PBKDF2', salt: salt, iterations: iterations, hash: 'SHA-256' },
+    keyMaterial,
+    256
+  );
+  const hashB64 = btoa(String.fromCharCode(...new Uint8Array(bits)));
+  return hashB64 === parts[3];
+}
+function rowToP(row) {
+  return {
+    id: row.id,
+    pseudo: row.pseudo,
+    start_date: row.start_date,
+    last_kill_date: row.last_kill_date,
+    kills: row.kills ?? 0,
+    avatar: row.avatar || '🐧',
+    notif_enabled: row.notif_enabled !== false,
+    notif_friends: row.notif_friends !== false,
+    notif_messages: row.notif_messages !== false,
+    notif_kill: row.notif_kill !== false,
+    banquise_public: row.banquise_public !== false,
+    alert_friends: row.alert_friends !== false,
+    glacons: typeof row.glacons === 'number' && !isNaN(row.glacons) ? row.glacons : 0
+  };
+}
+async function pullScoresFromServer() {
+  if (!SB || !myId()) return;
+  try {
+    const { data } = await SB.from('scores').select('game,score').eq('user_id', myId());
+    if (!data || !data.length) return;
+    let changed = false;
+    data.forEach(({ game, score }) => {
+      if (BEST_SCORES[game] !== undefined && typeof score === 'number' && score > (BEST_SCORES[game] || 0)) {
+        BEST_SCORES[game] = score;
+        changed = true;
+      }
+    });
+    if (changed) saveScores();
+  } catch (e) {}
+}
+async function refreshPasswordBanner() {
+  const b = document.getElementById('pass-recovery-banner');
+  if (!b || !SB || !myId()) return;
+  try {
+    const { data } = await SB.from('profiles').select('password_hash').eq('id', myId()).maybeSingle();
+    b.classList.toggle('hidden', !!(data && data.password_hash));
+  } catch (e) { b.classList.add('hidden'); }
+}
+async function tryLogin() {
+  const ps = document.getElementById('login-pseudo').value.trim();
+  const pw = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-err');
+  err.textContent = '';
+  if (ps.length < 2) { err.textContent = 'Pseudo trop court.'; return; }
+  if (!pw) { err.textContent = 'Mot de passe requis.'; return; }
+  if (!SB) { err.textContent = 'Connexion impossible (hors ligne).'; return; }
+  err.textContent = 'Connexion…';
+  const { data, error } = await SB.from('profiles').select('*').eq('pseudo', ps).maybeSingle();
+  if (error || !data) { err.textContent = 'Pseudo introuvable.'; return; }
+  if (!data.password_hash) {
+    err.textContent = 'Ce compte n’a pas encore de mot de passe. Sur ton appareil habituel : Profil → « Autre appareil » pour en créer un.';
+    return;
+  }
+  const ok = await verifyPasswordStored(data.password_hash, pw);
+  if (!ok) { err.textContent = 'Mot de passe incorrect.'; return; }
+  P = rowToP(data);
+  localStorage.setItem('mlp_id', P.id);
+  localStorage.setItem('mlp_v2', JSON.stringify(P));
+  await pullScoresFromServer();
+  err.textContent = '';
+  document.getElementById('login-pass').value = '';
+  enterApp();
+}
+async function savePassFromProfile() {
+  const e = document.getElementById('pass-setup-err');
+  e.textContent = '';
+  const pw = document.getElementById('pass-setup').value;
+  const pw2 = document.getElementById('pass-setup2').value;
+  if (pw.length < MIN_PASSWORD_LENGTH) { e.textContent = 'Au moins ' + MIN_PASSWORD_LENGTH + ' caractères.'; return; }
+  if (pw !== pw2) { e.textContent = 'Les mots de passe ne correspondent pas.'; return; }
+  if (!SB || !P) return;
+  try {
+    P._passwordHashPending = await pbkdf2HashPassword(pw);
+    await syncProfile();
+  } catch (err) {
+    e.textContent = 'Erreur d’enregistrement.';
+    return;
+  }
+  document.getElementById('pass-setup').value = '';
+  document.getElementById('pass-setup2').value = '';
+  toast('Mot de passe enregistré ! Tu peux te connecter sur un autre appareil.');
+  refreshPasswordBanner();
+}
 
 window.addEventListener('DOMContentLoaded', () => {
   genStars();
@@ -1171,20 +1322,42 @@ async function boot() {
 async function syncProfile() {
   if (!SB || !P) return;
   try {
-    await SB.from('profiles').upsert({
-      id: P.id, pseudo: P.pseudo, start_date: P.start_date, last_kill_date: P.last_kill_date||null, kills: P.kills||0,
-      avatar: P.avatar||'🐧', notif_enabled: P.notif_enabled!==false, banquise_public: P.banquise_public!==false, alert_friends: P.alert_friends!==false,
-    }, {onConflict:'id'});
-  } catch(e) {}
+    const row = {
+      id: P.id,
+      pseudo: P.pseudo,
+      start_date: P.start_date,
+      last_kill_date: P.last_kill_date || null,
+      kills: P.kills || 0,
+      avatar: P.avatar || '🐧',
+      notif_enabled: P.notif_enabled !== false,
+      banquise_public: P.banquise_public !== false,
+      alert_friends: P.alert_friends !== false
+    };
+    if (P._passwordHashPending) row.password_hash = P._passwordHashPending;
+    await SB.from('profiles').upsert(row, { onConflict: 'id' });
+    if (P._passwordHashPending) delete P._passwordHashPending;
+  } catch (e) {}
 }
 
-function showOB() { document.getElementById('splash').classList.remove('active'); document.getElementById('onboarding').classList.add('active'); }
+function showOBChoice() {
+  document.getElementById('ob-choice').classList.remove('hidden');
+  document.getElementById('ob-s1').classList.add('hidden');
+  document.getElementById('ob-s2').classList.add('hidden');
+  document.getElementById('ob-s3').classList.add('hidden');
+  document.getElementById('ob-login').classList.add('hidden');
+}
+function showOB() {
+  document.getElementById('splash').classList.remove('active');
+  document.getElementById('onboarding').classList.add('active');
+  showOBChoice();
+}
 function enterApp() {
   document.getElementById('splash').classList.remove('active'); document.getElementById('onboarding').classList.remove('active');
   document.getElementById('app').classList.add('active');
   updateScoreDisplay(); updateB(); updateP(); checkBadges();
   updateNotifPermissionUI();
   initNotifPolling();
+  refreshPasswordBanner();
 }
 
 function goPage(name) {
@@ -1207,8 +1380,41 @@ window.closePanel = closePanel;
 //  ONBOARDING & BINDINGS
 // ════════════════════════════════════════════════
 function bindAll() {
+  document.getElementById('ob-new-btn').onclick = () => {
+    document.getElementById('ob-choice').classList.add('hidden');
+    document.getElementById('ob-s1').classList.remove('hidden');
+  };
+  document.getElementById('ob-login-btn').onclick = () => {
+    document.getElementById('ob-choice').classList.add('hidden');
+    document.getElementById('ob-login').classList.remove('hidden');
+    document.getElementById('login-err').textContent = '';
+  };
+  document.getElementById('ob-back-choice').onclick = () => {
+    document.getElementById('ob-s1').classList.add('hidden');
+    document.getElementById('ob-choice').classList.remove('hidden');
+    document.getElementById('pseudo-err').textContent = '';
+  };
+  document.getElementById('ob-back-s1').onclick = () => {
+    document.getElementById('ob-s2').classList.add('hidden');
+    document.getElementById('ob-s1').classList.remove('hidden');
+    document.getElementById('date-err').textContent = '';
+  };
+  document.getElementById('ob-back-s2').onclick = () => {
+    document.getElementById('ob-s3').classList.add('hidden');
+    document.getElementById('ob-s2').classList.remove('hidden');
+    document.getElementById('pass-err').textContent = '';
+  };
+  document.getElementById('ob-login-back').onclick = () => {
+    document.getElementById('ob-login').classList.add('hidden');
+    document.getElementById('ob-choice').classList.remove('hidden');
+    document.getElementById('login-err').textContent = '';
+  };
+  document.getElementById('pass-done').onclick = () => { onPassDone(); };
+  document.getElementById('login-submit').onclick = () => { tryLogin(); };
+  const psb = document.getElementById('pass-setup-btn');
+  if (psb) psb.onclick = () => { savePassFromProfile(); };
   document.getElementById('pseudo-next').onclick = onPN;
-  document.getElementById('date-next').onclick   = onDN;
+  document.getElementById('date-next').onclick   = onDateNextStep;
   document.getElementById('date-in').oninput     = upPrev;
   document.getElementById('days-in').oninput     = upPrev;
   document.getElementById('kill-btn').onclick    = () => document.getElementById('kill-modal').classList.remove('hidden');
@@ -1314,30 +1520,71 @@ function onPN() {
   upPrev();
 }
 
-async function onDN() {
-  const e=document.getElementById('date-err'); let sd;
-  if(MODE==='date'){
-    const v=document.getElementById('date-in').value; if(!v){e.textContent='Choisis une date !';return;}
-    const dt=new Date(v),now=new Date(); now.setHours(0,0,0,0); dt.setHours(0,0,0,0);
-    if(dt>now){e.textContent='Pas dans le futur !';return;}
-    sd=v;
-  } else {
-    const d=parseInt(document.getElementById('days-in').value); if(isNaN(d)||d<0){e.textContent='Nombre invalide !';return;}
-    const dt=new Date(); dt.setDate(dt.getDate()-d); sd=dt.toISOString().slice(0,10);
-  }
-  e.textContent='';
-  if(SB){
-    e.textContent='Vérification…';
-    const {data}=await SB.from('profiles').select('id').eq('pseudo',window._pseudo).limit(1);
-    if(data&&data.length>0){e.textContent='Ce pseudo est déjà pris 😬';return;}
-    e.textContent='';
-  }
-  const uid=genUUID(); localStorage.setItem('mlp_id',uid);
-  P={id:uid,pseudo:window._pseudo,start_date:sd,avatar:'🐧',notif_enabled:true,notif_friends:true,notif_messages:true,notif_kill:true,banquise_public:true,alert_friends:true,last_kill_date:null,kills:0,glacons:0};
-  localStorage.setItem('mlp_v2',JSON.stringify(P));
+async function finishOnboardingNoSupabase(sd) {
+  const uid = genUUID();
+  localStorage.setItem('mlp_id', uid);
+  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
+  localStorage.setItem('mlp_v2', JSON.stringify(P));
   await syncProfile();
-  
-  if(P.notif_enabled) askNotificationPermission();
+  if (P.notif_enabled) askNotificationPermission();
+  enterApp();
+}
+async function onDateNextStep() {
+  const e = document.getElementById('date-err');
+  let sd;
+  if (MODE === 'date') {
+    const v = document.getElementById('date-in').value;
+    if (!v) { e.textContent = 'Choisis une date !'; return; }
+    const dt = new Date(v), now = new Date();
+    now.setHours(0, 0, 0, 0);
+    dt.setHours(0, 0, 0, 0);
+    if (dt > now) { e.textContent = 'Pas dans le futur !'; return; }
+    sd = v;
+  } else {
+    const d = parseInt(document.getElementById('days-in').value, 10);
+    if (isNaN(d) || d < 0) { e.textContent = 'Nombre invalide !'; return; }
+    const dt = new Date();
+    dt.setDate(dt.getDate() - d);
+    sd = dt.toISOString().slice(0, 10);
+  }
+  e.textContent = '';
+  if (SB) {
+    e.textContent = 'Vérification…';
+    const { data } = await SB.from('profiles').select('id').eq('pseudo', window._pseudo).limit(1);
+    if (data && data.length) { e.textContent = 'Ce pseudo est déjà pris 😬'; return; }
+    e.textContent = '';
+    window._obSD = sd;
+    document.getElementById('ob-s2').classList.add('hidden');
+    document.getElementById('ob-s3').classList.remove('hidden');
+    return;
+  }
+  await finishOnboardingNoSupabase(sd);
+}
+async function onPassDone() {
+  const e = document.getElementById('pass-err');
+  e.textContent = '';
+  const pw = document.getElementById('pass-new').value;
+  const pw2 = document.getElementById('pass-new2').value;
+  if (pw.length < MIN_PASSWORD_LENGTH) { e.textContent = 'Au moins ' + MIN_PASSWORD_LENGTH + ' caractères.'; return; }
+  if (pw !== pw2) { e.textContent = 'Les mots de passe ne correspondent pas.'; return; }
+  const sd = window._obSD;
+  if (!sd || !window._pseudo) { e.textContent = 'Session expirée. Recommence depuis l’accueil.'; return; }
+  e.textContent = 'Création…';
+  const uid = genUUID();
+  localStorage.setItem('mlp_id', uid);
+  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
+  localStorage.setItem('mlp_v2', JSON.stringify(P));
+  try {
+    P._passwordHashPending = await pbkdf2HashPassword(pw);
+    await syncProfile();
+  } catch (err) {
+    console.warn(err);
+    e.textContent = 'Erreur lors de la création du compte.';
+    return;
+  }
+  document.getElementById('pass-new').value = '';
+  document.getElementById('pass-new2').value = '';
+  if (P.notif_enabled) askNotificationPermission();
   enterApp();
 }
 
