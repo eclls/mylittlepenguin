@@ -195,6 +195,10 @@ button{cursor:pointer}
 .expl-map-viz { width: 100%; min-height: min(52vh,420px); border-radius: var(--r-lg); overflow: hidden; border: 2px solid rgba(26,74,138,.2); background: linear-gradient(180deg,#e0f2fe,#bae6fd); box-shadow: 0 8px 28px rgba(0,0,0,.08); z-index: 0; }
 .expl-map-viz .leaflet-container { font-family: var(--fb); border-radius: inherit; }
 .expl-map-viz .leaflet-control-attribution { font-size: 10px; max-width: calc(100% - 56px); line-height: 1.35; }
+.expl-map-viz .expl-map-pin-icon.leaflet-div-icon { background: transparent !important; border: none !important; }
+.expl-map-viz .expl-map-pin-inner { filter: drop-shadow(0 5px 10px rgba(0,0,0,.32)); pointer-events: none; }
+.expl-map-viz .expl-map-pin-inner svg { display: block; }
+.expl-map-viz .expl-map-pin-icon--dot .expl-map-pin-inner { filter: drop-shadow(0 3px 6px rgba(0,0,0,.28)); }
 .expl-globe-hint { font-size: .72rem; color: rgba(10,22,40,.6); font-weight: 600; margin-top: 10px; line-height: 1.45; }
 .expl-globe-empty { text-align: center; padding: 24px 16px; font-size: .86rem; font-weight: 700; color: #1a4a8a; background: rgba(255,255,255,.75); border-radius: var(--r-md); border: 1.5px dashed rgba(26,74,138,.25); }
 .expl-geocode-btn { padding: 10px 14px; border-radius: var(--r-md); border: 2px solid rgba(26,74,138,.35); background: #fff; color: #1a4a8a; font-weight: 800; font-size: .78rem; cursor: pointer; white-space: nowrap; }
@@ -665,7 +669,7 @@ button{cursor:pointer}
       <div id="expl-panel-map" class="expl-panel-map hidden">
         <div class="expl-map-viz" id="expl-map-viz" aria-label="Carte des expéditions"></div>
         <div id="expl-map-empty" class="expl-globe-empty hidden">Aucun lieu renseigné pour tes expéditions. Édite une expédition et utilise « Placer » après avoir saisi un lieu.</div>
-        <p class="expl-globe-hint">Zoome et déplace la carte (Leaflet + MapTiler <em>streets-v2</em>). Chaque marqueur correspond à une expédition dont tu as indiqué le lieu (bouton « Placer »). Géocodage « Placer » : Photon (OSM).</p>
+        <p class="expl-globe-hint">Zoome et déplace la carte (Leaflet + MapTiler, style et épingle réglables dans le code). Chaque marqueur correspond à une expédition dont tu as indiqué le lieu (bouton « Placer »). Géocodage « Placer » : Photon (OSM).</p>
       </div>
       <div class="bsp"></div>
     </div>
@@ -958,7 +962,13 @@ const SUPABASE_URL  = 'https://cirdtmjrsgbqbstwrgzx.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcmR0bWpyc2dicWJzdHdyZ3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDMxMjMsImV4cCI6MjA4OTYxOTEyM30.g0wYu9rQ75KZStirsfFV9JV-1V2tmWGy9zftEOzbQIU';
 
 /** Clé MapTiler Cloud — vide = repli OSM. Restriction origine : l’URL où la page tourne (ex. GitHub Pages https://eclls.github.io/mylittlepenguin/*), pas https://github.com/... */
-const MAPTILER_API_KEY = '13SQbvT304EPapvHhy9F';
+const MAPTILER_API_KEY = 'MLTeVLFY1E3v4gxdSDKB';
+
+/** Style de fond MapTiler (tuiles raster PNG). Ici : outdoor (relief / randonnée). Autres ex. : pastel, basic-v2, streets-v2, bright, topo-v2 … */
+const MAPTILER_MAP_STYLE = 'outdoor';
+
+/** Marqueurs : 'pin' (punaise : boule rouge + tige grise) ou 'dot' (pastille glacée) */
+const EXPL_PIN_STYLE = 'pin';
 
 const LVL = [
   {min:0,  max:29,  i:'🐣', n:'Poussin Polaire',       nx:30},
@@ -981,6 +991,8 @@ let explorationExps = [];
 let explorationMap = null;
 let explorationMapMarkers = [];
 let explorationMapLoading = false;
+let explorationPinIconCache = null;
+let explorationDotIconCache = null;
 let expPendingLat = null, expPendingLng = null, expPlaceLabel = '';
 let notifPollTimer = null;
 let notifWaterline = null;
@@ -1711,7 +1723,7 @@ function addExplorationMapTiles(map){
   const maptilerAttr = '&copy; <a href="https://www.maptiler.com/copyright/" rel="noopener">MapTiler</a> ' + osmOnly;
   if (MAPTILER_API_KEY) {
     L.tileLayer(
-      'https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=' + encodeURIComponent(MAPTILER_API_KEY),
+      'https://api.maptiler.com/maps/' + encodeURIComponent(MAPTILER_MAP_STYLE) + '/{z}/{x}/{y}.png?key=' + encodeURIComponent(MAPTILER_API_KEY),
       {
         tileSize: 512,
         zoomOffset: -1,
@@ -1727,6 +1739,41 @@ function addExplorationMapTiles(map){
       attribution: osmOnly
     }).addTo(map);
   }
+}
+
+function getExplorationMarkerIcon(){
+  if (EXPL_PIN_STYLE === 'dot') {
+    if (explorationDotIconCache) return explorationDotIconCache;
+    const dotSvg =
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" width="36" height="36" aria-hidden="true">' +
+      '<circle cx="20" cy="20" r="17" fill="#38bdf8" stroke="#1a4a8a" stroke-width="2.5"/>' +
+      '<circle cx="20" cy="20" r="8" fill="#fff" opacity=".35"/>' +
+      '<circle cx="20" cy="20" r="4" fill="#0f172a"/></svg>';
+    explorationDotIconCache = L.divIcon({
+      className: 'expl-map-pin-icon expl-map-pin-icon--dot',
+      html: '<div class="expl-map-pin-inner">' + dotSvg + '</div>',
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+      tooltipAnchor: [0, -18]
+    });
+    return explorationDotIconCache;
+  }
+  if (explorationPinIconCache) return explorationPinIconCache;
+  const pinSvg =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 64" width="42" height="56" aria-hidden="true">' +
+    '<path fill="#8d9bab" d="M21 27L27 27 27 44 24 62 21 44z"/>' +
+    '<circle cx="24" cy="15" r="12" fill="#e53935"/>' +
+    '<ellipse cx="17.5" cy="10" rx="4.5" ry="3.2" fill="rgba(255,255,255,.4)"/>' +
+    '<ellipse cx="29" cy="14" rx="3.2" ry="2.6" fill="rgba(0,0,0,.12)"/>' +
+    '</svg>';
+  explorationPinIconCache = L.divIcon({
+    className: 'expl-map-pin-icon',
+    html: '<div class="expl-map-pin-inner">' + pinSvg + '</div>',
+    iconSize: [42, 56],
+    iconAnchor: [21, 56],
+    tooltipAnchor: [0, -52]
+  });
+  return explorationPinIconCache;
 }
 
 function initExplorationMap(){
@@ -1783,9 +1830,11 @@ function refreshExplorationMap(){
   if (!explorationMap || typeof L === 'undefined') return;
   explorationMapMarkers.forEach(m => { explorationMap.removeLayer(m); });
   explorationMapMarkers = [];
+  const icon = getExplorationMarkerIcon();
+  const tipOff = EXPL_PIN_STYLE === 'dot' ? [0, -22] : [0, -48];
   pts.forEach(p => {
-    const m = L.marker([p.lat, p.lng]).addTo(explorationMap);
-    m.bindTooltip(p.label, { direction: 'top', offset: [0, -28] });
+    const m = L.marker([p.lat, p.lng], { icon: icon }).addTo(explorationMap);
+    m.bindTooltip(p.label, { direction: 'top', offset: tipOff, opacity: 0.95 });
     m.on('click', () => { toast(p.label); });
     explorationMapMarkers.push(m);
   });
