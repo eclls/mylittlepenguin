@@ -186,6 +186,17 @@ button{cursor:pointer}
 .expl-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
 .expl-header h1 { font-family: var(--fd); font-size: 1.75rem; font-weight: 700; color: #0a1628; text-shadow: 0 1px 0 #fff; margin: 0; flex: 1; min-width: 160px; }
 .expl-header-stack { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-end; align-self: flex-start; gap: 8px; flex-shrink: 0; }
+.expl-view-seg { display: flex; gap: 6px; margin: 12px 0 16px; width: 100%; max-width: 420px; }
+.expl-view-btn { flex: 1; padding: 10px 12px; border-radius: var(--r-xl); border: 2px solid rgba(26,74,138,.35); background: #fff; color: #1a4a8a; font-weight: 800; font-size: .82rem; cursor: pointer; transition: all .2s; }
+.expl-view-btn.on { background: linear-gradient(135deg,#1a4a8a,#2563eb); color: #fff; border-color: transparent; box-shadow: 0 4px 14px rgba(26,74,138,.25); }
+.expl-view-btn:active { transform: scale(.98); }
+.expl-panel-globe { margin-bottom: 16px; }
+.expl-globe-viz { width: 100%; min-height: min(52vh,420px); border-radius: var(--r-lg); overflow: hidden; border: 2px solid rgba(26,74,138,.2); background: linear-gradient(180deg,#e0f2fe,#bae6fd); box-shadow: 0 8px 28px rgba(0,0,0,.08); }
+.expl-globe-hint { font-size: .72rem; color: rgba(10,22,40,.6); font-weight: 600; margin-top: 10px; line-height: 1.45; }
+.expl-globe-empty { text-align: center; padding: 24px 16px; font-size: .86rem; font-weight: 700; color: #1a4a8a; background: rgba(255,255,255,.75); border-radius: var(--r-md); border: 1.5px dashed rgba(26,74,138,.25); }
+.expl-geocode-btn { padding: 10px 14px; border-radius: var(--r-md); border: 2px solid rgba(26,74,138,.35); background: #fff; color: #1a4a8a; font-weight: 800; font-size: .78rem; cursor: pointer; white-space: nowrap; }
+.expl-geocode-btn:active { transform: scale(.98); }
+.exp-place-status { font-size: .72rem; font-weight: 700; color: #15803d; min-height: 1.2em; }
 .add-exp-btn { background: #1a4a8a; color: #fff; font-weight: 800; padding: 10px 16px; border-radius: var(--r-xl); font-size: .84rem; border: none; cursor: pointer; white-space: nowrap; }
 .add-exp-btn:active { transform: scale(.98); }
 .expl-edit-flow-btn { background: #fff; color: #1a4a8a; font-weight: 800; padding: 10px 14px; border-radius: var(--r-xl); font-size: .78rem; border: 2px solid rgba(26,74,138,.45); cursor: pointer; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
@@ -578,6 +589,10 @@ button{cursor:pointer}
           <button type="button" class="expl-delete-flow-btn" id="show-exp-delete-picker">Supprimer</button>
         </div>
       </div>
+      <div class="expl-view-seg" role="tablist" aria-label="Affichage des expéditions">
+        <button type="button" class="expl-view-btn on" id="expl-view-btn-timeline" data-expl-view="timeline">Frise</button>
+        <button type="button" class="expl-view-btn" id="expl-view-btn-globe" data-expl-view="globe">Globe</button>
+      </div>
       <div class="exp-edit-picker hidden" id="exp-edit-picker">
         <label for="exp-edit-select">Choisir une expédition à modifier</label>
         <select id="exp-edit-select" class="exp-edit-select" aria-label="Expédition à modifier"></select>
@@ -597,6 +612,15 @@ button{cursor:pointer}
           <textarea id="exp-note-in" placeholder="Note, souvenir…" maxlength="200" style="width:100%;background:transparent;color:#0a1628;font-size:.9rem;font-weight:600;resize:none;min-height:60px;border:none;outline:none"></textarea>
         </div>
         <div class="ob-inp"><span class="ob-inp-ic">📅</span><input type="date" id="exp-date-in"/></div>
+        <div class="ob-inp" style="flex-direction:column;align-items:stretch;gap:8px">
+          <span style="font-size:.74rem;font-weight:800;color:#1a4a8a">Lieu sur le globe (optionnel)</span>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;width:100%">
+            <input type="text" id="exp-place-in" placeholder="Ville, région, pays…" maxlength="90" style="flex:1;min-width:140px;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid rgba(10,22,40,.12);font-size:.88rem;font-weight:600;color:#0a1628;background:rgba(10,22,40,.03)"/>
+            <button type="button" class="expl-geocode-btn" id="exp-geocode-btn">Placer</button>
+          </div>
+          <button type="button" class="cn-btn" id="exp-clear-place-btn" style="align-self:flex-start;padding:6px 12px;font-size:.72rem;color:#b45309;border-color:rgba(180,83,9,.35)">Effacer le lieu</button>
+          <div class="exp-place-status" id="exp-place-status"></div>
+        </div>
         <div class="photo-row">
           <button type="button" class="photo-upload-btn primary" id="exp-pick-gallery">🖼️ Galerie</button>
           <button type="button" class="photo-upload-btn" id="exp-pick-camera">📷 Appareil photo</button>
@@ -608,6 +632,7 @@ button{cursor:pointer}
         <button class="ob-btn" id="save-exp-btn">Sauvegarder l'expédition 🚀</button>
         <button class="cn-btn" id="cancel-exp-btn" style="color:#1a4a8a;border-color:rgba(26,74,138,.3)">Annuler</button>
       </div>
+      <div id="expl-panel-timeline" class="expl-panel-timeline">
       <div class="expl-path" id="expl-path">
         <div class="path-line"></div>
         <div id="expl-nodes"></div>
@@ -632,6 +657,12 @@ button{cursor:pointer}
           </div>
           <div class="expl-pingu-label" id="expl-wait-label">En attente de la prochaine aventure… ✨</div>
         </div>
+      </div>
+      </div>
+      <div id="expl-panel-globe" class="expl-panel-globe hidden">
+        <div class="expl-globe-viz" id="expl-globe-viz" aria-label="Globe des expéditions"></div>
+        <p class="expl-globe-hint">Fais tourner le globe du doigt ou à la souris. Chaque point correspond à une expédition dont tu as indiqué le lieu (bouton « Placer » dans le formulaire). Données cartographiques : OpenStreetMap / Photon.</p>
+        <div id="expl-globe-empty" class="expl-globe-empty hidden">Aucun lieu renseigné pour tes expéditions. Édite une expédition et utilise « Placer » après avoir saisi un lieu.</div>
       </div>
       <div class="bsp"></div>
     </div>
@@ -914,6 +945,7 @@ button{cursor:pointer}
 
 <input type="file" id="exp-photo-input" accept="image/*" style="display:none"/>
 
+<script src="https://cdn.jsdelivr.net/npm/globe.gl@2.32.1/dist/globe.gl.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // ════════════════════════════════════════════════
@@ -940,6 +972,8 @@ let selectedPhotoFile = null, selectedPhotoB64 = null;
 let editingExpeditionId = null;
 let expPhotoRemoved = false;
 let explorationExps = [];
+let explorationGlobe = null;
+let expPendingLat = null, expPendingLng = null, expPlaceLabel = '';
 let notifPollTimer = null;
 let notifWaterline = null;
 
@@ -1208,6 +1242,15 @@ function bindAll() {
   document.getElementById('exp-pick-gallery').onclick = () => pickExpPhoto('gallery');
   document.getElementById('exp-pick-camera').onclick = () => pickExpPhoto('camera');
   document.getElementById('exp-photo-input').addEventListener('change', handlePhotoSelect);
+  const evT = document.getElementById('expl-view-btn-timeline');
+  const evG = document.getElementById('expl-view-btn-globe');
+  if (evT) evT.onclick = () => setExplorationView('timeline');
+  if (evG) evG.onclick = () => setExplorationView('globe');
+  const egc = document.getElementById('exp-geocode-btn');
+  if (egc) egc.onclick = () => geocodeExpPlace();
+  const ecp = document.getElementById('exp-clear-place-btn');
+  if (ecp) ecp.onclick = () => clearExpPlace();
+  window.addEventListener('resize', () => { if (getExplorationView() === 'globe') resizeExplorationGlobe(); });
   setupMazeSwipe();
 }
 
@@ -1603,6 +1646,152 @@ async function checkBadges(){
 // ════════════════════════════════════════════════
 //  EXPLORATION
 // ════════════════════════════════════════════════
+function readExpGeoMap(){
+  try { return JSON.parse(localStorage.getItem('mlp_exp_geo') || '{}'); } catch (e) { return {}; }
+}
+function writeExpGeoMap(m){ localStorage.setItem('mlp_exp_geo', JSON.stringify(m)); }
+function setExpGeo(id, lat, lng, label){
+  const g = readExpGeoMap();
+  g[String(id)] = { lat: +lat, lng: +lng, label: label || '' };
+  writeExpGeoMap(g);
+}
+function deleteExpGeo(id){
+  const g = readExpGeoMap();
+  delete g[String(id)];
+  writeExpGeoMap(g);
+}
+function mergeExpGeoInto(exps){
+  const geo = readExpGeoMap();
+  exps.forEach(e => {
+    const g = geo[String(e.id)];
+    if (g && typeof g.lat === 'number' && typeof g.lng === 'number' && !isNaN(g.lat) && !isNaN(g.lng)) {
+      e._lat = g.lat; e._lng = g.lng; e._placeLabel = g.label || '';
+    } else {
+      delete e._lat; delete e._lng; delete e._placeLabel;
+    }
+  });
+}
+
+function getExplorationView(){
+  return localStorage.getItem('mlp_expl_view') === 'globe' ? 'globe' : 'timeline';
+}
+function setExplorationView(mode, silent){
+  const tl = document.getElementById('expl-panel-timeline');
+  const gl = document.getElementById('expl-panel-globe');
+  const btl = document.getElementById('expl-view-btn-timeline');
+  const bgl = document.getElementById('expl-view-btn-globe');
+  if (!tl || !gl) return;
+  if (mode === 'globe' && typeof Globe === 'undefined') {
+    if (!silent) toast('Globe 3D indisponible (script bloqué ou hors ligne).');
+    mode = 'timeline';
+  }
+  localStorage.setItem('mlp_expl_view', mode === 'globe' ? 'globe' : 'timeline');
+  const isG = mode === 'globe';
+  tl.classList.toggle('hidden', isG);
+  gl.classList.toggle('hidden', !isG);
+  if (btl) btl.classList.toggle('on', !isG);
+  if (bgl) bgl.classList.toggle('on', isG);
+  if (isG) {
+    requestAnimationFrame(() => {
+      initExplorationGlobe();
+      refreshExplorationGlobe();
+      setTimeout(() => { resizeExplorationGlobe(); }, 120);
+    });
+  }
+}
+
+function initExplorationGlobe(){
+  if (typeof Globe === 'undefined' || explorationGlobe) return;
+  const el = document.getElementById('expl-globe-viz');
+  if (!el) return;
+  const W = Math.max(280, el.clientWidth || 320);
+  const H = Math.min(520, Math.max(300, Math.floor(window.innerHeight * 0.48)));
+  try {
+    explorationGlobe = Globe()(el)
+      .width(W)
+      .height(H)
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+      .backgroundColor('rgba(224,242,254,0.97)')
+      .showAtmosphere(true)
+      .atmosphereColor('#5ba8d4')
+      .atmosphereAltitude(0.12)
+      .pointsData([])
+      .pointLat('lat')
+      .pointLng('lng')
+      .pointColor('color')
+      .pointAltitude(0.04)
+      .pointRadius(0.55)
+      .pointLabel('label')
+      .onPointClick(p => { if (p && p.label) toast(p.label); });
+    const ctr = explorationGlobe.controls && explorationGlobe.controls();
+    if (ctr) { ctr.autoRotate = true; ctr.autoRotateSpeed = 0.35; }
+  } catch (e) { console.warn('Globe init', e); explorationGlobe = null; }
+}
+
+function resizeExplorationGlobe(){
+  if (!explorationGlobe) return;
+  const el = document.getElementById('expl-globe-viz');
+  if (!el) return;
+  const W = Math.max(280, el.clientWidth);
+  const H = Math.min(520, Math.max(300, Math.floor(window.innerHeight * 0.48)));
+  try { explorationGlobe.width(W).height(H); } catch (e) {}
+}
+
+function refreshExplorationGlobe(){
+  const empty = document.getElementById('expl-globe-empty');
+  if (typeof Globe === 'undefined') {
+    if (empty) empty.classList.remove('hidden');
+    return;
+  }
+  mergeExpGeoInto(explorationExps);
+  const pts = explorationExps.filter(e => typeof e._lat === 'number' && typeof e._lng === 'number').map(e => ({
+    lat: e._lat,
+    lng: e._lng,
+    color: '#1a4a8a',
+    label: (e.title || 'Expédition') + ' · ' + new Date(e.exp_date).toLocaleDateString('fr-FR'),
+    id: e.id
+  }));
+  if (empty) empty.classList.toggle('hidden', pts.length > 0);
+  if (!explorationGlobe) return;
+  try { explorationGlobe.pointsData(pts); } catch (e) { console.warn('Globe points', e); }
+}
+
+async function geocodeExpPlace(){
+  const inp = document.getElementById('exp-place-in');
+  const st = document.getElementById('exp-place-status');
+  if (!inp || !st) return;
+  const q = inp.value.trim();
+  if (!q) { st.textContent = 'Indique un lieu.'; return; }
+  st.textContent = 'Recherche…';
+  try {
+    const r = await fetch('https://photon.komoot.io/api/?q=' + encodeURIComponent(q) + '&limit=1');
+    const j = await r.json();
+    if (j.features && j.features[0]) {
+      const [lng, lat] = j.features[0].geometry.coordinates;
+      expPendingLat = lat;
+      expPendingLng = lng;
+      expPlaceLabel = (j.features[0].properties && (j.features[0].properties.name || j.features[0].properties.country)) || q;
+      st.textContent = '✓ ' + expPlaceLabel + ' · ' + lat.toFixed(2) + '°, ' + lng.toFixed(2) + '°';
+    } else {
+      expPendingLat = expPendingLng = null;
+      expPlaceLabel = '';
+      st.textContent = 'Aucun résultat.';
+    }
+  } catch (e) {
+    st.textContent = 'Réseau indisponible.';
+    expPendingLat = expPendingLng = null;
+  }
+}
+function clearExpPlace(){
+  expPendingLat = expPendingLng = null;
+  expPlaceLabel = '';
+  const inp = document.getElementById('exp-place-in');
+  const st = document.getElementById('exp-place-status');
+  if (inp) inp.value = '';
+  if (st) st.textContent = '';
+}
+window.clearExpPlace = clearExpPlace;
+
 function expeditionImageUrl(exp){
   if(!exp)return '';
   const u=exp.photo_url??exp.photoUrl??exp.photo;
@@ -1635,11 +1824,14 @@ function populateExpeditionSelectors(){
 function resetExpeditionForm(){
   editingExpeditionId=null;
   expPhotoRemoved=false;
+  expPendingLat=null; expPendingLng=null; expPlaceLabel='';
   document.getElementById('exp-form-title').textContent='Nouvelle expédition';
   document.getElementById('save-exp-btn').textContent='Sauvegarder l\'expédition 🚀';
   document.getElementById('exp-title-in').value='';
   document.getElementById('exp-note-in').value='';
   document.getElementById('exp-date-in').value=new Date().toISOString().slice(0,10);
+  const ep = document.getElementById('exp-place-in'); if (ep) ep.value='';
+  const es = document.getElementById('exp-place-status'); if (es) es.textContent='';
   document.getElementById('exp-err').textContent='';
   document.getElementById('photo-preview').style.display='none';
   document.getElementById('photo-preview').removeAttribute('src');
@@ -1689,6 +1881,17 @@ function beginEditExpedition(id){
     const prev=document.getElementById('photo-preview');
     prev.src=existingImg; prev.style.display='block';
   }
+  mergeExpGeoInto([exp]);
+  if (typeof exp._lat === 'number' && typeof exp._lng === 'number') {
+    expPendingLat = exp._lat; expPendingLng = exp._lng; expPlaceLabel = exp._placeLabel || '';
+    const ep = document.getElementById('exp-place-in'); if (ep) ep.value = exp._placeLabel || '';
+    const es = document.getElementById('exp-place-status');
+    if (es) es.textContent = '✓ ' + (exp._placeLabel || 'Lieu') + ' · ' + exp._lat.toFixed(2) + '°, ' + exp._lng.toFixed(2) + '°';
+  } else {
+    expPendingLat = expPendingLng = null; expPlaceLabel = '';
+    const ep = document.getElementById('exp-place-in'); if (ep) ep.value = '';
+    const es = document.getElementById('exp-place-status'); if (es) es.textContent = '';
+  }
   document.getElementById('add-exp-form').classList.remove('hidden');
   document.getElementById('add-exp-form').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
@@ -1735,36 +1938,55 @@ async function saveExpedition(){
 
   const exp={title,note:note||null,exp_date:date,photo_url:photoUrl};
   const isEdit=!!editingExpeditionId;
+  let savedId=null;
 
   if(SB){
     try{
       if(isEdit){
         const{error}=await SB.from('expeditions').update(exp).eq('id',editingExpeditionId).eq('user_id',myId());
         if(error)throw error;
+        savedId=editingExpeditionId;
       }else{
-        const{error}=await SB.from('expeditions').insert({user_id:myId(),...exp});
+        const{data,error}=await SB.from('expeditions').insert({user_id:myId(),...exp}).select('id').single();
         if(error)throw error;
+        if(data&&data.id!=null)savedId=data.id;
       }
     }catch(e){
       const local=JSON.parse(localStorage.getItem('mlp_exps')||'[]');
       if(isEdit){
         const ix=local.findIndex(x=>String(x.id)===String(editingExpeditionId));
-        if(ix>=0){ local[ix]={...local[ix],...exp}; localStorage.setItem('mlp_exps',JSON.stringify(local)); }
+        if(ix>=0){ local[ix]={...local[ix],...exp}; localStorage.setItem('mlp_exps',JSON.stringify(local)); savedId=editingExpeditionId; }
       }else{
-        local.unshift({id:Date.now().toString(),...exp,created_at:new Date().toISOString()});
+        const nid=Date.now().toString();
+        local.unshift({id:nid,...exp,created_at:new Date().toISOString()});
         localStorage.setItem('mlp_exps',JSON.stringify(local));
+        savedId=nid;
       }
     }
   }else{
     const local=JSON.parse(localStorage.getItem('mlp_exps')||'[]');
     if(isEdit){
       const ix=local.findIndex(x=>String(x.id)===String(editingExpeditionId));
-      if(ix>=0){ local[ix]={...local[ix],...exp}; localStorage.setItem('mlp_exps',JSON.stringify(local)); }
+      if(ix>=0){ local[ix]={...local[ix],...exp}; localStorage.setItem('mlp_exps',JSON.stringify(local)); savedId=editingExpeditionId; }
     }else{
-      local.unshift({id:Date.now().toString(),...exp,created_at:new Date().toISOString()});
+      const nid=Date.now().toString();
+      local.unshift({id:nid,...exp,created_at:new Date().toISOString()});
       localStorage.setItem('mlp_exps',JSON.stringify(local));
+      savedId=nid;
     }
   }
+
+  if(savedId!=null){
+    const placeEl=document.getElementById('exp-place-in');
+    const placeTxt=placeEl?placeEl.value.trim():'';
+    if(expPendingLat!=null&&expPendingLng!=null){
+      setExpGeo(savedId,expPendingLat,expPendingLng,placeTxt||expPlaceLabel);
+    }else{
+      deleteExpGeo(savedId);
+    }
+  }
+  expPendingLat=null; expPendingLng=null; expPlaceLabel='';
+
   resetExpeditionForm();
   document.getElementById('add-exp-form').classList.add('hidden');
   toast(isEdit?'Expédition mise à jour ! 🗺️':'Expédition sauvegardée ! 🗺️');
@@ -1790,6 +2012,7 @@ async function deleteExpedition(id, skipConfirm){
     const filtered=local.filter(x=>String(x.id)!==String(id));
     localStorage.setItem('mlp_exps',JSON.stringify(filtered));
   }catch(e){}
+  deleteExpGeo(id);
   if(String(editingExpeditionId)===String(id)){
     resetExpeditionForm();
     document.getElementById('add-exp-form').classList.add('hidden');
@@ -1814,12 +2037,15 @@ async function loadExploration(){
   remote.forEach(e=>{ if(e&&e.id!=null) byId.set(String(e.id),e); });
   local.forEach(e=>{ if(e&&e.id!=null&&!byId.has(String(e.id))) byId.set(String(e.id),e); });
   const exps=[...byId.values()].sort((a,b)=>new Date(a.exp_date)-new Date(b.exp_date));
+  mergeExpGeoInto(exps);
   explorationExps=exps;
+  setExplorationView(getExplorationView(), true);
 
   if(!exps.length){
     nodesEl.innerHTML=`<div style="text-align:center;color:#1a4a8a;padding:30px 20px;font-size:.88rem;font-weight:600">Aucune expédition pour l'instant.<br/>Ajoute ta première aventure ! 🗺️</div>`;
     document.getElementById('expl-wait-label').textContent='En attente de la première aventure… ✨';
     populateExpeditionSelectors();
+    refreshExplorationGlobe();
     return;
   }
   const lastExp=exps[exps.length-1]; const daysWaiting=calcDF(lastExp.exp_date,null);
@@ -1844,6 +2070,8 @@ async function loadExploration(){
       </div>`;
   }).join('');
   populateExpeditionSelectors();
+  refreshExplorationGlobe();
+  if(getExplorationView()==='globe')setTimeout(resizeExplorationGlobe,100);
 }
 
 // ════════════════════════════════════════════════
