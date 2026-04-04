@@ -1753,7 +1753,8 @@ window.toggleAlert=toggleAlert;
 
 function doLogout(){
   if(!confirm('Quitter la banquise ?'))return;
-  const keep=['mlp_exp_geo','mlp_expl_view'];
+  const geoKey = expGeoStorageKey();
+  const keep=[geoKey,'mlp_exp_geo','mlp_expl_view'];
   const backup={};
   keep.forEach(k=>{ const v=localStorage.getItem(k); if(v!==null) backup[k]=v; });
   localStorage.clear();
@@ -1939,10 +1940,25 @@ async function checkBadges(){
 // ════════════════════════════════════════════════
 //  EXPLORATION
 // ════════════════════════════════════════════════
-function readExpGeoMap(){
-  try { return JSON.parse(localStorage.getItem('mlp_exp_geo') || '{}'); } catch (e) { return {}; }
+function expGeoStorageKey(){
+  const u = myId();
+  return u ? 'mlp_exp_geo_' + String(u) : 'mlp_exp_geo_anon';
 }
-function writeExpGeoMap(m){ localStorage.setItem('mlp_exp_geo', JSON.stringify(m)); }
+function readExpGeoMap(){
+  try {
+    const k = expGeoStorageKey();
+    let raw = localStorage.getItem(k);
+    if (!raw || raw === '{}') {
+      const leg = localStorage.getItem('mlp_exp_geo');
+      if (leg && leg !== '{}' && leg !== 'null') raw = leg;
+    }
+    const m = JSON.parse(raw || '{}');
+    return m && typeof m === 'object' ? m : {};
+  } catch (e) { return {}; }
+}
+function writeExpGeoMap(m){
+  try { localStorage.setItem(expGeoStorageKey(), JSON.stringify(m)); } catch (e) {}
+}
 function setExpGeo(id, lat, lng, label){
   const g = readExpGeoMap();
   g[String(id)] = { lat: +lat, lng: +lng, label: label || '' };
@@ -1968,8 +1984,10 @@ function mergeExpGeoInto(exps){
       }
     } else {
       const g = geo[String(e.id)];
-      if (g && typeof g.lat === 'number' && typeof g.lng === 'number' && !isNaN(g.lat) && !isNaN(g.lng)) {
-        e._lat = g.lat; e._lng = g.lng; e._placeLabel = g.label || '';
+      const glat = g != null ? +g.lat : NaN;
+      const glng = g != null ? +g.lng : NaN;
+      if (g != null && !isNaN(glat) && !isNaN(glng)) {
+        e._lat = glat; e._lng = glng; e._placeLabel = (g.label != null && String(g.label)) || '';
       } else {
         delete e._lat; delete e._lng; delete e._placeLabel;
       }
@@ -2412,6 +2430,20 @@ async function deleteExpedition(id, skipConfirm){
 }
 window.deleteExpedition=deleteExpedition;
 
+function expRowHasGeo(e){
+  return e && e.geo_lat != null && e.geo_lng != null && !isNaN(+e.geo_lat) && !isNaN(+e.geo_lng);
+}
+function mergeLocalGeoOntoRemoteRow(remoteRow, localRow){
+  if (!remoteRow || !localRow || remoteRow.id == null) return remoteRow;
+  if (expRowHasGeo(remoteRow) || !expRowHasGeo(localRow)) return remoteRow;
+  return {
+    ...remoteRow,
+    geo_lat: +localRow.geo_lat,
+    geo_lng: +localRow.geo_lng,
+    geo_label: localRow.geo_label != null ? localRow.geo_label : remoteRow.geo_label
+  };
+}
+
 async function loadExploration(){
   const nodesEl=document.getElementById('expl-nodes');
   let remote=[];
@@ -2422,6 +2454,9 @@ async function loadExploration(){
     }catch(e){}
   }
   const local=JSON.parse(localStorage.getItem('mlp_exps')||'[]');
+  const localById=new Map();
+  local.forEach(e=>{ if(e&&e.id!=null)localById.set(String(e.id),e); });
+  remote=remote.map(e=>mergeLocalGeoOntoRemoteRow(e,localById.get(String(e.id))));
   const byId=new Map();
   remote.forEach(e=>{ if(e&&e.id!=null) byId.set(String(e.id),e); });
   local.forEach(e=>{ if(e&&e.id!=null&&!byId.has(String(e.id))) byId.set(String(e.id),e); });
