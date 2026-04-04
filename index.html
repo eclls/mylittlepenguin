@@ -74,7 +74,7 @@ button{cursor:pointer}
 #onboarding .peng-svg{--peng-w:min(54vw,152px)}
 .mp-wrap .peng-svg{--peng-w:min(38vw,84px)}
 .dp .peng-svg.hold{--peng-w:min(32vw,108px)}
-.expl-pingu-end .peng-svg,.expl-pingu-strip .peng-svg{--peng-w:min(44vw,128px)}
+.expl-pingu-end .peng-svg{--peng-w:min(44vw,128px)}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-9px) rotate(1.5deg)}}
 @keyframes bob-hold{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-6px) rotate(1deg)}}
 
@@ -243,10 +243,9 @@ button{cursor:pointer}
 .exp-date { font-size: .7rem; color: #1a4a8a; font-weight: 700; }
 .exp-note { font-size: .75rem; color: rgba(10,22,40,.7); margin-top: 4px; line-height: 1.4; }
 
-.expl-pingu-end,.expl-pingu-strip { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 12px; z-index: 1; }
-.expl-pingu-strip { margin: 8px 0 14px; background: rgba(255,255,255,.72); border: 1.5px solid rgba(26,74,138,.18); border-radius: var(--r-lg); box-shadow: 0 4px 18px rgba(26,74,138,.1); max-width: 420px; width: 100%; margin-left: auto; margin-right: auto; }
-.expl-pingu-rank { font-size: .72rem; font-weight: 800; color: #1a4a8a; letter-spacing: .04em; text-align: center; opacity: .92; }
-.expl-pingu-label { font-size: .8rem; color: #1a4a8a; font-weight: 700; text-align: center; line-height: 1.35; }
+.expl-pingu-end { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 24px 8px 32px; z-index: 1; }
+.expl-pingu-rank { font-size: .72rem; font-weight: 800; color: #1a4a8a; letter-spacing: .04em; text-align: center; opacity: .92; max-width: 320px; }
+.expl-pingu-label { font-size: .8rem; color: #1a4a8a; font-weight: 700; text-align: center; line-height: 1.35; max-width: 320px; }
 
 .add-exp-form { background: #fff; border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-lg); padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,.1); color: #0a1628; }
 .add-exp-form h3 { font-family: var(--fd); font-size: 1.2rem; color: #0a1628; }
@@ -268,10 +267,38 @@ button{cursor:pointer}
 #page-amis{background:var(--night);overflow-y:auto}
 .am-bg{position:fixed;inset:0;background:radial-gradient(ellipse 120% 50% at 80% 20%,rgba(168,85,247,.14) 0%,transparent 60%);pointer-events:none}
 .amc{padding:16px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1;padding-top:20px}
-.amh{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
-.amh h1{font-family:var(--fd);font-size:1.75rem;font-weight:700}
-.add-btn{background:linear-gradient(135deg,var(--ice),var(--teal));color:#fff;font-weight:800;padding:10px 18px;border-radius:var(--r-xl);font-size:.88rem;box-shadow:0 4px 15px rgba(78,205,196,.28);transition:all .2s}
+.amh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;flex-wrap:wrap}
+.amh h1{font-family:var(--fd);font-size:1.75rem;font-weight:700;flex:1;min-width:140px}
+.amh-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.add-btn{background:linear-gradient(135deg,var(--ice),var(--teal));color:#fff;font-weight:800;padding:10px 16px;border-radius:var(--r-xl);font-size:.82rem;box-shadow:0 4px 15px rgba(78,205,196,.28);transition:all .2s;border:none;cursor:pointer}
+.add-btn.ghost{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.22);box-shadow:none;color:#e0f2fe}
 .add-btn:active{transform:scale(.95)}
+.leagues-bar{margin-bottom:4px}
+.leagues-bar.hidden{display:none!important}
+.leagues-bar-hd{font-size:.7rem;font-weight:800;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.leagues-chips{display:flex;flex-wrap:wrap;gap:8px}
+.league-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;background:rgba(78,205,196,.12);border:1px solid rgba(78,205,196,.35);color:#fff;font-size:.82rem;font-weight:700;cursor:pointer;transition:background .2s}
+.league-chip:active{transform:scale(.97);background:rgba(78,205,196,.22)}
+.league-chip-ic{font-size:1.1rem;line-height:1}
+.league-panel-body{padding:16px 18px 28px;display:flex;flex-direction:column;gap:14px}
+.league-step-h{font-family:var(--fd);font-size:1.05rem;font-weight:700;color:#fff;margin:0 0 4px}
+.league-step-p{font-size:.82rem;color:rgba(255,255,255,.55);font-weight:600;line-height:1.45;margin:0 0 12px}
+.league-opt{display:flex;flex-direction:column;align-items:flex-start;gap:6px;width:100%;padding:14px 16px;border-radius:var(--r-md);background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.12);color:#fff;text-align:left;cursor:pointer;transition:all .2s}
+.league-opt:active,.league-opt:hover{border-color:rgba(78,205,196,.45);background:rgba(78,205,196,.1)}
+.league-opt strong{font-size:.92rem}
+.league-opt span{font-size:.76rem;color:rgba(255,255,255,.55);font-weight:600;line-height:1.4}
+.league-emoji-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+.league-emo{width:100%;aspect-ratio:1;border-radius:var(--r-md);background:rgba(255,255,255,.08);border:2px solid transparent;font-size:1.6rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.league-emo.sel{border-color:var(--teal);background:rgba(78,205,196,.18)}
+.league-lb-card{background:rgba(10,22,40,.65);border:1.5px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.league-lb-rank{font-family:var(--fd);font-size:1.35rem;font-weight:800;color:var(--teal);min-width:28px;text-align:center}
+.league-lb-av{font-size:1.75rem}
+.league-lb-mid{flex:1;min-width:0}
+.league-lb-name{font-weight:800;color:#fff;font-size:.92rem}
+.league-lb-meta{font-size:.74rem;color:#b8e0f7;font-weight:600;margin-top:2px}
+.league-tag{display:inline-block;font-size:.65rem;font-weight:800;padding:2px 8px;border-radius:99px;background:rgba(168,85,247,.2);color:#e9d5ff;margin-top:6px}
+.league-tag.lux{background:rgba(244,63,94,.18);color:#fecdd3}
+.league-err{color:#f87171;font-size:.82rem;font-weight:700;min-height:1em}
 .add-pnl{background:rgba(10,22,40,.85);border:1.5px solid rgba(255,255,255,.12);border-radius:var(--r-lg);padding:18px;display:flex;flex-direction:column;gap:12px}
 .add-pnl h3{font-family:var(--fd);font-size:1.15rem;color:#fff}
 .sr{padding:8px;font-size:.88rem;font-weight:700;color:var(--teal);min-height:18px}
@@ -641,11 +668,6 @@ button{cursor:pointer}
         <button type="button" class="expl-view-btn on" id="expl-view-btn-timeline" data-expl-view="timeline">Frise</button>
         <button type="button" class="expl-view-btn" id="expl-view-btn-map" data-expl-view="map">Carte</button>
       </div>
-      <div class="expl-pingu-strip expl-pingu-end" id="expl-pingu-end">
-        <div class="peng-svg hold" id="expl-pingu-svg-wrap" aria-hidden="true"></div>
-        <div class="expl-pingu-rank" id="expl-pingu-rank"></div>
-        <div class="expl-pingu-label" id="expl-wait-label">En attente de la prochaine aventure… ✨</div>
-      </div>
       <div class="exp-edit-picker hidden" id="exp-edit-picker">
         <label for="exp-edit-select">Choisir une expédition à modifier</label>
         <select id="exp-edit-select" class="exp-edit-select" aria-label="Expédition à modifier"></select>
@@ -689,6 +711,11 @@ button{cursor:pointer}
       <div class="expl-path" id="expl-path">
         <div class="path-line"></div>
         <div id="expl-nodes"></div>
+        <div class="expl-pingu-end" id="expl-pingu-end">
+          <div class="peng-svg hold" id="expl-pingu-svg-wrap" aria-hidden="true"></div>
+          <div class="expl-pingu-rank" id="expl-pingu-rank"></div>
+          <div class="expl-pingu-label" id="expl-wait-label">En attente de la prochaine aventure… ✨</div>
+        </div>
       </div>
       </div>
       <div id="expl-panel-map" class="expl-panel-map hidden">
@@ -703,7 +730,14 @@ button{cursor:pointer}
   <div id="page-amis" class="page">
     <div class="am-bg"></div>
     <div class="amc">
-      <div class="amh"><h1>Explorateurs 🗺️</h1><button class="add-btn" id="open-add">+ Ajouter</button></div>
+      <div class="amh">
+        <h1>Explorateurs 🗺️</h1>
+        <div class="amh-btns">
+          <button type="button" class="add-btn ghost" id="open-league-hub">Ligue</button>
+          <button type="button" class="add-btn" id="open-add">+ Ajouter</button>
+        </div>
+      </div>
+      <div class="leagues-bar hidden" id="leagues-bar" aria-label="Tes ligues"></div>
       <div class="add-pnl hidden" id="add-pnl">
         <h3>Trouver un explorateur</h3>
         <div class="ob-inp"><span class="ob-inp-ic">🔍</span><input type="text" id="search-in" placeholder="Pseudo exact…" autocomplete="off"/></div>
@@ -804,6 +838,17 @@ button{cursor:pointer}
     <button class="nb" data-page="amis" onclick="goPage('amis')"><span class="ni" style="position:relative">🐾<span class="nb-badge hidden" id="badge-amis"></span></span><span class="nl">Amis</span></button>
     <button class="nb" data-page="profil" onclick="goPage('profil')"><span class="ni">🐧</span><span class="nl">Profil</span></button>
   </nav>
+</div>
+
+<div class="panel" id="league-panel">
+  <div class="panel-header">
+    <button type="button" class="panel-back" onclick="leaguePanelBack()">←</button>
+    <div>
+      <div class="panel-title" id="league-panel-title">Ligues</div>
+      <div style="font-size:.74rem;color:#b8e0f7;font-weight:600" id="league-panel-sub"></div>
+    </div>
+  </div>
+  <div class="league-panel-body" id="league-panel-body"></div>
 </div>
 
 <div class="panel" id="conv-panel">
@@ -1017,8 +1062,11 @@ const LVL = [
   {min:720,max:9999,i:'❄️', n:'Dieu du Grand Froid',   nx:null},
 ];
 const AVS = ['🐧','🐦','🐋','🦈','🦭','🐟','❄️','🌊','🏔️','⭐','🔥','🎯'];
+const LOCAL_LEAGUES_KEY = 'mlp_leagues_v1';
 
 let P = null, SB = null, MODE = 'date', SEL_AV = '🐧';
+let SEL_LEAGUE_EMOJI = '🐧';
+let LEAGUE_CREATE_TYPE = null;
 let CONV_FID = null, CONV_FNM = null, CONV_POLL = null;
 let BEST_SCORES = {fishing:0, maze:0, memory:0};
 let selectedPhotoFile = null, selectedPhotoB64 = null;
@@ -1356,6 +1404,7 @@ function enterApp() {
   updateNotifPermissionUI();
   initNotifPolling();
   refreshPasswordBanner();
+  void renderLeaguesBar();
 }
 
 function goPage(name) {
@@ -1420,6 +1469,8 @@ function bindAll() {
   document.getElementById('av-edit').onclick     = toggleAP;
   document.getElementById('av-ok').onclick       = confirmAV;
   document.getElementById('open-add').onclick    = () => document.getElementById('add-pnl').classList.toggle('hidden');
+  const olh = document.getElementById('open-league-hub');
+  if (olh) olh.onclick = () => openLeagueHub();
   document.getElementById('cancel-add').onclick  = () => document.getElementById('add-pnl').classList.add('hidden');
   document.getElementById('search-btn').onclick  = doSearch;
   document.getElementById('conv-send-btn') && (document.getElementById('conv-send-btn').onclick = sendConvMsg);
@@ -1596,6 +1647,7 @@ function calcDF(sd,kd){
   return Math.max(0,Math.floor((now-d)/86400000));
 }
 function bd(days){ let r=days; const rq=Math.floor(r/360);r%=360; const oq=Math.floor(r/180);r%=180; const pq=Math.floor(r/30);r%=30; return{r:rq,o:oq,p:pq,m:r}; }
+function banquiseAnimalTotal(days){ const x=bd(days); return (x.r||0)+(x.o||0)+(x.p||0)+(x.m||0); }
 function lvl(d){return LVL.find(l=>d>=l.min&&d<=l.max)||LVL[0];}
 
 function explPinguTierIndex(d){
@@ -1882,13 +1934,20 @@ async function addFriend(toId,toPseudo){
 window.addFriend=addFriend;
 
 async function loadF(){
-  if(!SB||!myId())return;
-  const listEl=document.getElementById('fl'); listEl.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:20px;font-size:.85rem">Chargement…</div>';
+  const listEl=document.getElementById('fl');
+  if(!SB||!myId()){
+    if(listEl) listEl.innerHTML='<div class="ef"><div style="font-size:3rem">🐧</div><p>Connecte l’app à Supabase pour gérer tes amis. Les ligues en mode local restent disponibles ci-dessus.</p></div>';
+    await renderLeaguesBar();
+    return;
+  }
+  listEl.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:20px;font-size:.85rem">Chargement…</div>';
   try{
     const{data:fs,error}=await SB.from('friendships').select('id,status,user_a,user_b').or(`user_a.eq.${myId()},user_b.eq.${myId()}`);
     if(error)throw error;
     if(!fs||!fs.length){
-      listEl.innerHTML='<div class="ef"><div style="font-size:3rem">🐧</div><p>Ton expédition est encore solitaire…<br/>Ajoute des amis pour partager l\'aventure !</p></div>'; return;
+      listEl.innerHTML='<div class="ef"><div style="font-size:3rem">🐧</div><p>Ton expédition est encore solitaire…<br/>Ajoute des amis pour partager l\'aventure !</p></div>';
+      await renderLeaguesBar();
+      return;
     }
     const otherIds=fs.map(f=>f.user_a===myId()?f.user_b:f.user_a);
     const{data:profiles}=await SB.from('profiles').select('id,pseudo,avatar,start_date,last_kill_date,banquise_public').in('id',otherIds);
@@ -1913,12 +1972,331 @@ async function loadF(){
       </div>`;
     }).join('');
   }catch(e){listEl.innerHTML=`<div class="ef"><p style="color:#f87171">Erreur : ${e.message}</p></div>`;}
+  await renderLeaguesBar();
 }
 
 async function acceptF(id){ if(!SB)return; await SB.from('friendships').update({status:'accepted'}).eq('id',id); toast('Ami accepté ! 🎉'); loadF(); }
 window.acceptF=acceptF;
 async function removeF(id){ if(!confirm('Retirer cet ami ?'))return; if(!SB)return; await SB.from('friendships').delete().eq('id',id); toast('Ami retiré'); loadF(); }
 window.removeF=removeF;
+
+function leagueReadLocal(){
+  try { return JSON.parse(localStorage.getItem(LOCAL_LEAGUES_KEY) || '[]'); } catch (e) { return []; }
+}
+function leagueWriteLocal(arr){ localStorage.setItem(LOCAL_LEAGUES_KEY, JSON.stringify(arr)); }
+function leagueLocalMyList(){
+  const uid = myId(); if (!uid) return [];
+  return leagueReadLocal().filter(L => Array.isArray(L.members) && L.members.includes(uid));
+}
+function escLg(s){
+  return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+async function renderLeaguesBar(){
+  const bar = document.getElementById('leagues-bar');
+  if (!bar) return;
+  let rows = [];
+  if (SB && myId()) {
+    try {
+      const { data: mids } = await SB.from('league_members').select('league_id').eq('user_id', myId());
+      const ids = (mids || []).map(x => x.league_id);
+      if (ids.length) {
+        const { data: Ls } = await SB.from('leagues').select('id,name,emoji,league_type').in('id', ids);
+        rows = Ls || [];
+      }
+    } catch (e) {}
+  } else {
+    rows = leagueLocalMyList().map(L => ({ id: L.id, name: L.name, emoji: L.emoji, league_type: L.league_type }));
+  }
+  if (!rows.length) { bar.innerHTML = ''; bar.classList.add('hidden'); return; }
+  bar.classList.remove('hidden');
+  bar.innerHTML = '<div class="leagues-bar-hd">Tes ligues</div><div class="leagues-chips">' + rows.map(r =>
+    '<button type="button" class="league-chip" onclick="openLeagueBoard(\'' + String(r.id).replace(/'/g, "\\'") + '\')"><span class="league-chip-ic">' + escLg(r.emoji || '🏆') + '</span><span>' + escLg(r.name) + '</span></button>'
+  ).join('') + '</div>';
+}
+
+function leaguePanelBack(){
+  const body = document.getElementById('league-panel-body');
+  const v = body && body.dataset.view;
+  if (v && v !== 'home') { showLeagueHomeScreen(); return; }
+  closePanel('league-panel');
+}
+
+function openLeagueHub(){
+  openPanel('league-panel');
+  showLeagueHomeScreen();
+}
+window.openLeagueHub = openLeagueHub;
+
+function showLeagueHomeScreen(){
+  document.getElementById('league-panel-title').textContent = 'Ligues';
+  document.getElementById('league-panel-sub').textContent = 'Avec tes amis — classement selon la banquise';
+  const body = document.getElementById('league-panel-body');
+  body.dataset.view = 'home';
+  body.innerHTML = '<p class="league-step-p" style="margin-top:0">Crée une ligue ou rejoins-en une avec le nom exact.</p>' +
+    '<button type="button" class="league-opt" onclick="showLeaguePickType()"><strong>Créer une ligue</strong><span>Choisis le type (Innocents ou Luxure), donne un nom et un émoji.</span></button>' +
+    '<button type="button" class="league-opt" onclick="showLeagueJoinForm()"><strong>Rejoindre une ligue</strong><span>Saisis le nom exact de la ligue pour apparaître au classement.</span></button>';
+}
+
+function showLeaguePickType(){
+  document.getElementById('league-panel-title').textContent = 'Type de ligue';
+  document.getElementById('league-panel-sub').textContent = '';
+  const body = document.getElementById('league-panel-body');
+  body.dataset.view = 'pickType';
+  body.innerHTML = '<p class="league-step-p" style="margin-top:0">Le classement utilise le nombre d’animaux sur la banquise (requins, orques, pingouins, mouettes), dérivé des jours affichés sur la banquise.</p>' +
+    '<button type="button" class="league-opt" onclick="showLeagueCreateForm(\'innocents\')"><strong>🕊️ Ligue des innocents</strong><span>Le premier est celui qui a le plus d’animaux (banquise la plus fournie).</span></button>' +
+    '<button type="button" class="league-opt" onclick="showLeagueCreateForm(\'luxure\')"><strong>🔥 Ligue de la luxure</strong><span>Le premier est celui qui en a le moins — la banquise la plus « légère » gagne.</span></button>';
+}
+window.showLeaguePickType = showLeaguePickType;
+
+function showLeagueCreateForm(type){
+  LEAGUE_CREATE_TYPE = type;
+  SEL_LEAGUE_EMOJI = '🐧';
+  document.getElementById('league-panel-title').textContent = 'Nouvelle ligue';
+  document.getElementById('league-panel-sub').textContent = type === 'innocents' ? 'Ligue des innocents' : 'Ligue de la luxure';
+  const body = document.getElementById('league-panel-body');
+  body.dataset.view = 'createForm';
+  const grid = AVS.map(a => '<button type="button" class="league-emo' + (a === SEL_LEAGUE_EMOJI ? ' sel' : '') + '" onclick="pickLeagueEmoji(\'' + a + '\')">' + a + '</button>').join('');
+  body.innerHTML = '<p class="league-step-h">Nom & émoji</p><p class="league-step-p">Comme pour ton profil : un nom unique et un émoji qui représente ta ligue.</p>' +
+    '<div class="ob-inp" style="margin-bottom:8px"><span class="ob-inp-ic">✏️</span><input type="text" id="league-name-in" maxlength="28" placeholder="ex: Les banquiseurs" style="flex:1;background:transparent;color:#fff;font-weight:700"/></div>' +
+    '<div class="league-emoji-grid" id="league-emoji-grid">' + grid + '</div>' +
+    '<div class="league-err" id="league-form-err"></div>' +
+    '<button type="button" class="ob-btn" onclick="submitLeagueCreate()">Créer la ligue</button>' +
+    '<button type="button" class="cn-btn" onclick="showLeagueHomeScreen()" style="width:100%;margin-top:4px">← Retour</button>';
+}
+window.showLeagueCreateForm = showLeagueCreateForm;
+
+function pickLeagueEmoji(a){
+  SEL_LEAGUE_EMOJI = a;
+  document.querySelectorAll('#league-panel-body .league-emo').forEach(el => el.classList.toggle('sel', el.textContent.trim() === a));
+}
+window.pickLeagueEmoji = pickLeagueEmoji;
+
+async function submitLeagueCreate(){
+  const errEl = document.getElementById('league-form-err');
+  const inp = document.getElementById('league-name-in');
+  const name = inp && inp.value.trim();
+  if (!name || name.length < 2) { if (errEl) errEl.textContent = 'Nom trop court (2 caractères min).'; return; }
+  if (!LEAGUE_CREATE_TYPE) { if (errEl) errEl.textContent = 'Type manquant.'; return; }
+  if (!myId()) { if (errEl) errEl.textContent = 'Profil requis.'; return; }
+  if (errEl) errEl.textContent = '';
+  if (SB) {
+    try {
+      const { data: row, error } = await SB.from('leagues').insert({
+        name: name,
+        emoji: SEL_LEAGUE_EMOJI || '🐧',
+        league_type: LEAGUE_CREATE_TYPE,
+        created_by: myId()
+      }).select('id').single();
+      if (error) throw error;
+      const { error: e2 } = await SB.from('league_members').insert({ league_id: row.id, user_id: myId() });
+      if (e2) throw e2;
+      toast('Ligue créée ! 🏆');
+      closePanel('league-panel');
+      await loadF();
+      openLeagueBoard(row.id);
+    } catch (e) {
+      if (errEl) errEl.textContent = (e.message && e.message.includes('duplicate')) ? 'Ce nom est déjà pris.' : ('Erreur : ' + (e.message || e));
+    }
+    return;
+  }
+  const all = leagueReadLocal();
+  const nlow = name.toLowerCase();
+  if (all.some(x => String(x.name || '').trim().toLowerCase() === nlow)) {
+    if (errEl) errEl.textContent = 'Ce nom est déjà pris (mode local).';
+    return;
+  }
+  const L = {
+    id: 'local_' + Date.now(),
+    name: name,
+    emoji: SEL_LEAGUE_EMOJI || '🐧',
+    league_type: LEAGUE_CREATE_TYPE,
+    created_by: myId(),
+    members: [myId()]
+  };
+  all.push(L);
+  leagueWriteLocal(all);
+  toast('Ligue créée (local) 🏆');
+  closePanel('league-panel');
+  await renderLeaguesBar();
+  openLeagueBoard(L.id);
+}
+window.submitLeagueCreate = submitLeagueCreate;
+
+function showLeagueJoinForm(){
+  document.getElementById('league-panel-title').textContent = 'Rejoindre';
+  document.getElementById('league-panel-sub').textContent = 'Nom exact (insensible à la casse)';
+  const body = document.getElementById('league-panel-body');
+  body.dataset.view = 'joinForm';
+  body.innerHTML = '<p class="league-step-h">Nom de la ligue</p><p class="league-step-p">Demande le nom à un membre : il doit correspondre exactement (espaces en trop ignorés).</p>' +
+    '<div class="ob-inp" style="margin-bottom:8px"><span class="ob-inp-ic">🏆</span><input type="text" id="league-join-in" maxlength="28" placeholder="Nom de la ligue" style="flex:1;background:transparent;color:#fff;font-weight:700"/></div>' +
+    '<div class="league-err" id="league-join-err"></div>' +
+    '<button type="button" class="ob-btn" onclick="submitLeagueJoin()">Rejoindre</button>' +
+    '<button type="button" class="cn-btn" onclick="showLeagueHomeScreen()" style="width:100%;margin-top:4px">← Retour</button>';
+}
+window.showLeagueJoinForm = showLeagueJoinForm;
+
+async function submitLeagueJoin(){
+  const errEl = document.getElementById('league-join-err');
+  const inp = document.getElementById('league-join-in');
+  const raw = inp && inp.value.trim();
+  if (!raw || raw.length < 2) { if (errEl) errEl.textContent = 'Indique un nom.'; return; }
+  const nlow = raw.toLowerCase();
+  if (errEl) errEl.textContent = '';
+  if (SB) {
+    try {
+      const { data: lg, error } = await SB.from('leagues').select('id,name').eq('name_normalized', nlow).maybeSingle();
+      if (error) throw error;
+      if (!lg) { if (errEl) errEl.textContent = 'Aucune ligue avec ce nom.'; return; }
+      const { error: e2 } = await SB.from('league_members').insert({ league_id: lg.id, user_id: myId() });
+      if (e2) {
+        if (String(e2.message || '').includes('duplicate') || e2.code === '23505') { toast('Tu es déjà dans cette ligue !'); closePanel('league-panel'); await loadF(); return; }
+        throw e2;
+      }
+      toast('Bienvenue dans « ' + lg.name + ' » !');
+      closePanel('league-panel');
+      await loadF();
+      openLeagueBoard(lg.id);
+    } catch (e) {
+      if (errEl) errEl.textContent = 'Erreur : ' + (e.message || e);
+    }
+    return;
+  }
+  const all = leagueReadLocal();
+  const L = all.find(x => String(x.name || '').trim().toLowerCase() === nlow);
+  if (!L) { if (errEl) errEl.textContent = 'Ligue introuvable (mode local).'; return; }
+  const uid = myId();
+  if (!L.members) L.members = [];
+  if (!L.members.includes(uid)) L.members.push(uid);
+  leagueWriteLocal(all);
+  toast('Ligue rejointe (local) !');
+  closePanel('league-panel');
+  await renderLeaguesBar();
+  openLeagueBoard(L.id);
+}
+window.submitLeagueJoin = submitLeagueJoin;
+
+function sortLeagueRows(rows, innocents){
+  const copy = rows.slice();
+  copy.sort((a, b) => {
+    const ap = a.banquise_public === false ? 1 : 0;
+    const bp = b.banquise_public === false ? 1 : 0;
+    if (ap !== bp) return ap - bp;
+    const da = a.days != null ? a.days : -1;
+    const db = b.days != null ? b.days : -1;
+    const aa = a.animals != null ? a.animals : -1;
+    const ab = b.animals != null ? b.animals : -1;
+    if (innocents) {
+      if (ab !== aa) return ab - aa;
+      if (db !== da) return db - da;
+    } else {
+      if (aa !== ab) return aa - ab;
+      if (da !== db) return da - db;
+    }
+    return String(a.pseudo || '').localeCompare(String(b.pseudo || ''));
+  });
+  return copy;
+}
+
+function buildLeagueBoardHtml(league, rows){
+  const innocents = league.league_type === 'innocents';
+  const tag = innocents
+    ? '<span class="league-tag">Innocents — max animaux</span>'
+    : '<span class="league-tag lux">Luxure — min animaux</span>';
+  let html = '<div style="text-align:center;margin-bottom:12px"><span style="font-size:2rem">' + escLg(league.emoji || '🏆') + '</span><div style="font-weight:800;color:#fff;font-size:1.05rem;margin-top:4px">' + escLg(league.name) + '</div>' + tag + '</div>';
+  rows.forEach((r, idx) => {
+    const rank = idx + 1;
+    const hide = r.banquise_public === false;
+    const d = hide ? '—' : (r.days != null ? r.days : '—');
+    const an = hide ? '—' : (r.animals != null ? r.animals : '—');
+    const lv = hide ? 'Masqué' : (r.days != null ? lvl(r.days).i + ' ' + lvl(r.days).n : '—');
+    const priv = hide ? ' <span style="opacity:.65;font-size:.72rem">(banquise privée)</span>' : '';
+    html += '<div class="league-lb-card">' +
+      '<div class="league-lb-rank">' + rank + '</div>' +
+      '<div class="league-lb-av">' + (r.avatar || '🐧') + '</div>' +
+      '<div class="league-lb-mid"><div class="league-lb-name">' + escLg(r.pseudo || 'Explorateur') + priv + '</div>' +
+      '<div class="league-lb-meta">' + lv + ' · ' + d + ' j · ' + an + ' animaux</div></div></div>';
+  });
+  const lid = String(league.id).replace(/'/g, "\\'");
+  html += '<button type="button" class="cn-btn" style="width:100%;margin-top:12px;border-color:rgba(248,113,113,.4);color:#fca5a5" onclick="leaveLeague(\'' + lid + '\')">Quitter cette ligue</button>';
+  return html;
+}
+
+async function openLeagueBoard(leagueId){
+  openPanel('league-panel');
+  const body = document.getElementById('league-panel-body');
+  body.dataset.view = 'board';
+  document.getElementById('league-panel-title').textContent = 'Classement';
+  document.getElementById('league-panel-sub').textContent = '';
+  body.innerHTML = '<div style="text-align:center;padding:28px;color:rgba(255,255,255,.45)">Chargement…</div>';
+  if (String(leagueId).indexOf('local_') === 0) {
+    const all = leagueReadLocal();
+    const L = all.find(x => x.id === leagueId);
+    if (!L) { body.innerHTML = '<p class="league-err">Ligue introuvable.</p>'; return; }
+    const uid = myId();
+    const rows = (L.members || []).map(mid => {
+      if (mid === uid && P) {
+        const d = calcD();
+        return { pseudo: P.pseudo, avatar: P.avatar, days: d, animals: banquiseAnimalTotal(d), banquise_public: true };
+      }
+      return { pseudo: 'Membre (autre appareil)', avatar: '🐧', days: null, animals: null, banquise_public: true };
+    });
+    const sorted = sortLeagueRows(rows, L.league_type === 'innocents');
+    body.innerHTML = buildLeagueBoardHtml(L, sorted);
+    return;
+  }
+  if (!SB) { body.innerHTML = '<p class="league-err">Supabase requis pour ce classement.</p>'; return; }
+  try {
+    const { data: league, error: e0 } = await SB.from('leagues').select('*').eq('id', leagueId).single();
+    if (e0 || !league) throw e0 || new Error('Introuvable');
+    const { data: mems, error: e1 } = await SB.from('league_members').select('user_id').eq('league_id', leagueId);
+    if (e1) throw e1;
+    const ids = (mems || []).map(m => m.user_id);
+    if (!ids.length) { body.innerHTML = '<p class="league-err">Aucun membre.</p>'; return; }
+    const { data: profs, error: e2 } = await SB.from('profiles').select('id,pseudo,avatar,start_date,last_kill_date,banquise_public').in('id', ids);
+    if (e2) throw e2;
+    const rows = (profs || []).map(p => {
+      const d = calcDF(p.start_date, p.last_kill_date);
+      return {
+        pseudo: p.pseudo,
+        avatar: p.avatar,
+        days: d,
+        animals: banquiseAnimalTotal(d),
+        banquise_public: p.banquise_public !== false
+      };
+    });
+    const sorted = sortLeagueRows(rows, league.league_type === 'innocents');
+    body.innerHTML = buildLeagueBoardHtml(league, sorted);
+  } catch (e) {
+    body.innerHTML = '<p class="league-err">' + escLg(e.message || e) + '</p>';
+  }
+}
+window.openLeagueBoard = openLeagueBoard;
+
+async function leaveLeague(leagueId){
+  if (!confirm('Quitter cette ligue ?')) return;
+  if (String(leagueId).indexOf('local_') === 0) {
+    const all = leagueReadLocal();
+    const L = all.find(x => x.id === leagueId);
+    if (L && Array.isArray(L.members)) {
+      L.members = L.members.filter(id => id !== myId());
+      leagueWriteLocal(all);
+    }
+    toast('Tu as quitté la ligue.');
+    closePanel('league-panel');
+    await renderLeaguesBar();
+    return;
+  }
+  if (!SB) return;
+  try {
+    await SB.from('league_members').delete().eq('league_id', leagueId).eq('user_id', myId());
+    toast('Tu as quitté la ligue.');
+    closePanel('league-panel');
+    await loadF();
+  } catch (e) { toast('Erreur : ' + (e.message || e)); }
+}
+window.leaveLeague = leaveLeague;
+window.leaguePanelBack = leaguePanelBack;
 
 async function openFriendBanquise(fid){
   if(!SB||!fid){toast('Connexion requise');return;}
