@@ -74,7 +74,7 @@ button{cursor:pointer}
 #onboarding .peng-svg{--peng-w:min(54vw,152px)}
 .mp-wrap .peng-svg{--peng-w:min(38vw,84px)}
 .dp .peng-svg.hold{--peng-w:min(32vw,108px)}
-.expl-pingu-end .peng-svg{--peng-w:min(40vw,118px)}
+.expl-pingu-end .peng-svg,.expl-pingu-strip .peng-svg{--peng-w:min(44vw,128px)}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-9px) rotate(1.5deg)}}
 @keyframes bob-hold{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-6px) rotate(1deg)}}
 
@@ -243,8 +243,10 @@ button{cursor:pointer}
 .exp-date { font-size: .7rem; color: #1a4a8a; font-weight: 700; }
 .exp-note { font-size: .75rem; color: rgba(10,22,40,.7); margin-top: 4px; line-height: 1.4; }
 
-.expl-pingu-end { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px 0; z-index: 1; }
-.expl-pingu-label { font-size: .8rem; color: #1a4a8a; font-weight: 700; text-align: center; }
+.expl-pingu-end,.expl-pingu-strip { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 12px; z-index: 1; }
+.expl-pingu-strip { margin: 8px 0 14px; background: rgba(255,255,255,.72); border: 1.5px solid rgba(26,74,138,.18); border-radius: var(--r-lg); box-shadow: 0 4px 18px rgba(26,74,138,.1); max-width: 420px; width: 100%; margin-left: auto; margin-right: auto; }
+.expl-pingu-rank { font-size: .72rem; font-weight: 800; color: #1a4a8a; letter-spacing: .04em; text-align: center; opacity: .92; }
+.expl-pingu-label { font-size: .8rem; color: #1a4a8a; font-weight: 700; text-align: center; line-height: 1.35; }
 
 .add-exp-form { background: #fff; border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-lg); padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,.1); color: #0a1628; }
 .add-exp-form h3 { font-family: var(--fd); font-size: 1.2rem; color: #0a1628; }
@@ -639,6 +641,11 @@ button{cursor:pointer}
         <button type="button" class="expl-view-btn on" id="expl-view-btn-timeline" data-expl-view="timeline">Frise</button>
         <button type="button" class="expl-view-btn" id="expl-view-btn-map" data-expl-view="map">Carte</button>
       </div>
+      <div class="expl-pingu-strip expl-pingu-end" id="expl-pingu-end">
+        <div class="peng-svg hold" id="expl-pingu-svg-wrap" aria-hidden="true"></div>
+        <div class="expl-pingu-rank" id="expl-pingu-rank"></div>
+        <div class="expl-pingu-label" id="expl-wait-label">En attente de la prochaine aventure… ✨</div>
+      </div>
       <div class="exp-edit-picker hidden" id="exp-edit-picker">
         <label for="exp-edit-select">Choisir une expédition à modifier</label>
         <select id="exp-edit-select" class="exp-edit-select" aria-label="Expédition à modifier"></select>
@@ -682,10 +689,6 @@ button{cursor:pointer}
       <div class="expl-path" id="expl-path">
         <div class="path-line"></div>
         <div id="expl-nodes"></div>
-        <div class="expl-pingu-end" id="expl-pingu-end">
-          <div class="peng-svg hold" id="expl-pingu-svg-wrap" aria-hidden="true"></div>
-          <div class="expl-pingu-label" id="expl-wait-label">En attente de la prochaine aventure… ✨</div>
-        </div>
       </div>
       </div>
       <div id="expl-panel-map" class="expl-panel-map hidden">
@@ -1023,6 +1026,7 @@ let editingExpeditionId = null;
 let expPhotoRemoved = false;
 let explorationExps = [];
 let explLastDaysWaiting = 0;
+let explSvgGradSeq = 0;
 let explorationMap = null;
 let explorationMapMarkers = [];
 let explorationMapLoading = false;
@@ -1602,47 +1606,53 @@ function explPinguTierIndex(d){
   return LVL.length - 1;
 }
 
-/** Pingouin de fin de frise : apparence selon le grade banquise (LVL + calcD), chiffre = jours depuis la dernière expédition. */
+/** Pingouin : grade banquise (tier) + chiffre sur le panneau = jours depuis la dernière expédition. */
 function buildExplWaitPenguinSVG(tier, signDays){
   const t = Math.min(LVL.length - 1, Math.max(0, tier | 0));
+  const gid = 'explPeG' + (++explSvgGradSeq);
   const numStr = String(Math.max(0, Math.floor(Number(signDays) || 0)));
   const fs = numStr.length > 3 ? 6 : numStr.length > 2 ? 7 : 9;
   const bodies = [
-    ['#909099', '#4a4a5a', '#2a2a3a'],
-    ['#9498a4', '#4c5062', '#2c2e3e'],
-    ['#9a9eaf', '#50546c', '#303444'],
-    ['#a4a8ba', '#585c78', '#363a4c'],
-    ['#b2b6c8', '#666a84', '#404458'],
-    ['#c6cad8', '#7e8298', '#505468'],
-    ['#d8dce8', '#9ea2b4', '#686c80']
+    ['#6e7582', '#3a3d4c', '#1a1c28'],
+    ['#7a808e', '#424654', '#222530'],
+    ['#8a909e', '#4e5464', '#2a2e3c'],
+    ['#9ca2b2', '#5a6072', '#343848'],
+    ['#aeb4c4', '#6a7080', '#404858'],
+    ['#c4c8d6', '#828898', '#505868'],
+    ['#dde1ec', '#a0a4b4', '#707488']
   ];
-  const bellies = ['#f8f6f2', '#f6f4f0', '#f3f1ec', '#efece6', '#ebe7df', '#e6e2d8', '#dfdbd4'];
-  const faceWhites = ['#f8f6f2', '#f7f5f3', '#f5f3f0', '#f2f0ec', '#eeebe5', '#eae6df', '#e5e1d8'];
+  const bellies = ['#fffefb', '#faf8f4', '#f4f2ec', '#ebe8e0', '#e2ddd4', '#d8d2c8', '#cec6ba'];
+  const faceWhites = ['#ffffff', '#faf8f6', '#f5f3ef', '#edeae4', '#e5e1da', '#dcd6ce', '#d2cbc2'];
   const [c0, c1, c2] = bodies[t];
   const belly = bellies[t];
   const faceW = faceWhites[t];
-  const wrinkleOp = [0, 0.1, 0.28, 0.5, 0.68, 0.85, 0.98][t];
-  const cheekOp = t < 2 ? 0 : Math.min(1, 0.15 + (t - 2) * 0.22);
-  const browOp = t < 4 ? 0 : Math.min(1, 0.35 + (t - 4) * 0.32);
-  const snowCapOp = t < 6 ? 0 : 0.92;
-  const caneOp = t < 4 ? 0 : t === 4 ? 0.45 : 1;
-  const showOpen = t <= 3;
-  const showHalf = t === 4;
+  const wrinkleOp = [0, 0.22, 0.45, 0.62, 0.78, 0.92, 1][t];
+  const wrinkleStroke = t >= 4 ? '#5c5c6c' : '#7a7a8a';
+  const cheekBlushOp = t <= 1 ? 0.55 - t * 0.2 : 0;
+  const cheekOp = t < 2 ? 0 : Math.min(1, 0.2 + (t - 2) * 0.24);
+  const browOp = t < 3 ? 0 : Math.min(1, 0.25 + (t - 3) * 0.28);
+  const snowCapOp = t < 5 ? 0 : t === 5 ? 0.55 : 1;
+  const caneOp = t < 3 ? 0 : t === 3 ? 0.28 : t === 4 ? 0.65 : 1;
+  const showOpen = t <= 2;
+  const showHalf = t === 3 || t === 4;
   const showClosed = t >= 5;
-  const beak = t >= 5 ? '#c86818' : t >= 3 ? '#d87010' : '#e07800';
+  const beak = t >= 5 ? '#a85a18' : t >= 3 ? '#c06010' : '#e07800';
+  const headDark = t >= 5 ? '#252530' : t >= 3 ? '#1f1f2a' : '#1a1a28';
   return (
     '<svg width="64" height="84" viewBox="0 0 64 84" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
-    '<defs><radialGradient id="explPeBodyG" cx="40%" cy="35%" r="65%">' +
+    '<defs><radialGradient id="' + gid + '" cx="40%" cy="35%" r="65%">' +
     '<stop offset="0%" stop-color="' + c0 + '"/><stop offset="55%" stop-color="' + c1 + '"/><stop offset="100%" stop-color="' + c2 + '"/></radialGradient></defs>' +
     '<ellipse cx="21" cy="78" rx="8" ry="3.5" fill="#c25a00"/><ellipse cx="41" cy="78" rx="8" ry="3.5" fill="#c25a00"/>' +
-    '<ellipse cx="32" cy="55" rx="20" ry="24" fill="url(#explPeBodyG)"/>' +
+    '<ellipse cx="32" cy="55" rx="20" ry="24" fill="url(#' + gid + ')"/>' +
     '<ellipse cx="32" cy="59" rx="13" ry="16" fill="' + belly + '"/>' +
-    '<ellipse cx="32" cy="30" rx="18" ry="18" fill="#1a1a28"/>' +
+    '<ellipse cx="32" cy="30" rx="18" ry="18" fill="' + headDark + '"/>' +
     '<g opacity="' + snowCapOp + '"><path d="M14 14 Q22 8 32 10 Q44 8 50 16 Q48 20 40 18 Q32 16 24 18 Q16 20 14 14Z" fill="#f0f4fa" stroke="#c8d8e8" stroke-width="0.6"/></g>' +
     '<g opacity="' + browOp + '" stroke="#d0d4dc" fill="none" stroke-linecap="round" stroke-width="1.8">' +
     '<path d="M15 17 Q18 12 24 15"/><path d="M49 17 Q46 12 40 15"/></g>' +
     '<ellipse cx="32" cy="35" rx="12" ry="10" fill="' + faceW + '"/>' +
-    '<g opacity="' + wrinkleOp + '" stroke="#8a8a9a" fill="none" stroke-linecap="round">' +
+    '<g opacity="' + cheekBlushOp + '">' +
+    '<ellipse cx="20" cy="34" rx="5" ry="3.2" fill="#f5a0a8"/><ellipse cx="44" cy="34" rx="5" ry="3.2" fill="#f5a0a8"/></g>' +
+    '<g opacity="' + wrinkleOp + '" stroke="' + wrinkleStroke + '" fill="none" stroke-linecap="round">' +
     '<path d="M21 21 Q26 19 31 21" stroke-width="0.85"/><path d="M23 17 Q28 16 33 17" stroke-width="0.75"/>' +
     '<path d="M25 24 Q30 23 35 24" stroke-width="0.9"/><path d="M20 26 Q24 25 28 26" stroke-width="0.65"/></g>' +
     '<g opacity="' + cheekOp + '" stroke="#a8a8b8" fill="none" stroke-linecap="round" stroke-width="0.7">' +
@@ -1679,6 +1689,8 @@ function renderExplorationEndPenguin(daysWaiting){
   const L = lvl(d);
   wrap.setAttribute('title', L.n + ' · ' + num + (num === 1 ? ' jour' : ' jours') + ' depuis la dernière expédition');
   wrap.innerHTML = buildExplWaitPenguinSVG(tier, num);
+  const rk = document.getElementById('expl-pingu-rank');
+  if (rk) rk.textContent = L.i + ' ' + L.n + ' · streak banquise ' + d + ' jour' + (d === 1 ? '' : 's');
 }
 
 function refreshExplWaitPenguinVisual(){
