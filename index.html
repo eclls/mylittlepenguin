@@ -414,7 +414,16 @@ button{cursor:pointer}
 .mca{flex:1;padding:13px;border-radius:var(--r-xl);background:linear-gradient(135deg,#1a4a8a,var(--teal));color:#fff;font-weight:800;font-size:.88rem;border:none;cursor:pointer}
 
 /* ══ MINI-JEUX PANELS ══ */
-#game-fishing,#game-maze,#game-memory{background:var(--night)}
+#game-fishing,#game-maze,#game-memory,#game-glide{background:var(--night)}
+.friend-scores-section{padding:0 16px 16px}
+.friend-scores-section.hidden{display:none!important}
+.friend-scores-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:400px;margin:0 auto}
+.friend-score-cell{background:rgba(10,22,40,.55);border:1.5px solid rgba(255,255,255,.1);border-radius:var(--r-md);padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.friend-score-lb{font-size:.68rem;font-weight:800;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.06em}
+.friend-score-val{font-family:var(--fd);font-size:1.35rem;font-weight:800;color:var(--gold)}
+.glide-wrap{width:100%;max-width:360px;height:min(52vh,440px);border-radius:var(--r-lg);overflow:hidden;border:2px solid rgba(91,168,212,.35);background:linear-gradient(180deg,#87ceeb 0%,#b8d4e8 45%,#5ab3d8 78%,#0d3a6e 100%);touch-action:none;position:relative}
+#glide-canvas{display:block;width:100%;height:100%;cursor:pointer}
+.glide-hud{position:absolute;top:8px;left:0;right:0;text-align:center;pointer-events:none;font-family:var(--fd);font-size:1.6rem;font-weight:800;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.4)}
 .game-panel-body{padding:16px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:calc(100vh - 80px)}
 .game-score-display{font-family:var(--fd);font-size:2.5rem;font-weight:700;color:var(--gold);text-align:center}
 .game-lives{font-size:1.5rem;letter-spacing:4px}
@@ -645,6 +654,11 @@ button{cursor:pointer}
             <div class="game-icon">🃏</div>
             <div class="game-name">Mémoire</div>
             <div class="game-score" id="score-memory">0</div>
+          </div>
+          <div class="game-card" onclick="openGame('glide')">
+            <div class="game-icon">🧊</div>
+            <div class="game-name">Iceberg run</div>
+            <div class="game-score" id="score-glide">0</div>
           </div>
         </div>
       </div>
@@ -885,6 +899,10 @@ button{cursor:pointer}
     </div>
   </div>
   <div class="friend-bq-body">
+    <div id="friend-scores-section" class="friend-scores-section hidden" aria-label="Records jeux de l ami">
+      <div class="sl" style="margin-bottom:10px;padding-top:4px">Records jeux 🎮</div>
+      <div class="friend-scores-grid" id="friend-scores-grid"></div>
+    </div>
     <div id="friend-bq-private" class="friend-bq-private hidden">
       <div style="font-size:3.2rem">🔒</div>
       <p class="friend-bq-private-msg">Ton ami préfère garder sa banquise privée… coquin.</p>
@@ -1007,6 +1025,22 @@ button{cursor:pointer}
   </div>
 </div>
 
+<div class="panel" id="game-glide">
+  <div class="panel-header">
+    <button type="button" class="panel-back" onclick="closePanel('game-glide');stopGlide()">←</button>
+    <div class="panel-title">Iceberg run 🧊</div>
+  </div>
+  <div class="game-panel-body">
+    <div class="game-score-display" id="glide-score-disp">0</div>
+    <div class="glide-wrap" id="glide-wrap">
+      <div class="glide-hud" id="glide-hud"></div>
+      <canvas id="glide-canvas" width="360" height="480" aria-label="Pingouin entre les icebergs — tape pour voler"></canvas>
+    </div>
+    <div class="game-instructions">Tape ou clique pour battre des ailes !<br/>Évite les icebergs — chaque passage compte 🐧</div>
+    <button type="button" class="game-start-btn" id="glide-start-btn" onclick="startGlide()">▶ Commencer</button>
+  </div>
+</div>
+
 <div class="mo hidden" id="kill-modal">
   <div class="mc-card">
     <div style="font-size:3rem">💀</div>
@@ -1068,7 +1102,7 @@ let P = null, SB = null, MODE = 'date', SEL_AV = '🐧';
 let SEL_LEAGUE_EMOJI = '🐧';
 let LEAGUE_CREATE_TYPE = null;
 let CONV_FID = null, CONV_FNM = null, CONV_POLL = null;
-let BEST_SCORES = {fishing:0, maze:0, memory:0};
+let BEST_SCORES = {fishing:0, maze:0, memory:0, glide:0};
 let selectedPhotoFile = null, selectedPhotoB64 = null;
 let editingExpeditionId = null;
 let expPhotoRemoved = false;
@@ -1346,7 +1380,7 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('date-in').max   = new Date().toISOString().slice(0,10);
   document.getElementById('date-in').value = new Date().toISOString().slice(0,10);
   document.getElementById('exp-date-in').value = new Date().toISOString().slice(0,10);
-  BEST_SCORES = JSON.parse(localStorage.getItem('mlp_scores') || '{"fishing":0,"maze":0,"memory":0}');
+  BEST_SCORES = Object.assign({ fishing: 0, maze: 0, memory: 0, glide: 0 }, JSON.parse(localStorage.getItem('mlp_scores') || '{}'));
   bindAll();
   initSB();
   updateScoreDisplay();
@@ -1535,6 +1569,7 @@ function bindAll() {
   if (ecp) ecp.onclick = () => clearExpPlace();
   window.addEventListener('resize', () => { if (getExplorationView() === 'map') resizeExplorationMap(); });
   setupMazeSwipe();
+  setupGlideListeners();
 }
 
 function setMode(m) {
@@ -2298,12 +2333,38 @@ async function leaveLeague(leagueId){
 window.leaveLeague = leaveLeague;
 window.leaguePanelBack = leaguePanelBack;
 
+function renderFriendScores(scoresMap){
+  const grid = document.getElementById('friend-scores-grid');
+  if (!grid) return;
+  const rows = [
+    ['fishing', 'Pêche', 'pts'],
+    ['maze', 'Labyrinthe', 'nv.'],
+    ['memory', 'Mémoire', 'pts'],
+    ['glide', 'Iceberg run', 'passages']
+  ];
+  grid.innerHTML = rows.map(([k, label, unit]) => {
+    const v = scoresMap[k] != null ? scoresMap[k] : 0;
+    return '<div class="friend-score-cell"><span class="friend-score-lb">' + label + '</span><span class="friend-score-val">' + v + '<span style="font-size:.62rem;font-weight:700;color:rgba(255,255,255,.42);margin-left:4px">' + unit + '</span></span></div>';
+  }).join('');
+}
+
 async function openFriendBanquise(fid){
   if(!SB||!fid){toast('Connexion requise');return;}
+  const sec = document.getElementById('friend-scores-section');
+  if (sec) sec.classList.add('hidden');
   const{data,error}=await SB.from('profiles').select('id,pseudo,avatar,start_date,last_kill_date,banquise_public').eq('id',fid).maybeSingle();
   if(error||!data){toast('Profil introuvable');return;}
   document.getElementById('friend-bq-title').textContent=(data.pseudo||'Explorateur')+' 🏔️';
   document.getElementById('friend-bq-subtitle').textContent=(data.avatar||'🐧')+' • Banquise';
+  const scoresMap = { fishing: 0, maze: 0, memory: 0, glide: 0 };
+  try {
+    const { data: sc } = await SB.from('scores').select('game,score').eq('user_id', fid);
+    (sc || []).forEach(({ game, score }) => {
+      if (Object.prototype.hasOwnProperty.call(scoresMap, game) && typeof score === 'number') scoresMap[game] = score;
+    });
+  } catch (e) {}
+  renderFriendScores(scoresMap);
+  if (sec) sec.classList.remove('hidden');
   if(data.banquise_public===false){
     document.getElementById('friend-bq-private').classList.remove('hidden');
     document.getElementById('friend-bq-public').classList.add('hidden');
@@ -2993,6 +3054,7 @@ function openGame(name){
   openPanel('game-'+name);
   if(name==='memory') initMemoryBoard();
   if(name==='maze')   initMazeBoard();
+  if(name==='glide')  setupGlideCanvas();
 }
 window.openGame=openGame;
 
@@ -3000,6 +3062,8 @@ function updateScoreDisplay(){
   document.getElementById('score-fishing').textContent=BEST_SCORES.fishing||0;
   document.getElementById('score-maze').textContent=BEST_SCORES.maze||0;
   document.getElementById('score-memory').textContent=BEST_SCORES.memory||0;
+  const sg = document.getElementById('score-glide');
+  if (sg) sg.textContent = BEST_SCORES.glide || 0;
 }
 
 function saveScores(){
@@ -3218,6 +3282,255 @@ function endMemory(){
   else toast(icePr+'Terminé en '+memMoves+' coups ! 🃏');
 }
 function stopMemory(){if(memActive)memActive=false;document.getElementById('memory-start-btn').style.display='block';}
+
+// ════════════════════════════════════════════════
+//  MINI-JEU : ICEBERG RUN (Flappy pingouin)
+// ════════════════════════════════════════════════
+let glideRaf = null;
+let glideState = null;
+const GLIDE_W = 360;
+const GLIDE_H = 480;
+
+function setupGlideListeners(){
+  const c = document.getElementById('glide-canvas');
+  if (!c || c.dataset.glideBound) return;
+  c.dataset.glideBound = '1';
+  const flap = (e) => {
+    e.preventDefault();
+    if (glideState && glideState.active) glideState.vy = glideState.flap;
+  };
+  c.addEventListener('pointerdown', flap);
+  c.addEventListener('touchstart', flap, { passive: false });
+}
+
+function setupGlideCanvas(){
+  setupGlideListeners();
+}
+
+function drawIcebergPair(ctx, p){
+  const topH = p.gapTop;
+  const botY = p.gapTop + p.gapH;
+  const botH = GLIDE_H - botY;
+  ctx.fillStyle = '#e0f2fe';
+  ctx.strokeStyle = '#5fa8c8';
+  ctx.lineWidth = 2;
+  if (topH > 4) {
+    ctx.beginPath();
+    ctx.moveTo(p.x, 0);
+    ctx.lineTo(p.x + p.w, 0);
+    ctx.lineTo(p.x + p.w, topH - 18);
+    ctx.quadraticCurveTo(p.x + p.w * 0.68, topH + 4, p.x + p.w * 0.38, topH - 6);
+    ctx.quadraticCurveTo(p.x + p.w * 0.12, topH - 2, p.x, topH - 24);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+  if (botH > 4) {
+    ctx.beginPath();
+    ctx.moveTo(p.x, botY + 24);
+    ctx.quadraticCurveTo(p.x + p.w * 0.28, botY - 2, p.x + p.w * 0.55, botY + 10);
+    ctx.quadraticCurveTo(p.x + p.w * 0.82, botY + 4, p.x + p.w, botY + 20);
+    ctx.lineTo(p.x + p.w, GLIDE_H);
+    ctx.lineTo(p.x, GLIDE_H);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+}
+
+function drawGlidePenguin(ctx, x, y, vy){
+  const tilt = Math.max(-0.55, Math.min(0.65, vy * 0.045));
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(tilt);
+  ctx.fillStyle = '#1a1a28';
+  ctx.beginPath();
+  ctx.ellipse(0, 2, 15, 17, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#f5f0e8';
+  ctx.beginPath();
+  ctx.ellipse(3, 5, 9, 11, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.ellipse(6, -4, 5.5, 5.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#0a0a18';
+  ctx.beginPath();
+  ctx.arc(7.5, -4, 2.2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath();
+  ctx.arc(8.2, -4.8, 0.9, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#e07800';
+  ctx.beginPath();
+  ctx.moveTo(10, 0);
+  ctx.lineTo(18, 2);
+  ctx.lineTo(10, 5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.fillStyle = '#c25a00';
+  ctx.beginPath();
+  ctx.ellipse(-4, 14, 7, 3.5, 0, 0, Math.PI * 2);
+  ctx.ellipse(8, 14, 7, 3.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawGlideFrame(){
+  const c = document.getElementById('glide-canvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const g = ctx.createLinearGradient(0, 0, 0, GLIDE_H);
+  g.addColorStop(0, '#6eb8e8');
+  g.addColorStop(0.45, '#b8dff5');
+  g.addColorStop(0.78, '#4a9ec4');
+  g.addColorStop(1, '#0a2840');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, GLIDE_W, GLIDE_H);
+  ctx.fillStyle = 'rgba(255,255,255,.2)';
+  for (let i = 0; i < 18; i++) {
+    const sx = ((i * 73 + (glideState ? glideState.t : 0) * 0.4) % (GLIDE_W + 40)) - 20;
+    const sy = (i * 47) % (GLIDE_H - 40);
+    ctx.beginPath();
+    ctx.arc(sx, sy, 1.2 + (i % 3) * 0.4, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  if (!glideState) return;
+  glideState.pillars.forEach(p => drawIcebergPair(ctx, p));
+  drawGlidePenguin(ctx, glideState.birdX, glideState.y, glideState.vy);
+}
+
+function glideMaybeSpawn(){
+  const s = glideState;
+  if (!s) return;
+  const gapH = 128;
+  const margin = 70;
+  const span = GLIDE_H - gapH - 2 * margin;
+  const gapTop = margin + Math.random() * span;
+  const w = 56;
+  if (!s.pillars.length) {
+    s.pillars.push({ x: 400, gapTop, gapH, w, passed: false });
+    return;
+  }
+  const last = s.pillars[s.pillars.length - 1];
+  if (last.x < 235) {
+    s.pillars.push({ x: last.x + 198, gapTop, gapH, w, passed: false });
+  }
+}
+
+function glideLoop(){
+  if (!glideState || !glideState.active) return;
+  const s = glideState;
+  s.t++;
+  s.vy += s.gravity;
+  s.y += s.vy;
+  s.speed = Math.min(3.35, 2.48 + s.score * 0.035);
+  s.pillars.forEach(p => { p.x -= s.speed; });
+  while (s.pillars.length && s.pillars[0].x + s.pillars[0].w < -20) s.pillars.shift();
+  glideMaybeSpawn();
+  const br = 13;
+  const bx = s.birdX;
+  const by = s.y;
+  for (let i = 0; i < s.pillars.length; i++) {
+    const p = s.pillars[i];
+    if (bx + br > p.x && bx - br < p.x + p.w) {
+      if (by - br < p.gapTop || by + br > p.gapTop + p.gapH) {
+        drawGlideFrame();
+        endGlideRound(true);
+        return;
+      }
+      if (!p.passed && p.x + p.w < bx) {
+        p.passed = true;
+        s.score++;
+        document.getElementById('glide-score-disp').textContent = String(s.score);
+        const hud = document.getElementById('glide-hud');
+        if (hud) hud.textContent = String(s.score);
+      }
+    }
+  }
+  if (by - br < 6 || by + br > GLIDE_H - 6) {
+    drawGlideFrame();
+    endGlideRound(true);
+    return;
+  }
+  drawGlideFrame();
+  glideRaf = requestAnimationFrame(glideLoop);
+}
+
+function endGlideRound(didPlay){
+  if (!glideState) return;
+  glideState.active = false;
+  if (glideRaf) {
+    cancelAnimationFrame(glideRaf);
+    glideRaf = null;
+  }
+  const sc = glideState.score | 0;
+  const btn = document.getElementById('glide-start-btn');
+  if (btn) {
+    btn.style.display = 'block';
+    btn.textContent = '▶ Rejouer';
+  }
+  document.getElementById('glide-score-disp').textContent = String(sc);
+  const hud = document.getElementById('glide-hud');
+  if (hud) hud.textContent = '';
+  if (didPlay) {
+    const ice = tryAwardIce('glide');
+    const icePr = ice ? '🧊 +1 glaçon · ' : '';
+    if (sc > (BEST_SCORES.glide || 0)) {
+      BEST_SCORES.glide = sc;
+      saveScores();
+      toast(icePr + '🏆 Record Iceberg run : ' + sc + ' passages !');
+    } else {
+      toast(icePr + (sc ? sc + ' passages 🧊' : 'Perdu !'));
+    }
+  }
+}
+
+function startGlide(){
+  setupGlideListeners();
+  if (glideRaf) {
+    cancelAnimationFrame(glideRaf);
+    glideRaf = null;
+  }
+  const btn = document.getElementById('glide-start-btn');
+  if (btn) btn.style.display = 'none';
+  document.getElementById('glide-score-disp').textContent = '0';
+  const hud = document.getElementById('glide-hud');
+  if (hud) hud.textContent = '';
+  glideState = {
+    active: true,
+    birdX: 84,
+    y: 235,
+    vy: 0,
+    gravity: 0.48,
+    flap: -7.9,
+    speed: 2.48,
+    score: 0,
+    pillars: [],
+    t: 0
+  };
+  glideMaybeSpawn();
+  drawGlideFrame();
+  glideRaf = requestAnimationFrame(glideLoop);
+}
+
+function stopGlide(){
+  if (glideRaf) {
+    cancelAnimationFrame(glideRaf);
+    glideRaf = null;
+  }
+  if (glideState && glideState.active) glideState.active = false;
+  glideState = null;
+  const btn = document.getElementById('glide-start-btn');
+  if (btn) {
+    btn.style.display = 'block';
+    btn.textContent = '▶ Commencer';
+  }
+}
+window.startGlide = startGlide;
+window.stopGlide = stopGlide;
 
 // ════════════════════════════════════════════════
 //  UTILS
