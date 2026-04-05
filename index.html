@@ -374,13 +374,13 @@ button{cursor:pointer}
 .stc-i{font-size:1.35rem}
 .stc-v{font-family:var(--fd);font-size:1.8rem;font-weight:800;color:#fff}
 .stc-l{font-size:.7rem;font-weight:700;color:#b8e0f7;text-transform:uppercase;letter-spacing:.08em}
-.stc-hint{cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease;outline:none}
+.stc-hint{cursor:pointer;touch-action:manipulation;-webkit-touch-callout:none;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease;outline:none}
 .stc-hint:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.25);border-color:rgba(180,230,255,.35)}
 .stc-hint:active{transform:translateY(0) scale(0.98)}
 .stc-hint:focus-visible{box-shadow:0 0 0 3px rgba(91,168,212,.55)}
 .lpc{display:flex;flex-direction:column;gap:10px;margin-top:4px}
 .lpc-c{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1rem;color:#fff}
-.lpc-hint{cursor:pointer;border-radius:var(--r-md);padding:10px;margin:-10px;transition:background .15s ease,box-shadow .15s ease;outline:none}
+.lpc-hint{cursor:pointer;touch-action:manipulation;-webkit-touch-callout:none;border-radius:var(--r-md);padding:10px;margin:-10px;transition:background .15s ease,box-shadow .15s ease;outline:none}
 .lpc-hint:hover{background:rgba(255,255,255,.06)}
 .lpc-hint:focus-visible{box-shadow:0 0 0 3px rgba(91,168,212,.45)}
 @keyframes profGlitchSnap{
@@ -1216,6 +1216,43 @@ function closeNotifPermModal() {
 window.openNotifPermModal = openNotifPermModal;
 window.closeNotifPermModal = closeNotifPermModal;
 
+/**
+ * iOS Web Clip / PWA : les div role="button" dans une page scrollable ne reçoivent souvent pas le click.
+ * On déclenche sur touchend (tap sans mouvement) + click pour bureau, en évitant le double appel.
+ */
+function bindReliableTap(el, handler) {
+  if (!el || typeof handler !== 'function') return;
+  let touchMoved = false;
+  let sx = 0;
+  let sy = 0;
+  let skipNextClick = false;
+  el.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    touchMoved = false;
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+  }, { passive: true });
+  el.addEventListener('touchmove', (e) => {
+    if (e.touches.length !== 1) return;
+    if (Math.abs(e.touches[0].clientX - sx) > 12 || Math.abs(e.touches[0].clientY - sy) > 12) touchMoved = true;
+  }, { passive: true });
+  el.addEventListener('touchend', (e) => {
+    if (touchMoved) return;
+    skipNextClick = true;
+    handler();
+    try { e.preventDefault(); } catch (err) {}
+    setTimeout(() => { skipNextClick = false; }, 450);
+  }, { passive: false });
+  el.addEventListener('click', (e) => {
+    if (skipNextClick) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    handler();
+  });
+}
+
 function triggerProfGlitch(card) {
   if (!card) return;
   card.classList.remove('prof-hint-card--snap');
@@ -1665,14 +1702,14 @@ function bindAll() {
   window.addEventListener('resize', () => { if (getExplorationView() === 'map') resizeExplorationMap(); });
   document.querySelectorAll('.stc-hint').forEach((el) => {
     const go = () => openProfHint(el.getAttribute('data-prof-hint'));
-    el.addEventListener('click', go);
+    bindReliableTap(el, go);
     el.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
     });
   });
   const pph = document.getElementById('prof-progress-hint');
   if (pph) {
-    pph.addEventListener('click', () => openProfLevelsModal());
+    bindReliableTap(pph, () => openProfLevelsModal());
     pph.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProfLevelsModal(); }
     });

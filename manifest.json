@@ -3,6 +3,7 @@
   "short_name": "🐧 Penguin",
   "description": "Ton compagnon de l'Antarctique — calendrier des pingouins",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0a1628",
   "theme_color": "#0a1628",
