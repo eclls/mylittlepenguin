@@ -374,8 +374,32 @@ button{cursor:pointer}
 .stc-i{font-size:1.35rem}
 .stc-v{font-family:var(--fd);font-size:1.8rem;font-weight:800;color:#fff}
 .stc-l{font-size:.7rem;font-weight:700;color:#b8e0f7;text-transform:uppercase;letter-spacing:.08em}
+.stc-hint{cursor:pointer;transition:transform .12s ease,box-shadow .12s ease,border-color .12s ease;outline:none}
+.stc-hint:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.25);border-color:rgba(180,230,255,.35)}
+.stc-hint:active{transform:translateY(0) scale(0.98)}
+.stc-hint:focus-visible{box-shadow:0 0 0 3px rgba(91,168,212,.55)}
 .lpc{display:flex;flex-direction:column;gap:10px;margin-top:4px}
 .lpc-c{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1rem;color:#fff}
+.lpc-hint{cursor:pointer;border-radius:var(--r-md);padding:10px;margin:-10px;transition:background .15s ease,box-shadow .15s ease;outline:none}
+.lpc-hint:hover{background:rgba(255,255,255,.06)}
+.lpc-hint:focus-visible{box-shadow:0 0 0 3px rgba(91,168,212,.45)}
+@keyframes profGlitchSnap{
+  0%{opacity:0;transform:scale(.97) translate(0,4px);filter:hue-rotate(0deg)}
+  12%{opacity:1;transform:scale(1.01) translate(-3px,0) skewX(-.8deg);filter:hue-rotate(75deg);box-shadow:3px 0 0 rgba(255,0,180,.4),-3px 0 0 rgba(0,255,255,.35)}
+  24%{transform:translate(2px,-1px) skewX(.6deg);filter:hue-rotate(-40deg)}
+  40%{transform:translate(0,0) skewX(0);filter:none;box-shadow:none}
+  100%{opacity:1;transform:scale(1) translate(0,0)}
+}
+.prof-hint-card{max-width:min(420px,94vw);text-align:left}
+.prof-hint-card h3{margin:.2em 0 .5em;font-size:1.15rem}
+.prof-hint-body{font-size:.9rem;line-height:1.45;color:rgba(255,255,255,.88);margin:0 0 1rem}
+.prof-lvl-list{max-height:min(52vh,380px);overflow-y:auto;margin:0 0 12px;padding:4px 2px;display:flex;flex-direction:column;gap:8px}
+.prof-lvl-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(10,22,40,.55);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-md);font-size:.85rem}
+.prof-lvl-row .pl-ic{font-size:1.25rem;flex-shrink:0}
+.prof-lvl-row .pl-nm{flex:1;font-weight:700;color:#fff}
+.prof-lvl-row .pl-rg{font-family:var(--fd);font-weight:800;color:#b8e0f7;white-space:nowrap;font-size:.78rem}
+.prof-exp-note{font-size:.82rem;line-height:1.4;color:rgba(255,255,255,.75);padding:10px 12px;border-radius:var(--r-md);background:rgba(91,168,212,.12);border:1px solid rgba(91,168,212,.25);margin-bottom:12px}
+.prof-hint-card--snap{animation:profGlitchSnap .5s ease-out both}
 .lp-bar{width:100%;height:10px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
 .lp-fill{height:100%;background:linear-gradient(90deg,var(--ice),var(--teal));border-radius:99px;transition:width .8s cubic-bezier(.34,1.56,.64,1)}
 .lp-info{font-size:.74rem;color:#b8e0f7;font-weight:700;margin-top:4px}
@@ -780,16 +804,16 @@ button{cursor:pointer}
         <button class="ob-btn" id="av-ok">Confirmer</button>
       </div>
       <div class="p-st">
-        <div class="stc"><div class="stc-i">🧊</div><div class="stc-v" id="st-ice">0</div><div class="stc-l">Glaçons</div></div>
-        <div class="stc"><div class="stc-i">📅</div><div class="stc-v" id="st-d">0</div><div class="stc-l">Jours</div></div>
-        <div class="stc"><div class="stc-i">🐦</div><div class="stc-v" id="st-m">0</div><div class="stc-l">Mouettes</div></div>
-        <div class="stc"><div class="stc-i">🐧</div><div class="stc-v" id="st-p">0</div><div class="stc-l">Pingouins</div></div>
-        <div class="stc"><div class="stc-i">🐋</div><div class="stc-v" id="st-o">0</div><div class="stc-l">Orques</div></div>
-        <div class="stc"><div class="stc-i">🦈</div><div class="stc-v" id="st-r">0</div><div class="stc-l">Requins</div></div>
+        <div class="stc stc-hint" data-prof-hint="glacons" tabindex="0" role="button" aria-label="Aide : glaçons"><div class="stc-i">🧊</div><div class="stc-v" id="st-ice">0</div><div class="stc-l">Glaçons</div></div>
+        <div class="stc stc-hint" data-prof-hint="jours" tabindex="0" role="button" aria-label="Aide : jours"><div class="stc-i">📅</div><div class="stc-v" id="st-d">0</div><div class="stc-l">Jours</div></div>
+        <div class="stc stc-hint" data-prof-hint="mouettes" tabindex="0" role="button" aria-label="Aide : mouettes"><div class="stc-i">🐦</div><div class="stc-v" id="st-m">0</div><div class="stc-l">Mouettes</div></div>
+        <div class="stc stc-hint" data-prof-hint="pingouins" tabindex="0" role="button" aria-label="Aide : pingouins"><div class="stc-i">🐧</div><div class="stc-v" id="st-p">0</div><div class="stc-l">Pingouins</div></div>
+        <div class="stc stc-hint" data-prof-hint="orques" tabindex="0" role="button" aria-label="Aide : orques"><div class="stc-i">🐋</div><div class="stc-v" id="st-o">0</div><div class="stc-l">Orques</div></div>
+        <div class="stc stc-hint" data-prof-hint="requins" tabindex="0" role="button" aria-label="Aide : requins"><div class="stc-i">🦈</div><div class="stc-v" id="st-r">0</div><div class="stc-l">Requins</div></div>
       </div>
       <div class="psec">
         <div class="sl">Progression</div>
-        <div class="lpc">
+        <div class="lpc lpc-hint" id="prof-progress-hint" tabindex="0" role="button" aria-label="Voir les grades banquise et l’évolution du pingouin">
           <div class="lpc-c"><span id="lp-i">🐣</span><span id="lp-cn">Poussin Polaire</span></div>
           <div><div class="lp-bar"><div class="lp-fill" id="lp-fill" style="width:0%"></div></div><div class="lp-info" id="lp-info"></div></div>
           <div class="lp-next">→ <span id="lp-nn">Maître des Mouettes</span></div>
@@ -1059,6 +1083,23 @@ button{cursor:pointer}
   </div>
 </div>
 
+<div class="mo hidden" id="prof-hint-modal" onclick="if(event.target===this)closeProfHintModal()">
+  <div class="mc-card prof-hint-card" id="prof-hint-card" onclick="event.stopPropagation()">
+    <h3 id="prof-hint-title"></h3>
+    <div class="prof-hint-body" id="prof-hint-body"></div>
+    <div class="mb" style="justify-content:center"><button type="button" class="mca" onclick="closeProfHintModal()">OK</button></div>
+  </div>
+</div>
+
+<div class="mo hidden" id="prof-levels-modal" onclick="if(event.target===this)closeProfLevelsModal()">
+  <div class="mc-card prof-hint-card" id="prof-levels-card" onclick="event.stopPropagation()">
+    <h3>Grades banquise</h3>
+    <div class="prof-lvl-list" id="prof-levels-list"></div>
+    <p class="prof-exp-note">Dans <strong>Expéditions</strong> (frise), le pingouin en bas reflète ton <strong>grade</strong> : il évolue visuellement quand tu montes de niveau. Le chiffre sur son panneau indique les jours depuis ta dernière expédition.</p>
+    <div class="mb" style="justify-content:center"><button type="button" class="mca" onclick="closeProfLevelsModal()">OK</button></div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <input type="file" id="exp-photo-input" accept="image/*" style="display:none"/>
@@ -1095,6 +1136,15 @@ const LVL = [
   {min:360,max:719, i:'🦈', n:'Légende des Abysses',   nx:720},
   {min:720,max:9999,i:'❄️', n:'Dieu du Grand Froid',   nx:null},
 ];
+/** Textes d’aide profil (clic sur les tuiles stats) */
+const PROF_HINT = {
+  glacons: { title: '🧊 Glaçons', body: '<p>Les <strong>glaçons</strong>, ce sont les points que tu accumules en jouant aux mini-jeux de la banquise (Pêche, Labyrinthe, Mémoire, Iceberg run…). En général, chaque jeu peut t’en rapporter <strong>une fois par jour</strong> (« dé » du jour). Le total s’affiche ici.</p>' },
+  jours: { title: '📅 Jours', body: '<p>Les <strong>jours</strong>, c’est ta <strong>série</strong> sur la banquise : depuis ta date de départ, ou depuis le dernier « kill » si tu as tout remis à zéro. Ce compteur pilote ton <strong>grade</strong> (barre Progression) et le découpage des animaux en dessous.</p>' },
+  mouettes: { title: '🐦 Mouettes', body: '<p>Les <strong>mouettes</strong> affichent les <strong>jours restants</strong> dans le tout dernier bloc de 30 jours (de 0 à 29) — la « décimale » de ta progression. Ce nombre anime aussi les mouettes sur l’iceberg.</p>' },
+  pingouins: { title: '🐧 Pingouins', body: '<p>Les <strong>pingouins</strong> comptent les blocs de <strong>30 jours complets</strong> dans la partie « restante » après les grands paliers orques (découpage en paliers de 30 jours).</p>' },
+  orques: { title: '🐋 Orques', body: '<p>Après les <strong>requins</strong> (tranches de 360 j), ce qui reste de ta série est découpé : tu peux avoir <strong>0 ou 1</strong> « palier » <strong>orque</strong> (bloc de 180 j dans ce reliquat). Ensuite viennent les pingouins (par 30 j) puis les mouettes (0–29 j restants).</p>' },
+  requins: { title: '🦈 Requins', body: '<p>Chaque <strong>requin</strong> correspond à <strong>360 jours</strong> de série cumulés sur ta banquise — les plus gros cycles avant les grades les plus rares.</p>' },
+};
 const AVS = ['🐧','🐦','🐋','🦈','🦭','🐟','❄️','🌊','🏔️','⭐','🔥','🎯'];
 const LOCAL_LEAGUES_KEY = 'mlp_leagues_v1';
 
@@ -1165,6 +1215,51 @@ function closeNotifPermModal() {
 }
 window.openNotifPermModal = openNotifPermModal;
 window.closeNotifPermModal = closeNotifPermModal;
+
+function triggerProfGlitch(card) {
+  if (!card) return;
+  card.classList.remove('prof-hint-card--snap');
+  void card.offsetWidth;
+  card.classList.add('prof-hint-card--snap');
+  card.addEventListener('animationend', () => {
+    card.classList.remove('prof-hint-card--snap');
+  }, { once: true });
+}
+function openProfHint(key) {
+  const h = PROF_HINT[key];
+  if (!h) return;
+  const t = document.getElementById('prof-hint-title');
+  const b = document.getElementById('prof-hint-body');
+  const modal = document.getElementById('prof-hint-modal');
+  const card = document.getElementById('prof-hint-card');
+  if (!t || !b || !modal) return;
+  t.textContent = h.title;
+  b.innerHTML = h.body;
+  modal.classList.remove('hidden');
+  triggerProfGlitch(card);
+}
+function closeProfHintModal() {
+  const m = document.getElementById('prof-hint-modal');
+  if (m) m.classList.add('hidden');
+}
+function openProfLevelsModal() {
+  const list = document.getElementById('prof-levels-list');
+  const modal = document.getElementById('prof-levels-modal');
+  const card = document.getElementById('prof-levels-card');
+  if (!list || !modal) return;
+  list.innerHTML = LVL.map((l) => {
+    const maxLabel = l.max >= 9999 ? '∞' : String(l.max);
+    return `<div class="prof-lvl-row"><span class="pl-ic">${l.i}</span><span class="pl-nm">${l.n}</span><span class="pl-rg">${l.min}–${maxLabel} j</span></div>`;
+  }).join('');
+  modal.classList.remove('hidden');
+  triggerProfGlitch(card);
+}
+function closeProfLevelsModal() {
+  const m = document.getElementById('prof-levels-modal');
+  if (m) m.classList.add('hidden');
+}
+window.closeProfHintModal = closeProfHintModal;
+window.closeProfLevelsModal = closeProfLevelsModal;
 
 async function confirmNotifPermFromModal() {
   closeNotifPermModal();
@@ -1568,6 +1663,20 @@ function bindAll() {
   const ecp = document.getElementById('exp-clear-place-btn');
   if (ecp) ecp.onclick = () => clearExpPlace();
   window.addEventListener('resize', () => { if (getExplorationView() === 'map') resizeExplorationMap(); });
+  document.querySelectorAll('.stc-hint').forEach((el) => {
+    const go = () => openProfHint(el.getAttribute('data-prof-hint'));
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+    });
+  });
+  const pph = document.getElementById('prof-progress-hint');
+  if (pph) {
+    pph.addEventListener('click', () => openProfLevelsModal());
+    pph.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openProfLevelsModal(); }
+    });
+  }
   setupMazeSwipe();
   setupGlideListeners();
 }
