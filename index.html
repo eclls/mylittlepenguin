@@ -393,6 +393,9 @@ button{cursor:pointer}
 .prof-hint-card{max-width:min(420px,94vw);text-align:left}
 .prof-hint-card h3{margin:.2em 0 .5em;font-size:1.15rem}
 .prof-hint-body{font-size:.9rem;line-height:1.45;color:rgba(255,255,255,.88);margin:0 0 1rem}
+.prof-hint-body>p{margin:0 0 .55em}
+.prof-hint-body>p:last-child{margin-bottom:0}
+.prof-hint-foot{margin-top:4px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12);font-size:.84rem;line-height:1.35;color:#b8e0f7;font-weight:700}
 .prof-lvl-list{max-height:min(52vh,380px);overflow-y:auto;margin:0 0 12px;padding:4px 2px;display:flex;flex-direction:column;gap:8px}
 .prof-lvl-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(10,22,40,.55);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-md);font-size:.85rem}
 .prof-lvl-row .pl-ic{font-size:1.25rem;flex-shrink:0}
@@ -1139,11 +1142,11 @@ const LVL = [
 /** Textes d’aide profil (clic sur les tuiles stats) */
 const PROF_HINT = {
   glacons: { title: '🧊 Glaçons', body: '<p>Les <strong>glaçons</strong>, ce sont les points que tu accumules en jouant aux mini-jeux de la banquise (Pêche, Labyrinthe, Mémoire, Iceberg run…). En général, chaque jeu peut t’en rapporter <strong>une fois par jour</strong> (« dé » du jour). Le total s’affiche ici.</p>' },
-  jours: { title: '📅 Jours', body: '<p>Les <strong>jours</strong>, c’est ta <strong>série</strong> sur la banquise : depuis ta date de départ, ou depuis le dernier « kill » si tu as tout remis à zéro. Ce compteur pilote ton <strong>grade</strong> (barre Progression) et les animaux en dessous, qu’on lit en <strong>crescendo</strong> : d’abord les <strong>mouettes</strong> (le détail), puis <strong>pingouins</strong>, <strong>orques</strong>, et enfin les <strong>requins</strong> (les plus gros paliers).</p>' },
-  mouettes: { title: '🐦 Mouettes', body: '<p>On commence par le plus fin : les <strong>mouettes</strong>, c’est le chiffre des <strong>jours restants</strong> dans le dernier bloc de 30 (de <strong>0 à 29</strong>) — la petite « décimale » de ta progression. Ce nombre anime aussi les mouettes sur l’iceberg.</p><p>Ensuite, au fil des jours, s’ajoutent des <strong>pingouins</strong> (paquets de 30 j complets), puis éventuellement un palier <strong>orque</strong>, et tout en haut les <strong>requins</strong> (360 j de série chacun). Touche une autre tuile pour zoomer sur l’étape qui t’intéresse.</p>' },
-  pingouins: { title: '🐧 Pingouins', body: '<p>D’abord les <strong>mouettes</strong> : 0 à 29 jours restants dans le bloc actuel. Les <strong>pingouins</strong>, eux, comptent les blocs de <strong>30 jours complets</strong> dans la partie du reliquat qui vient après le palier <strong>orque</strong> (dans ce qui reste une fois les gros cycles de 360 j retirés).</p><p>Au-dessus dans l’échelle : <strong>0 ou 1 orque</strong> (bloc de 180 j dans ce reliquat), puis les <strong>requins</strong>, une unité tous les <strong>360 jours</strong> de série.</p>' },
-  orques: { title: '🐋 Orques', body: '<p>Du plus petit au plus grand : <strong>mouettes</strong> (0–29 j restants), <strong>pingouins</strong> (tranches de 30 j), puis l’<strong>orque</strong> — dans ce qui reste de ta série après chaque tranche de <strong>360 j</strong> (requin), tu peux avoir <strong>0 ou 1</strong> palier correspondant à un bloc de <strong>180 jours</strong>.</p><p>Les <strong>requins</strong>, eux, comptent les <strong>360 jours</strong> de série un par un : c’est le sommet de l’échelle.</p>' },
-  requins: { title: '🦈 Requins', body: '<p>On lit ta série en montant l’échelle : d’abord les <strong>mouettes</strong> (0–29 j dans le dernier petit bloc), les <strong>pingouins</strong> (paquets de 30 j), l’<strong>orque</strong> (0 ou 1 bloc de 180 j dans le reliquat après les 360 j), et enfin les <strong>requins</strong>.</p><p>Chaque <strong>requin</strong> correspond à <strong>360 jours</strong> de série cumulés sur la banquise — le palier le plus massif, au sommet du crescendo.</p>' },
+  jours: { title: '📅 Jours', body: '<p>Ta <strong>série</strong> sur la banquise : depuis ton départ, ou depuis le dernier kill. Ça pilote ton <strong>grade</strong> et les compteurs d’animaux.</p>' },
+  mouettes: { title: '🐦 Mouettes', body: '<p>Les jours <strong>restants</strong> dans ton bloc de 30 en cours (de <strong>0 à 29</strong>). Ça anime aussi les mouettes sur l’iceberg.</p><p class="prof-hint-foot">30 mouettes = 1 pingouin</p>' },
+  pingouins: { title: '🐧 Pingouins', body: '<p>Les blocs de <strong>30 jours complets</strong> dans la partie « milieu » de ta série.</p><p class="prof-hint-foot">1 pingouin = 30 mouettes · 6 pingouins = 1 orque</p>' },
+  orques: { title: '🐋 Orques', body: '<p>Un palier de <strong>180 jours</strong> dans le reliquat ; l’affichage peut être <strong>0 ou 1</strong> selon où tu en es.</p><p class="prof-hint-foot">1 orque = 6 pingouins = 180 mouettes</p>' },
+  requins: { title: '🦈 Requins', body: '<p>Une unité tous les <strong>360 jours</strong> de série sur la banquise.</p><p class="prof-hint-foot">1 requin = 2 orques = 12 pingouins = 360 mouettes</p>' },
 };
 const AVS = ['🐧','🐦','🐋','🦈','🦭','🐟','❄️','🌊','🏔️','⭐','🔥','🎯'];
 const LOCAL_LEAGUES_KEY = 'mlp_leagues_v1';
@@ -1571,6 +1574,8 @@ function enterApp() {
   initNotifPolling();
   refreshPasswordBanner();
   void renderLeaguesBar();
+  /** Scores : sans cet appel, seul le localStorage (mlp_scores) compte ; le serveur n’est lu qu’après login MDP. */
+  void pullScoresFromServer();
 }
 
 function goPage(name) {
