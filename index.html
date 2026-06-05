@@ -13,8 +13,10 @@
   <title>MyLittlePenguin 🐧</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link rel="preconnect" href="https://cirdtmjrsgbqbstwrgzx.supabase.co" crossorigin/>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin/>
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net"/>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" crossorigin="anonymous"/>
 <style>
 /* ══ ROOT ══ */
 :root{
@@ -63,7 +65,7 @@ button{cursor:pointer}
 .sp-title span{background:linear-gradient(135deg,var(--teal),var(--glacier));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .sp-sub{font-size:.95rem;color:var(--sky);opacity:.8}
 .ld-track{width:160px;height:6px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden}
-.ld-fill{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--glacier));border-radius:99px;animation:load 2s ease forwards}
+.ld-fill{height:100%;width:0;background:linear-gradient(90deg,var(--teal),var(--glacier));border-radius:99px;animation:load 1s ease forwards}
 @keyframes load{to{width:100%}}
 
 /* ══ PENGUIN SVG ══ */
@@ -200,6 +202,14 @@ button{cursor:pointer}
 .expl-view-btn { flex: 1; padding: 10px 12px; border-radius: var(--r-xl); border: 2px solid rgba(26,74,138,.35); background: #fff; color: #1a4a8a; font-weight: 800; font-size: .82rem; cursor: pointer; transition: all .2s; }
 .expl-view-btn.on { background: linear-gradient(135deg,#1a4a8a,#2563eb); color: #fff; border-color: transparent; box-shadow: 0 4px 14px rgba(26,74,138,.25); }
 .expl-view-btn:active { transform: scale(.98); }
+.expl-error-banner { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; width: 100%; max-width: 420px; margin: -4px 0 14px; padding: 10px 14px; border-radius: var(--r-md); background: rgba(180,83,9,.1); border: 1.5px solid rgba(180,83,9,.35); }
+.expl-error-banner.hidden { display: none; }
+.expl-error-msg { flex: 1; min-width: 160px; font-size: .8rem; font-weight: 700; color: #b45309; line-height: 1.35; }
+.expl-retry-btn { padding: 8px 16px; border-radius: var(--r-xl); border: none; background: linear-gradient(135deg,#b45309,#f59e0b); color: #fff; font-weight: 800; font-size: .8rem; cursor: pointer; transition: transform .15s; }
+.expl-retry-btn:active { transform: scale(.96); }
+.expl-load-error { text-align: center; color: #b45309; padding: 30px 20px; font-size: .88rem; font-weight: 700; line-height: 1.5; }
+@keyframes passAttnPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(78,205,196,.0); } 50% { box-shadow: 0 0 0 4px rgba(78,205,196,.28); } }
+.pass-recovery-banner.attn { animation: passAttnPulse 2.2s ease-in-out 3; border-color: rgba(78,205,196,.6) !important; }
 .expl-panel-map { margin-bottom: 16px; }
 .expl-map-viz { width: 100%; min-height: min(52vh,420px); border-radius: var(--r-lg); overflow: hidden; border: 2px solid rgba(26,74,138,.2); background: linear-gradient(180deg,#e0f2fe,#bae6fd); box-shadow: 0 8px 28px rgba(0,0,0,.08); z-index: 0; }
 .expl-map-viz .leaflet-container { font-family: var(--fb); border-radius: inherit; }
@@ -709,6 +719,10 @@ button{cursor:pointer}
         <button type="button" class="expl-view-btn on" id="expl-view-btn-timeline" data-expl-view="timeline">Frise</button>
         <button type="button" class="expl-view-btn" id="expl-view-btn-map" data-expl-view="map">Carte</button>
       </div>
+      <div id="expl-error-banner" class="expl-error-banner hidden" role="status">
+        <span class="expl-error-msg" id="expl-error-msg"></span>
+        <button type="button" class="expl-retry-btn" id="expl-retry-btn">Réessayer</button>
+      </div>
       <div class="exp-edit-picker hidden" id="exp-edit-picker">
         <label for="exp-edit-select">Choisir une expédition à modifier</label>
         <select id="exp-edit-select" class="exp-edit-select" aria-label="Expédition à modifier"></select>
@@ -826,7 +840,7 @@ button{cursor:pointer}
         <div class="sl">Paramètres</div>
         <div class="slist">
           <div class="si pass-recovery-banner hidden" id="pass-recovery-banner" style="flex-direction:column;align-items:stretch;gap:10px;padding:14px;border-radius:var(--r-md);background:rgba(91,168,212,.12);border:1.5px solid rgba(26,74,138,.2)">
-            <div class="si-l" style="margin-bottom:0"><span class="si-ic">🔐</span><div><div class="si-lb">Autre appareil</div><div class="si-sb">Définis un mot de passe pour te reconnecter ailleurs</div></div></div>
+            <div class="si-l" style="margin-bottom:0"><span class="si-ic">🔐</span><div><div class="si-lb">Protège ton compte 🛟</div><div class="si-sb">Définis un mot de passe pour <strong>ne jamais perdre</strong> ta banquise et tes expéditions (récupération sur un autre appareil / après réinstallation).</div></div></div>
             <div class="ob-inp"><input type="password" id="pass-setup" placeholder="Nouveau mot de passe (8+ car.)" minlength="8" autocomplete="new-password" style="width:100%;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid rgba(10,22,40,.12);font-size:.88rem;font-weight:600"/></div>
             <div class="ob-inp"><input type="password" id="pass-setup2" placeholder="Confirmer" minlength="8" autocomplete="new-password" style="width:100%;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid rgba(10,22,40,.12);font-size:.88rem;font-weight:600"/></div>
             <div class="ob-err" id="pass-setup-err" style="min-height:1em"></div>
@@ -1107,8 +1121,7 @@ button{cursor:pointer}
 
 <input type="file" id="exp-photo-input" accept="image/*" style="display:none"/>
 
-<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 <script>
 // ════════════════════════════════════════════════
 //  CONFIG
@@ -1164,6 +1177,8 @@ let explLastDaysWaiting = 0;
 let explSvgGradSeq = 0;
 let explorationMap = null;
 let explorationMapMarkers = [];
+let explMapSig = null;
+let explResizeTimer = null;
 let explorationMapLoading = false;
 let explorationPinIconCache = null;
 let explorationDotIconCache = null;
@@ -1456,12 +1471,65 @@ async function pullScoresFromServer() {
     if (changed) saveScores();
   } catch (e) {}
 }
+/**
+ * Auto-réparation d'identité.
+ * Si l'app a « perdu » son id local (ex. raccourci iOS réinstallé → localStorage vidé,
+ * puis compte recréé hors-ligne), il peut exister plusieurs profils au même pseudo.
+ * On se rebranche alors sur le profil qui possède réellement les données (expéditions),
+ * pour que la frise/carte réapparaissent sans intervention.
+ */
+async function reconcileIdentityByPseudo() {
+  if (!SB || !P || !P.pseudo || !P.id) return;
+  try {
+    const { data: profs, error } = await SB.from('profiles').select('id').eq('pseudo', P.pseudo);
+    if (error || !profs || !profs.length) return;
+    // Candidats = profils au même pseudo + l'id courant (on ne l'exclut JAMAIS).
+    const candidateSet = new Set(profs.map(p => p.id).filter(Boolean));
+    candidateSet.add(P.id);
+    const candidates = [...candidateSet];
+    if (candidates.length === 1) return; // un seul id possible : rien à faire
+    async function countExp(id) {
+      try {
+        const { count, error: e2 } = await SB.from('expeditions').select('id', { count: 'exact', head: true }).eq('user_id', id);
+        if (e2) return null;
+        return count || 0;
+      } catch (e) { return null; }
+    }
+    // RÈGLE DE SÛRETÉ : ne jamais quitter un compte qui possède déjà des données.
+    const currentCount = await countExp(P.id);
+    if (currentCount === null) return;   // incertitude réseau → on ne touche à rien
+    if (currentCount > 0) return;        // l'id courant a des expéditions → on garde
+    // L'id courant n'a aucune expédition : on cherche un autre id du même pseudo qui en a.
+    let bestId = P.id, bestCount = 0;
+    for (const id of candidates) {
+      if (id === P.id) continue;
+      const c = await countExp(id);
+      if (c !== null && c > bestCount) { bestCount = c; bestId = id; }
+    }
+    if (bestId !== P.id && bestCount > 0) {
+      P.id = bestId;
+      localStorage.setItem('mlp_id', P.id);
+      localStorage.setItem('mlp_v2', JSON.stringify(P));
+    }
+  } catch (e) {}
+}
 async function refreshPasswordBanner() {
   const b = document.getElementById('pass-recovery-banner');
   if (!b || !SB || !myId()) return;
   try {
     const { data } = await SB.from('profiles').select('password_hash').eq('id', myId()).maybeSingle();
-    b.classList.toggle('hidden', !!(data && data.password_hash));
+    const hasPwd = !!(data && data.password_hash);
+    b.classList.toggle('hidden', hasPwd);
+    if (!hasPwd) {
+      // Attire l'œil sur le bloc + rappel unique (pas à chaque ouverture).
+      b.classList.add('attn');
+      if (!localStorage.getItem('mlp_pwd_hint_shown')) {
+        localStorage.setItem('mlp_pwd_hint_shown', '1');
+        setTimeout(() => toast('🔐 Astuce : définis un mot de passe (Profil) pour ne jamais perdre ta banquise.'), 1200);
+      }
+    } else {
+      b.classList.remove('attn');
+    }
   } catch (e) { b.classList.add('hidden'); }
 }
 async function tryLogin() {
@@ -1484,6 +1552,7 @@ async function tryLogin() {
   P = rowToP(data);
   localStorage.setItem('mlp_id', P.id);
   localStorage.setItem('mlp_v2', JSON.stringify(P));
+  await reconcileIdentityByPseudo();
   await pullScoresFromServer();
   err.textContent = '';
   document.getElementById('login-pass').value = '';
@@ -1519,8 +1588,20 @@ window.addEventListener('DOMContentLoaded', () => {
   bindAll();
   initSB();
   updateScoreDisplay();
-  setTimeout(boot, 2000);
+  registerServiceWorker();
+  // Avant : délai fixe de 2 s avant le démarrage (splash purement décoratif).
+  // On démarre dès que possible ; le splash reste affiché un court instant.
+  setTimeout(boot, 450);
 });
+
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
+  // file:// (test local par double-clic) ne supporte pas les SW : on évite l'erreur.
+  if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return;
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
 
 async function boot() {
   const saved = localStorage.getItem('mlp_v2');
@@ -1528,7 +1609,21 @@ async function boot() {
     try {
       P = JSON.parse(saved);
       if (typeof P.glacons !== 'number' || isNaN(P.glacons)) P.glacons = 0;
-      await syncProfile(); enterApp(); return;
+      // Affichage IMMÉDIAT (depuis le cache local) : on ne bloque plus le premier
+      // rendu en attendant le réseau. La réconciliation d'identité et la synchro
+      // profil tournent en tâche de fond.
+      enterApp();
+      (async () => {
+        try {
+          const before = P.id;
+          await reconcileIdentityByPseudo();
+          await syncProfile();
+          if (P.id !== before && document.getElementById('page-exploration').classList.contains('active')) {
+            loadExploration();
+          }
+        } catch (e) {}
+      })();
+      return;
     } catch(e) {}
   }
   showOB();
@@ -1700,11 +1795,17 @@ function bindAll() {
   const evMap = document.getElementById('expl-view-btn-map');
   if (evT) evT.onclick = () => setExplorationView('timeline');
   if (evMap) evMap.onclick = () => setExplorationView('map');
+  const erb = document.getElementById('expl-retry-btn');
+  if (erb) erb.onclick = () => retryLoadExploration();
   const egc = document.getElementById('exp-geocode-btn');
   if (egc) egc.onclick = () => geocodeExpPlace();
   const ecp = document.getElementById('exp-clear-place-btn');
   if (ecp) ecp.onclick = () => clearExpPlace();
-  window.addEventListener('resize', () => { if (getExplorationView() === 'map') resizeExplorationMap(); });
+  window.addEventListener('resize', () => {
+    if (getExplorationView() !== 'map') return;
+    if (explResizeTimer) clearTimeout(explResizeTimer);
+    explResizeTimer = setTimeout(() => { explResizeTimer = null; resizeExplorationMap(); }, 200);
+  });
   document.querySelectorAll('.stc-hint').forEach((el) => {
     const go = () => openProfHint(el.getAttribute('data-prof-hint'));
     bindReliableTap(el, go);
@@ -2693,9 +2794,15 @@ function setExplorationView(mode, silent){
   if (bmap) bmap.classList.toggle('on', isM);
   if (isM) {
     requestAnimationFrame(() => {
-      initExplorationMap();
-      refreshExplorationMap();
-      setTimeout(() => { resizeExplorationMap(); }, 120);
+      ensureLeaflet().then((ok) => {
+        if (!ok) { toast('Carte indisponible (hors ligne ou script bloqué).'); return; }
+        if (!explorationMap) {
+          initExplorationMap();
+        } else {
+          refreshExplorationMap();
+          explorationMap.invalidateSize(true);
+        }
+      });
     });
   }
 }
@@ -2765,6 +2872,28 @@ function getExplorationMarkerIcon(){
   return explorationPinIconCache;
 }
 
+let leafletLoadingPromise = null;
+function ensureLeaflet(){
+  if (typeof L !== 'undefined') return Promise.resolve(true);
+  if (leafletLoadingPromise) return leafletLoadingPromise;
+  leafletLoadingPromise = new Promise((resolve) => {
+    if (!document.getElementById('leaflet-css')) {
+      const lk = document.createElement('link');
+      lk.id = 'leaflet-css'; lk.rel = 'stylesheet';
+      lk.href = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css';
+      lk.crossOrigin = 'anonymous';
+      document.head.appendChild(lk);
+    }
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js';
+    s.crossOrigin = 'anonymous';
+    s.onload = () => resolve(true);
+    s.onerror = () => { leafletLoadingPromise = null; resolve(false); };
+    document.head.appendChild(s);
+  });
+  return leafletLoadingPromise;
+}
+
 function initExplorationMap(){
   const el = document.getElementById('expl-map-viz');
   if (!el || typeof L === 'undefined') {
@@ -2787,21 +2916,25 @@ function initExplorationMap(){
   explorationMapLoading = false;
   refreshExplorationMap();
   setTimeout(() => {
-    if (explorationMap) explorationMap.invalidateSize(true);
-    resizeExplorationMap();
+    if (!explorationMap) return;
+    explorationMap.invalidateSize(true);
+    fitExplorationMapToMarkers();
   }, 100);
 }
 
 function resizeExplorationMap(){
+  // Volontairement léger : on recale juste la taille du conteneur.
+  // (Avant, ça refaisait fitBounds + relecture localStorage à CHAQUE resize,
+  //  ce qui rechargeait les tuiles en boucle et faisait ramer/planter sur mobile,
+  //  où la barre d'URL déclenche des resize en continu pendant le scroll.)
   if (!explorationMap || typeof L === 'undefined') return;
   explorationMap.invalidateSize(true);
-  mergeExpGeoInto(explorationExps);
+}
+function fitExplorationMapToMarkers(){
+  if (!explorationMap || typeof L === 'undefined') return;
   const pts = explorationExps.filter(e => typeof e._lat === 'number' && typeof e._lng === 'number');
   if (pts.length === 0) return;
-  if (pts.length === 1) {
-    explorationMap.setView([pts[0]._lat, pts[0]._lng], 8);
-    return;
-  }
+  if (pts.length === 1) { explorationMap.setView([pts[0]._lat, pts[0]._lng], 8); return; }
   const bounds = L.latLngBounds(pts.map(p => [p._lat, p._lng]));
   explorationMap.fitBounds(bounds, { padding: [48, 48], maxZoom: 12 });
 }
@@ -2817,6 +2950,12 @@ function refreshExplorationMap(){
   }));
   if (empty) empty.classList.toggle('hidden', pts.length > 0);
   if (!explorationMap || typeof L === 'undefined') return;
+  // On ne reconstruit les marqueurs (et on ne recadre) QUE si les points ont changé.
+  // Évite de retirer/recréer toutes les épingles + un fitBounds à chaque appel,
+  // ce qui faisait clignoter/ramer la carte et annulait le zoom manuel.
+  const sig = pts.map(p => p.id + ':' + p.lat.toFixed(5) + ',' + p.lng.toFixed(5)).join('|');
+  if (sig === explMapSig) return;
+  explMapSig = sig;
   explorationMapMarkers.forEach(m => { explorationMap.removeLayer(m); });
   explorationMapMarkers = [];
   const icon = getExplorationMarkerIcon();
@@ -2827,12 +2966,7 @@ function refreshExplorationMap(){
     m.on('click', () => { toast(p.label); });
     explorationMapMarkers.push(m);
   });
-  if (pts.length === 1) {
-    explorationMap.setView([pts[0].lat, pts[0].lng], 8);
-  } else if (pts.length > 1) {
-    const bounds = L.latLngBounds(pts.map(p => [p.lat, p.lng]));
-    explorationMap.fitBounds(bounds, { padding: [48, 48], maxZoom: 12 });
-  }
+  fitExplorationMapToMarkers();
 }
 
 async function geocodeExpPlace(){
@@ -3122,14 +3256,29 @@ function mergeLocalGeoOntoRemoteRow(remoteRow, localRow){
   };
 }
 
+function showExplError(msg){
+  const banner=document.getElementById('expl-error-banner');
+  const msgEl=document.getElementById('expl-error-msg');
+  if(!banner)return;
+  if(!msg){ banner.classList.add('hidden'); return; }
+  if(msgEl) msgEl.textContent=msg;
+  banner.classList.remove('hidden');
+}
+function retryLoadExploration(){
+  showExplError('Reconnexion…');
+  loadExploration();
+}
+window.retryLoadExploration=retryLoadExploration;
+
 async function loadExploration(){
   const nodesEl=document.getElementById('expl-nodes');
-  let remote=[];
+  let remote=[]; let remoteFailed=false;
   if(SB){
     try{
-      const{data}=await SB.from('expeditions').select('*').eq('user_id',myId()).order('exp_date',{ascending:true});
+      const{data,error}=await SB.from('expeditions').select('*').eq('user_id',myId()).order('exp_date',{ascending:true});
+      if(error) throw error;
       remote=data||[];
-    }catch(e){}
+    }catch(e){ remoteFailed=true; }
   }
   const local=JSON.parse(localStorage.getItem('mlp_exps')||'[]');
   const localById=new Map();
@@ -3140,7 +3289,35 @@ async function loadExploration(){
   local.forEach(e=>{ if(e&&e.id!=null&&!byId.has(String(e.id))) byId.set(String(e.id),e); });
   const exps=[...byId.values()].sort((a,b)=>new Date(a.exp_date)-new Date(b.exp_date));
   mergeExpGeoInto(exps);
+
+  // ── Échec serveur : ne JAMAIS écraser ce qui est déjà affiché ──
+  // (Avant, une erreur réseau vidait la frise et la carte comme s'il n'y avait
+  //  jamais eu de données. On garde la dernière version connue.)
+  if(remoteFailed && exps.length===0 && explorationExps.length>0){
+    showExplError('⚠️ Connexion au serveur impossible. Affichage de la dernière version connue (hors-ligne).');
+    return;
+  }
+  if(remoteFailed && exps.length===0){
+    nodesEl.innerHTML=`<div class="expl-load-error">⚠️ Impossible de charger tes expéditions (serveur ou réseau indisponible).<br/>Tes données ne sont pas perdues : réessaie dans un instant.<br/><br/><button type="button" class="expl-retry-btn" onclick="retryLoadExploration()">Réessayer</button></div>`;
+    document.getElementById('expl-wait-label').textContent='Reconnexion en attente… 📡';
+    showExplError('⚠️ Connexion au serveur impossible.');
+    populateExpeditionSelectors();
+    return;
+  }
+
   explorationExps=exps;
+  // Cache local « chaud » pour pouvoir réafficher hors-ligne au prochain coup.
+  if(!remoteFailed){
+    showExplError(false);
+    // Cache allégé : on retire les photos en base64 (data:) pour éviter des écritures
+    // localStorage énormes (et des plantages de quota) à chaque chargement.
+    if(SB){ try{
+      const slim=exps.map(e=>{ const o={...e}; delete o._lat; delete o._lng; delete o._placeLabel; if(typeof o.photo_url==='string'&&o.photo_url.startsWith('data:')) o.photo_url=null; return o; });
+      localStorage.setItem('mlp_exps',JSON.stringify(slim));
+    }catch(e){} }
+  }else{
+    showExplError('⚠️ Connexion instable. Affichage de la dernière version connue (hors-ligne).');
+  }
   setExplorationView(getExplorationView(), true);
 
   if(!exps.length){
@@ -3176,8 +3353,9 @@ async function loadExploration(){
       </div>`;
   }).join('');
   populateExpeditionSelectors();
-  refreshExplorationMap();
-  if (getExplorationView() === 'map') setTimeout(resizeExplorationMap, 100);
+  // En vue carte, setExplorationView() (appelé plus haut) a déjà programmé le
+  // rafraîchissement des marqueurs ; sinon on met juste à jour si la carte existe.
+  if (getExplorationView() === 'map') refreshExplorationMap();
 }
 
 // ════════════════════════════════════════════════
