@@ -1085,9 +1085,22 @@ button{cursor:pointer}
 <div class="mo hidden" id="kill-modal">
   <div class="mc-card">
     <div style="font-size:3rem">💀</div>
-    <h3>Tu es sûr·e ?</h3>
-    <p>Tous tes animaux vont disparaître.<br/>Le compte repart de zéro demain.</p>
-    <div class="mb"><button class="mcn" onclick="closeKill()">Annuler</button><button class="mck" onclick="doKill()">Oui ☠️</button></div>
+    <div id="kill-step-choice" style="display:flex;flex-direction:column;align-items:center;gap:13px;width:100%">
+      <h3>Petit chasseur, tu as donc tué toute ta banquise ?</h3>
+      <p>Tous tes animaux vont disparaître et le compteur repart de zéro.<br/>C'était quand ?</p>
+      <div class="mb" style="flex-direction:column">
+        <button class="mck" onclick="doKill()">☠️ À l'instant</button>
+        <button class="mca" onclick="showKillDateStep()">📅 Je suis déjà revenu·e de la chasse</button>
+      </div>
+      <button type="button" class="mcn" style="width:100%" onclick="closeKill()">Annuler</button>
+    </div>
+    <div id="kill-step-date" style="display:none;flex-direction:column;align-items:center;gap:13px;width:100%">
+      <h3>Tu es rentré·e quand ?</h3>
+      <p>Choisis la date de ta dernière chasse.<br/>Le compteur repartira de ce moment-là.</p>
+      <div class="ob-inp"><span class="ob-inp-ic">📅</span><input type="date" id="kill-date-in"/></div>
+      <div class="ob-err" id="kill-date-err"></div>
+      <div class="mb"><button class="mcn" onclick="showKillChoiceStep()">← Retour</button><button class="mck" onclick="doKillAntidate()">Valider ☠️</button></div>
+    </div>
   </div>
 </div>
 
@@ -1730,7 +1743,7 @@ function bindAll() {
   document.getElementById('date-next').onclick   = onDateNextStep;
   document.getElementById('date-in').oninput     = upPrev;
   document.getElementById('days-in').oninput     = upPrev;
-  document.getElementById('kill-btn').onclick    = () => document.getElementById('kill-modal').classList.remove('hidden');
+  document.getElementById('kill-btn').onclick    = () => { showKillChoiceStep(); document.getElementById('kill-modal').classList.remove('hidden'); };
   document.getElementById('logout-btn').onclick  = doLogout;
   document.getElementById('av-edit').onclick     = toggleAP;
   document.getElementById('av-ok').onclick       = confirmAV;
@@ -2086,10 +2099,40 @@ function renderACD(days){ renderStatsInto(document.getElementById('acd'), days);
 // ════════════════════════════════════════════════
 //  KILL
 // ════════════════════════════════════════════════
-function closeKill(){document.getElementById('kill-modal').classList.add('hidden');}
+function closeKill(){document.getElementById('kill-modal').classList.add('hidden'); showKillChoiceStep();}
 window.closeKill=closeKill;
-async function doKill(){
-  closeKill(); const today=new Date().toISOString().slice(0,10);
+
+function showKillChoiceStep(){
+  document.getElementById('kill-step-date').style.display='none';
+  document.getElementById('kill-step-choice').style.display='flex';
+}
+window.showKillChoiceStep=showKillChoiceStep;
+
+function showKillDateStep(){
+  document.getElementById('kill-step-choice').style.display='none';
+  const step=document.getElementById('kill-step-date'); step.style.display='flex';
+  const inp=document.getElementById('kill-date-in');
+  const today=new Date().toISOString().slice(0,10);
+  inp.max=today; inp.value=today;
+  if(P&&P.start_date) inp.min=P.start_date.slice(0,10);
+  document.getElementById('kill-date-err').textContent='';
+}
+window.showKillDateStep=showKillDateStep;
+
+function doKillAntidate(){
+  const v=document.getElementById('kill-date-in').value;
+  const err=document.getElementById('kill-date-err');
+  if(!v){err.textContent='Choisis une date !';return;}
+  const d=new Date(v),now=new Date(); now.setHours(0,0,0,0); d.setHours(0,0,0,0);
+  if(d>now){err.textContent='La date ne peut pas être dans le futur !';return;}
+  if(P&&P.start_date){const sd=new Date(P.start_date); sd.setHours(0,0,0,0); if(d<sd){err.textContent='Avant ton départ ? Impossible !';return;}}
+  err.textContent='';
+  doKill(v);
+}
+window.doKillAntidate=doKillAntidate;
+
+async function doKill(killDate){
+  closeKill(); const today=(typeof killDate==='string'&&killDate)?killDate:new Date().toISOString().slice(0,10);
   P.last_kill_date=today; P.kills=(P.kills||0)+1; localStorage.setItem('mlp_v2',JSON.stringify(P));
   if(SB&&P.alert_friends){
     try{
@@ -2103,7 +2146,8 @@ async function doKill(){
   await syncProfile();
   const l=document.getElementById('al'); l.style.transition='opacity .6s'; l.style.opacity='0';
   setTimeout(()=>{updateB();l.style.opacity='1';},660);
-  toast('☠️ Pingouin tué ! Demain on recommence…');
+  const nDays=calcD();
+  toast(nDays>0?`☠️ Banquise tuée ! Compteur relancé à ${nDays} jour${nDays>1?'s':''}.`:'☠️ Banquise tuée ! Demain on recommence…');
 }
 window.doKill=doKill;
 
