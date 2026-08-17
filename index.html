@@ -877,6 +877,10 @@ button{cursor:pointer}
             <div class="tog on" id="priv-tog" onclick="togglePriv()"><div class="knob"></div></div>
           </div>
           <div class="si">
+            <div class="si-l"><span class="si-ic">🗺️</span><div><div class="si-lb">Mes expéditions</div><div class="si-sb">Visible par mes amis</div></div></div>
+            <div class="tog" id="exp-priv-tog" onclick="toggleExpPriv()"><div class="knob"></div></div>
+          </div>
+          <div class="si">
             <div class="si-l"><span class="si-ic">📣</span><div><div class="si-lb">Alerter mes amis</div><div class="si-sb">Quand je "kill" ma banquise</div></div></div>
             <div class="tog on" id="alert-tog" onclick="toggleAlert()"><div class="knob"></div></div>
           </div>
@@ -1013,6 +1017,10 @@ button{cursor:pointer}
           </div>
         </div>
       </div>
+    </div>
+    <div id="friend-exp-section" class="hidden" style="padding:0 4px">
+      <div class="sl" style="margin:16px 0 10px">Ses expéditions 🗺️</div>
+      <div id="friend-expl-nodes"></div>
     </div>
   </div>
 </div>
@@ -1483,6 +1491,7 @@ function rowToP(row) {
     notif_messages: row.notif_messages !== false,
     notif_kill: row.notif_kill !== false,
     banquise_public: row.banquise_public !== false,
+    expedition_public: row.expedition_public === true,
     alert_friends: row.alert_friends !== false,
     glacons: typeof row.glacons === 'number' && !isNaN(row.glacons) ? row.glacons : 0
   };
@@ -1672,6 +1681,7 @@ async function syncProfile() {
       avatar: P.avatar || '🐧',
       notif_enabled: P.notif_enabled !== false,
       banquise_public: P.banquise_public !== false,
+      expedition_public: P.expedition_public === true,
       alert_friends: P.alert_friends !== false
     };
     if (P._passwordHashPending) row.password_hash = P._passwordHashPending;
@@ -1893,7 +1903,7 @@ function onPN() {
 async function finishOnboardingNoSupabase(sd) {
   const uid = genUUID();
   localStorage.setItem('mlp_id', uid);
-  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
+  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
   localStorage.setItem('mlp_v2', JSON.stringify(P));
   await syncProfile();
   if (P.notif_enabled) askNotificationPermission();
@@ -1942,7 +1952,7 @@ async function onPassDone() {
   e.textContent = 'Création…';
   const uid = genUUID();
   localStorage.setItem('mlp_id', uid);
-  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
+  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
   localStorage.setItem('mlp_v2', JSON.stringify(P));
   try {
     P._passwordHashPending = await pbkdf2HashPassword(pw);
@@ -2267,6 +2277,7 @@ function updateP(){
   document.getElementById('notif-messages-tog').classList.toggle('on',P.notif_messages!==false);
   document.getElementById('notif-kill-tog').classList.toggle('on',P.notif_kill!==false);
   document.getElementById('priv-tog').classList.toggle('on',!!P.banquise_public);
+  document.getElementById('exp-priv-tog').classList.toggle('on',!!P.expedition_public);
   document.getElementById('alert-tog').classList.toggle('on',!!P.alert_friends);
   updateNotifPermissionUI();
 }
@@ -2307,6 +2318,13 @@ async function togglePriv(){
   await syncProfile(); toast(P.banquise_public?'👁️ Banquise visible':'🔒 Banquise privée');
 }
 window.togglePriv=togglePriv;
+
+async function toggleExpPriv(){
+  P.expedition_public=!P.expedition_public; localStorage.setItem('mlp_v2',JSON.stringify(P));
+  document.getElementById('exp-priv-tog').classList.toggle('on',P.expedition_public);
+  await syncProfile(); toast(P.expedition_public?'🗺️ Expéditions visibles':'🔒 Expéditions privées');
+}
+window.toggleExpPriv=toggleExpPriv;
 
 async function toggleAlert(){
   P.alert_friends=!P.alert_friends; localStorage.setItem('mlp_v2',JSON.stringify(P));
@@ -2742,8 +2760,9 @@ async function openFriendBanquise(fid){
   if(!SB||!fid){toast('Connexion requise');return;}
   const sec = document.getElementById('friend-scores-section');
   if (sec) sec.classList.add('hidden');
-  const{data,error}=await SB.from('profiles').select('id,pseudo,avatar,start_date,last_kill_date,banquise_public').eq('id',fid).maybeSingle();
+  const{data,error}=await SB.from('profiles').select('id,pseudo,avatar,start_date,last_kill_date,banquise_public,expedition_public').eq('id',fid).maybeSingle();
   if(error||!data){toast('Profil introuvable');return;}
+  loadFriendExpeditions(fid, data.expedition_public===true);
   document.getElementById('friend-bq-title').textContent=(data.pseudo||'Explorateur')+' 🏔️';
   document.getElementById('friend-bq-subtitle').textContent=(data.avatar||'🐧')+' • Banquise';
   const scoresMap = { fishing: 0, maze: 0, memory: 0, glide: 0 };
@@ -2773,6 +2792,31 @@ async function openFriendBanquise(fid){
   openPanel('friend-bq-panel');
 }
 window.openFriendBanquise=openFriendBanquise;
+
+async function loadFriendExpeditions(fid, isPublic){
+  const sec=document.getElementById('friend-exp-section');
+  const nodes=document.getElementById('friend-expl-nodes');
+  if(!sec||!nodes)return;
+  if(!isPublic){ sec.classList.add('hidden'); nodes.innerHTML=''; return; }
+  sec.classList.remove('hidden');
+  nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem">Chargement…</div>';
+  if(!SB){ nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem">Indisponible hors-ligne.</div>'; return; }
+  try{
+    const{data,error}=await SB.from('expeditions').select('*').eq('user_id',fid).order('exp_date',{ascending:true});
+    if(error)throw error;
+    const exps=data||[];
+    if(!exps.length){ nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem;font-weight:600">Aucune expédition partagée pour l\'instant 🗺️</div>'; return; }
+    nodes.innerHTML=exps.map(exp=>{
+      const imgUrl=expeditionImageUrl(exp);
+      const photoHtml=imgUrl?`<img class="exp-photo" src="${String(imgUrl).replace(/"/g,'&quot;')}" alt="" loading="lazy" decoding="async"/>`:`<div class="exp-photo-placeholder">🏔️</div>`;
+      const dateStr=new Date(exp.exp_date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+      return`<div class="exp-bubble" style="width:100%;margin-bottom:12px">${photoHtml}<div class="exp-title">${escHTML(exp.title)}</div><div class="exp-date">📅 ${dateStr}</div>${exp.note?`<div class="exp-note">${escHTML(exp.note)}</div>`:''}</div>`;
+    }).join('');
+  }catch(e){
+    nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem">Impossible de charger les expéditions.</div>';
+  }
+}
+window.loadFriendExpeditions=loadFriendExpeditions;
 
 // ════════════════════════════════════════════════
 //  CONVERSATIONS
