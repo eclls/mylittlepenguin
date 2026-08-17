@@ -12,7 +12,7 @@
  * IMPORTANT : pense à incrémenter CACHE_VERSION à chaque déploiement notable
  * pour forcer le rafraîchissement des assets en cache.
  */
-const CACHE_VERSION = 'mlp-v2';
+const CACHE_VERSION = 'mlp-v3';
 const PRECACHE = [
   './',
   './index.html',
@@ -89,4 +89,41 @@ self.addEventListener('fetch', (event) => {
       })
     );
   }
+});
+
+/* ══════════════════════════════════════════════════════════
+ * WEB PUSH — notifications même quand l'app est fermée.
+ * Le serveur (Edge Function Supabase) envoie un push signé (VAPID) ;
+ * le service worker se réveille ici et affiche la notification.
+ * ══════════════════════════════════════════════════════════ */
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (e) {
+    try { data = { body: event.data ? event.data.text() : '' }; } catch (_) { data = {}; }
+  }
+  const title = data.title || 'My Little Penguin 🐧';
+  const options = {
+    body: data.body || '',
+    icon: data.icon || './icons/app-icon.png',
+    badge: data.badge || './icons/app-icon.png',
+    tag: data.tag || 'mlp',
+    renotify: !!data.tag,
+    data: { url: data.url || './' },
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || './';
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      for (const c of clients) {
+        if ('focus' in c) return c.focus();
+      }
+      if (self.clients.openWindow) return self.clients.openWindow(target);
+    })
+  );
 });

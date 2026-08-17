@@ -1,0 +1,50 @@
+name: Sauvegarde Supabase (quotidienne)
+
+# Filet de sécurité GRATUIT : un pg_dump chiffrable de la base, chaque jour,
+# stocké en artefact GitHub (90 jours de rétention). Aucune donnée n'est
+# poussée dans le dépôt (utile si le repo est public).
+#
+# PRÉREQUIS (une seule fois) :
+#   1. Dans Supabase → Project Settings → Database → Connection string (URI),
+#      copie l'URI "Session pooler" ou "Direct connection" (avec le mot de passe).
+#   2. Dans GitHub → Settings → Secrets and variables → Actions → New repository secret :
+#        Name  = SUPABASE_DB_URL
+#        Value = postgresql://postgres:...@...supabase.co:5432/postgres
+#
+# Tu peux aussi lancer la sauvegarde à la main via l'onglet "Actions".
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # tous les jours à 03:00 UTC
+  workflow_dispatch: {}
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Installer pg_dump 16
+        run: |
+          sudo sh -c 'echo "deb https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/pgdg.gpg
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-16
+
+      - name: Dump de la base
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "❌ Secret SUPABASE_DB_URL manquant. Voir les instructions en haut du fichier."
+            exit 1
+          fi
+          ts=$(date +%Y%m%d-%H%M%S)
+          pg_dump "$SUPABASE_DB_URL" --no-owner --no-privileges -f "backup-$ts.sql"
+          gzip "backup-$ts.sql"
+          echo "Sauvegarde créée : backup-$ts.sql.gz"
+
+      - name: Uploader l'artefact de sauvegarde
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-backup
+          path: backup-*.sql.gz
+          retention-days: 90

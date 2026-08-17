@@ -1168,6 +1168,11 @@ button{cursor:pointer}
 const SUPABASE_URL  = 'https://cirdtmjrsgbqbstwrgzx.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpcmR0bWpyc2dicWJzdHdyZ3p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNDMxMjMsImV4cCI6MjA4OTYxOTEyM30.g0wYu9rQ75KZStirsfFV9JV-1V2tmWGy9zftEOzbQIU';
 
+// ⚠️ Clé PUBLIQUE VAPID pour le Web Push (notifs app fermée).
+// Remplace la valeur ci-dessous par ta clé publique (voir supabase/functions/send-push).
+// Tant qu'elle contient "REMPLACE", l'abonnement push est simplement ignoré (l'app marche normalement).
+const VAPID_PUBLIC_KEY = 'BCGvaS4Pw6UG5GrZzgAGsLFKH4lKjSe74tJ6IJTFlJPWQlN2spDKQUR8ENv40R3Nd8KrtEVqR6wmNe1ukHmDhMI';
+
 /**
  * Clé MapTiler Cloud (copier-coller depuis cloud.maptiler.com → ton compte → clés API).
  * Vide = carte OpenStreetMap sans MapTiler.
@@ -1360,7 +1365,7 @@ async function confirmNotifPermFromModal() {
   if (!('Notification' in window)) return;
   try {
     const permission = await Notification.requestPermission();
-    if (permission === 'granted') toast('🔔 Notifications autorisées !');
+    if (permission === 'granted') { toast('🔔 Notifications autorisées !'); subscribeToPush(); }
     else if (permission === 'denied') toast('Notifications refusées — tu pourras changer cela dans les paramètres du site.');
   } catch (e) {}
   updateNotifPermissionUI();
@@ -1379,6 +1384,69 @@ async function askNotificationPermission() {
   if (!('Notification' in window)) return;
   if (Notification.permission === 'default') openNotifPermModal();
   else updateNotifPermissionUI();
+}
+
+// ─── WEB PUSH (notifs app fermée) ─────────────────────────
+function pushSupported() {
+  return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+}
+function pushConfigured() {
+  return typeof VAPID_PUBLIC_KEY === 'string' && VAPID_PUBLIC_KEY.indexOf('REMPLACE') === -1 && VAPID_PUBLIC_KEY.length > 20;
+}
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  const arr = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+  return arr;
+}
+
+async function savePushSubscription(sub) {
+  if (!SB || !myId() || !sub) return;
+  const j = sub.toJSON();
+  if (!j.endpoint || !j.keys) return;
+  try {
+    await SB.from('push_subscriptions').upsert({
+      user_id: myId(),
+      endpoint: j.endpoint,
+      p256dh: j.keys.p256dh,
+      auth: j.keys.auth,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'endpoint' });
+  } catch (e) {}
+}
+
+async function subscribeToPush() {
+  if (!pushSupported() || !pushConfigured()) return false;
+  if (Notification.permission !== 'granted') return false;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      });
+    }
+    await savePushSubscription(sub);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function unsubscribeFromPush() {
+  if (!pushSupported()) return;
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      const ep = sub.endpoint;
+      await sub.unsubscribe().catch(() => {});
+      if (SB) { try { await SB.from('push_subscriptions').delete().eq('endpoint', ep); } catch (e) {} }
+    }
+  } catch (e) {}
 }
 
 function tryShowBrowserNotification(title, body, tag) {
@@ -1400,6 +1468,8 @@ function initNotifPolling() {
   }
   notifPollTimer = setInterval(scanNotifEvents, 50000);
   setTimeout(scanNotifEvents, 5000);
+  // Rafraîchit l'abonnement Web Push à chaque ouverture (iOS peut l'oublier).
+  if (Notification.permission === 'granted') subscribeToPush();
 }
 
 async function scanNotifEvents() {
@@ -2298,8 +2368,8 @@ async function toggleNotif(){
   else document.getElementById('notif-perm-modal').classList.add('hidden');
   await syncProfile(); toast(P.notif_enabled?'🔔 Notifications activées':'🔕 Désactivées');
   updateNotifPermissionUI();
-  if(P.notif_enabled) initNotifPolling();
-  else if(notifPollTimer){ clearInterval(notifPollTimer); notifPollTimer=null; }
+  if(P.notif_enabled){ initNotifPolling(); subscribeToPush(); }
+  else { unsubscribeFromPush(); if(notifPollTimer){ clearInterval(notifPollTimer); notifPollTimer=null; } }
 }
 window.toggleNotif=toggleNotif;
 

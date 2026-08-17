@@ -1,0 +1,4 @@
+Clé publique   BCGvaS4Pw6UG5GrZzgAGsLFKH4lKjSe74tJ6IJTFlJPWQlN2spDKQUR8ENv40R3Nd8KrtEVqR6wmNe1ukHmDhMI
+Clé privée     gqMlg_TEArioDRNk7djKkFrpxAbX8QA4vTqSoAjkE4o
+
+WEBHOOK SECRET pingu-secret-1708
