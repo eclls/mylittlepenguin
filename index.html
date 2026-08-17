@@ -817,9 +817,18 @@ button{cursor:pointer}
       </div>
       <div class="apg hidden" id="av-picker">
         <h3>Choisis ton avatar</h3>
+        <div id="av-photo-wrap" style="display:flex;flex-direction:column;align-items:center;gap:10px">
+          <div id="av-photo-preview" style="width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,.06);border:2px dashed rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;overflow:hidden;font-size:2.4rem">🐧</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+            <button type="button" class="cn-btn" id="av-photo-btn" style="width:auto;padding:10px 16px">📷 Photo / caméra</button>
+            <button type="button" class="cn-btn" id="av-photo-clear" style="display:none;width:auto;padding:10px 16px">✕ Retirer la photo</button>
+          </div>
+        </div>
+        <div style="text-align:center;color:rgba(255,255,255,.5);font-size:.78rem;font-weight:600">— ou choisis un emoji —</div>
         <div class="av-gr" id="av-gr"></div>
         <button class="ob-btn" id="av-ok">Confirmer</button>
       </div>
+      <input type="file" id="av-photo-input" accept="image/*" style="display:none"/>
       <div class="p-st">
         <div class="stc stc-hint" data-prof-hint="glacons" tabindex="0" role="button" aria-label="Aide : glaçons"><div class="stc-i">🧊</div><div class="stc-v" id="st-ice">0</div><div class="stc-l">Glaçons</div></div>
         <div class="stc stc-hint" data-prof-hint="jours" tabindex="0" role="button" aria-label="Aide : jours"><div class="stc-i">📅</div><div class="stc-v" id="st-d">0</div><div class="stc-l">Jours</div></div>
@@ -1206,6 +1215,10 @@ const PROF_HINT = {
   requins: { title: '🦈 Requins', body: '<p>Une unité tous les <strong>360 jours</strong> de série sur la banquise.</p><p class="prof-hint-foot">1 requin = 2 orques = 12 pingouins = 360 mouettes</p>' },
 };
 const AVS = ['🐧','🐦','🐋','🦈','🦭','🐟','❄️','🌊','🏔️','⭐','🔥','🎯'];
+let SEL_AV = '🐧';
+let avUsePhoto = false;   // true = l'avatar confirmé sera la photo
+let avPhotoFile = null;   // fichier photo en attente d'upload
+let avPhotoB64  = null;   // aperçu base64 (fallback hors-ligne)
 const LOCAL_LEAGUES_KEY = 'mlp_leagues_v1';
 
 let P = null, SB = null, MODE = 'date', SEL_AV = '🐧';
@@ -1556,6 +1569,7 @@ function rowToP(row) {
     last_kill_date: row.last_kill_date,
     kills: row.kills ?? 0,
     avatar: row.avatar || '🐧',
+    avatar_url: row.avatar_url || null,
     notif_enabled: row.notif_enabled !== false,
     notif_friends: row.notif_friends !== false,
     notif_messages: row.notif_messages !== false,
@@ -1749,6 +1763,7 @@ async function syncProfile() {
       last_kill_date: P.last_kill_date || null,
       kills: P.kills || 0,
       avatar: P.avatar || '🐧',
+      avatar_url: P.avatar_url || null,
       notif_enabled: P.notif_enabled !== false,
       banquise_public: P.banquise_public !== false,
       expedition_public: P.expedition_public === true,
@@ -1848,6 +1863,9 @@ function bindAll() {
   document.getElementById('logout-btn').onclick  = doLogout;
   document.getElementById('av-edit').onclick     = toggleAP;
   document.getElementById('av-ok').onclick       = confirmAV;
+  document.getElementById('av-photo-btn').onclick   = () => document.getElementById('av-photo-input').click();
+  document.getElementById('av-photo-clear').onclick = clearAvatarPhoto;
+  document.getElementById('av-photo-input').addEventListener('change', handleAvatarPhotoSelect);
   document.getElementById('open-add').onclick    = () => document.getElementById('add-pnl').classList.toggle('hidden');
   const olh = document.getElementById('open-league-hub');
   if (olh) olh.onclick = () => openLeagueHub();
@@ -1973,7 +1991,7 @@ function onPN() {
 async function finishOnboardingNoSupabase(sd) {
   const uid = genUUID();
   localStorage.setItem('mlp_id', uid);
-  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
+  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
   localStorage.setItem('mlp_v2', JSON.stringify(P));
   await syncProfile();
   if (P.notif_enabled) askNotificationPermission();
@@ -2022,7 +2040,7 @@ async function onPassDone() {
   e.textContent = 'Création…';
   const uid = genUUID();
   localStorage.setItem('mlp_id', uid);
-  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
+  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
   localStorage.setItem('mlp_v2', JSON.stringify(P));
   try {
     P._passwordHashPending = await pbkdf2HashPassword(pw);
@@ -2331,7 +2349,10 @@ function updateP(){
   if(!P)return;
   const d=calcD(); const lv=lvl(d); const{r,o,p,m}=bd(d); const nl=LVL.find(l=>l.min===lv.nx);
   const pct=lv.nx?Math.min(100,Math.round(((d-lv.min)/(lv.nx-lv.min))*100)):100; const rem=lv.nx?lv.nx-d:0;
-  document.getElementById('p-un').textContent=P.pseudo||'—'; document.getElementById('av-d').textContent=P.avatar||'🐧';
+  document.getElementById('p-un').textContent=P.pseudo||'—';
+  const avEl=document.getElementById('av-d');
+  if(P.avatar_url){ avEl.innerHTML=`<img src="${String(P.avatar_url).replace(/"/g,'&quot;')}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block"/>`; }
+  else { avEl.textContent=P.avatar||'🐧'; }
   document.getElementById('p-lvl-i').textContent=lv.i; document.getElementById('p-lvl-n').textContent=lv.n;
   document.getElementById('lp-i').textContent=lv.i; document.getElementById('lp-cn').textContent=lv.n;
   document.getElementById('lp-fill').style.width=pct+'%';
@@ -2352,13 +2373,92 @@ function updateP(){
   updateNotifPermissionUI();
 }
 
+function renderAvatarPreview(url, emoji){
+  const el=document.getElementById('av-photo-preview'); if(!el)return;
+  if(url){ el.innerHTML=`<img src="${String(url).replace(/"/g,'&quot;')}" alt="" style="width:100%;height:100%;object-fit:cover"/>`; }
+  else { el.textContent = emoji || '🐧'; }
+}
+
 function toggleAP(){
   const pk=document.getElementById('av-picker'); pk.classList.toggle('hidden');
-  if(!pk.classList.contains('hidden')) document.getElementById('av-gr').innerHTML=AVS.map(a=>`<div class="av-op${a===(P?.avatar||'🐧')?' sel':''}" onclick="pickAv('${a}')">${a}</div>`).join('');
+  if(pk.classList.contains('hidden')) return;
+  SEL_AV = P?.avatar || '🐧';
+  avUsePhoto = !!(P && P.avatar_url);
+  avPhotoFile = null; avPhotoB64 = null;
+  document.getElementById('av-photo-input').value='';
+  document.getElementById('av-gr').innerHTML=AVS.map(a=>`<div class="av-op${(!avUsePhoto&&a===SEL_AV)?' sel':''}" onclick="pickAv('${a}')">${a}</div>`).join('');
+  renderAvatarPreview(avUsePhoto ? (P?.avatar_url||null) : null, SEL_AV);
+  document.getElementById('av-photo-clear').style.display = avUsePhoto ? '' : 'none';
 }
-function pickAv(a){SEL_AV=a;document.querySelectorAll('.av-op').forEach(el=>el.classList.toggle('sel',el.textContent===a));}
+
+function pickAv(a){
+  SEL_AV=a; avUsePhoto=false; avPhotoFile=null; avPhotoB64=null;
+  document.querySelectorAll('.av-op').forEach(el=>el.classList.toggle('sel',el.textContent===a));
+  document.getElementById('av-photo-clear').style.display='none';
+  renderAvatarPreview(null, a);
+}
 window.pickAv=pickAv;
-async function confirmAV(){P.avatar=SEL_AV;localStorage.setItem('mlp_v2',JSON.stringify(P));document.getElementById('av-d').textContent=SEL_AV;document.getElementById('av-picker').classList.add('hidden');await syncProfile();toast('Avatar mis à jour ! '+SEL_AV);}
+
+function handleAvatarPhotoSelect(e){
+  const file=e.target.files[0]; if(!file)return;
+  avPhotoFile=file; avUsePhoto=true;
+  const reader=new FileReader();
+  reader.onload=(ev)=>{ avPhotoB64=ev.target.result; renderAvatarPreview(avPhotoB64, SEL_AV); };
+  reader.readAsDataURL(file);
+  document.getElementById('av-photo-clear').style.display='';
+  document.querySelectorAll('.av-op').forEach(el=>el.classList.remove('sel'));
+}
+window.handleAvatarPhotoSelect=handleAvatarPhotoSelect;
+
+function clearAvatarPhoto(){
+  avPhotoFile=null; avPhotoB64=null; avUsePhoto=false;
+  document.getElementById('av-photo-input').value='';
+  document.getElementById('av-photo-clear').style.display='none';
+  document.querySelectorAll('.av-op').forEach(el=>el.classList.toggle('sel',el.textContent===SEL_AV));
+  renderAvatarPreview(null, SEL_AV);
+}
+window.clearAvatarPhoto=clearAvatarPhoto;
+
+async function confirmAV(){
+  const btn=document.getElementById('av-ok');
+  if(avUsePhoto){
+    if(avPhotoFile){
+      let url=null;
+      if(SB){
+        try{
+          const ext=(avPhotoFile.type&&avPhotoFile.type.indexOf('png')!==-1)?'png':'jpg';
+          const fname=`avatar_${myId()}_${Date.now()}.${ext}`;
+          btn.textContent='Envoi…';
+          const{error:upErr}=await SB.storage.from('expedition-photos').upload(fname,avPhotoFile,{contentType:avPhotoFile.type||'image/jpeg',upsert:true});
+          if(!upErr){ const{data:urlData}=SB.storage.from('expedition-photos').getPublicUrl(fname); url=urlData?.publicUrl||null; }
+        }catch(e){ console.warn('Avatar upload:',e.message); }
+      }
+      if(!url) url=avPhotoB64; // fallback local si upload impossible
+      P.avatar_url=url;
+    }
+    // sinon : on garde la photo existante (P.avatar_url inchangé)
+  } else {
+    P.avatar=SEL_AV;
+    P.avatar_url=null;
+  }
+  localStorage.setItem('mlp_v2',JSON.stringify(P));
+  updateP();
+  document.getElementById('av-picker').classList.add('hidden');
+  document.getElementById('av-photo-input').value='';
+  btn.textContent='Confirmer';
+  await syncProfile();
+  toast(P.avatar_url?'Photo de profil mise à jour ! 📷':'Avatar mis à jour ! '+P.avatar);
+}
+
+// Rendu d'un avatar : photo (img) si avatar_url, sinon emoji.
+function avatarHTML(avatar, url, px){
+  px = px || 40;
+  if(url){
+    return `<img src="${String(url).replace(/"/g,'&quot;')}" alt="" style="width:${px}px;height:${px}px;border-radius:50%;object-fit:cover;display:inline-block;vertical-align:middle;flex-shrink:0"/>`;
+  }
+  return `<span style="display:inline-block;vertical-align:middle">${escHTML(avatar||'🐧')}</span>`;
+}
+window.avatarHTML=avatarHTML;
 
 async function toggleNotif(){
   P.notif_enabled=!P.notif_enabled; localStorage.setItem('mlp_v2',JSON.stringify(P));
@@ -2424,11 +2524,11 @@ async function doSearch(){
   if(ps===P?.pseudo){re.innerHTML='<span style="color:#fbbf24">C\'est toi ! 😄</span>';return;}
   re.textContent='Recherche…';
   try{
-    const{data,error}=await SB.from('profiles').select('id,pseudo,avatar,start_date,last_kill_date').eq('pseudo',ps).limit(1);
+    const{data,error}=await SB.from('profiles').select('id,pseudo,avatar,avatar_url,start_date,last_kill_date').eq('pseudo',ps).limit(1);
     if(error)throw error;
     if(!data||!data.length){re.innerHTML='<span style="color:#f87171">Personne trouvée 😕</span>';return;}
     const u=data[0]; const d=calcDF(u.start_date,u.last_kill_date);
-    re.innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin:8px 0;padding:10px;background:rgba(255,255,255,.06);border-radius:16px"><span style="font-size:1.5rem">${u.avatar||'🐧'}</span><div style="flex:1"><div style="font-weight:800;color:#fff">${u.pseudo}</div><div style="font-size:.74rem;color:#b8e0f7">${lvl(d).i} ${lvl(d).n} • ${d} jours</div></div><button onclick="addFriend('${u.id}','${u.pseudo}')" style="padding:9px 16px;border-radius:999px;background:linear-gradient(135deg,#1a4a8a,#4ecdc4);border:none;color:white;font-weight:800;font-size:.82rem;cursor:pointer">+ Ajouter</button></div>`;
+    re.innerHTML=`<div style="display:flex;align-items:center;gap:10px;margin:8px 0;padding:10px;background:rgba(255,255,255,.06);border-radius:16px"><span style="font-size:1.5rem;display:flex;align-items:center">${avatarHTML(u.avatar,u.avatar_url,40)}</span><div style="flex:1"><div style="font-weight:800;color:#fff">${u.pseudo}</div><div style="font-size:.74rem;color:#b8e0f7">${lvl(d).i} ${lvl(d).n} • ${d} jours</div></div><button onclick="addFriend('${u.id}','${u.pseudo}')" style="padding:9px 16px;border-radius:999px;background:linear-gradient(135deg,#1a4a8a,#4ecdc4);border:none;color:white;font-weight:800;font-size:.82rem;cursor:pointer">+ Ajouter</button></div>`;
   }catch(e){re.innerHTML=`<span style="color:#f87171">Erreur : ${e.message}</span>`;}
 }
 
@@ -2462,7 +2562,7 @@ async function loadF(){
       return;
     }
     const otherIds=fs.map(f=>f.user_a===myId()?f.user_b:f.user_a);
-    const{data:profiles}=await SB.from('profiles').select('id,pseudo,avatar,start_date,last_kill_date,banquise_public').in('id',otherIds);
+    const{data:profiles}=await SB.from('profiles').select('id,pseudo,avatar,avatar_url,start_date,last_kill_date,banquise_public').in('id',otherIds);
     const pm={};(profiles||[]).forEach(p=>pm[p.id]=p);
     const { data: unread } = await SB.from('messages').select('from_id').eq('to_id', myId()).eq('read', false);
     const unreadSet=new Set((unread||[]).map(m=>m.from_id));
@@ -2471,8 +2571,8 @@ async function loadF(){
       const oid=f.user_a===myId()?f.user_b:f.user_a; const ot=pm[oid]; if(!ot)return'';
       const d=calcDF(ot.start_date,ot.last_kill_date); const isPending=f.status==='pending'; const iReceived=isPending&&f.user_b===myId();
       const hasUnread=unreadSet.has(oid);
-      return`<div class="fc" onclick="${!isPending?`openConv('${ot.id}','${ot.pseudo}','${ot.avatar||'🐧'}')`:''}" style="${isPending?'cursor:default':''}">
-        <div class="fc-av${!isPending?' fc-av-click':''}" ${!isPending?`onclick="event.stopPropagation();openFriendBanquise('${ot.id}')" title="Voir sa banquise"`:''}>${ot.avatar||'🐧'}</div>
+      return`<div class="fc" onclick="${!isPending?`openConv('${ot.id}','${ot.pseudo}','${ot.avatar||'🐧'}','${ot.avatar_url||''}')`:''}" style="${isPending?'cursor:default':''}">
+        <div class="fc-av${!isPending?' fc-av-click':''}" ${!isPending?`onclick="event.stopPropagation();openFriendBanquise('${ot.id}')" title="Voir sa banquise"`:''}>${avatarHTML(ot.avatar, ot.avatar_url, 42)}</div>
         <div class="fc-if">
           <div class="fc-nm">${ot.pseudo} ${hasUnread?'<span style="color:var(--teal);font-size:.75rem">●</span>':''}</div>
           <div class="fc-lv">${lvl(d).i} ${lvl(d).n} • ${d}j ${isPending?'⏳ En attente':''}</div>
@@ -2726,7 +2826,7 @@ function buildLeagueBoardHtml(league, rows){
     const priv = hide ? ' <span style="opacity:.65;font-size:.72rem">(banquise privée)</span>' : '';
     html += '<div class="league-lb-card">' +
       '<div class="league-lb-rank">' + rank + '</div>' +
-      '<div class="league-lb-av">' + (r.avatar || '🐧') + '</div>' +
+      '<div class="league-lb-av">' + avatarHTML(r.avatar, r.avatar_url, 32) + '</div>' +
       '<div class="league-lb-mid"><div class="league-lb-name">' + escLg(r.pseudo || 'Explorateur') + priv + '</div>' +
       '<div class="league-lb-meta">' + lv + ' · ' + d + ' j · ' + an + ' animaux</div></div></div>';
   });
@@ -2750,7 +2850,7 @@ async function openLeagueBoard(leagueId){
     const rows = (L.members || []).map(mid => {
       if (mid === uid && P) {
         const d = calcD();
-        return { pseudo: P.pseudo, avatar: P.avatar, days: d, animals: banquiseAnimalTotal(d), banquise_public: true };
+        return { pseudo: P.pseudo, avatar: P.avatar, avatar_url: P.avatar_url || null, days: d, animals: banquiseAnimalTotal(d), banquise_public: true };
       }
       return { pseudo: 'Membre (autre appareil)', avatar: '🐧', days: null, animals: null, banquise_public: true };
     });
@@ -2766,13 +2866,14 @@ async function openLeagueBoard(leagueId){
     if (e1) throw e1;
     const ids = (mems || []).map(m => m.user_id);
     if (!ids.length) { body.innerHTML = '<p class="league-err">Aucun membre.</p>'; return; }
-    const { data: profs, error: e2 } = await SB.from('profiles').select('id,pseudo,avatar,start_date,last_kill_date,banquise_public').in('id', ids);
+    const { data: profs, error: e2 } = await SB.from('profiles').select('id,pseudo,avatar,avatar_url,start_date,last_kill_date,banquise_public').in('id', ids);
     if (e2) throw e2;
     const rows = (profs || []).map(p => {
       const d = calcDF(p.start_date, p.last_kill_date);
       return {
         pseudo: p.pseudo,
         avatar: p.avatar,
+        avatar_url: p.avatar_url || null,
         days: d,
         animals: banquiseAnimalTotal(d),
         banquise_public: p.banquise_public !== false
@@ -2830,11 +2931,11 @@ async function openFriendBanquise(fid){
   if(!SB||!fid){toast('Connexion requise');return;}
   const sec = document.getElementById('friend-scores-section');
   if (sec) sec.classList.add('hidden');
-  const{data,error}=await SB.from('profiles').select('id,pseudo,avatar,start_date,last_kill_date,banquise_public,expedition_public').eq('id',fid).maybeSingle();
+  const{data,error}=await SB.from('profiles').select('id,pseudo,avatar,avatar_url,start_date,last_kill_date,banquise_public,expedition_public').eq('id',fid).maybeSingle();
   if(error||!data){toast('Profil introuvable');return;}
   loadFriendExpeditions(fid, data.expedition_public===true);
   document.getElementById('friend-bq-title').textContent=(data.pseudo||'Explorateur')+' 🏔️';
-  document.getElementById('friend-bq-subtitle').textContent=(data.avatar||'🐧')+' • Banquise';
+  document.getElementById('friend-bq-subtitle').innerHTML=avatarHTML(data.avatar,data.avatar_url,20)+' <span style="vertical-align:middle">• Banquise</span>';
   const scoresMap = { fishing: 0, maze: 0, memory: 0, glide: 0 };
   try {
     const { data: sc } = await SB.from('scores').select('game,score').eq('user_id', fid);
@@ -2903,9 +3004,9 @@ function msgMetaRow(cls,time,isMine,m){
   return`<div class="msg-meta ${cls}"><span class="msg-time-text">${time}</span>${msgReceiptTicks(isMine,m)}</div>`;
 }
 
-async function openConv(fid,fnm,fav){
+async function openConv(fid,fnm,fav,favUrl){
   CONV_FID=fid; CONV_FNM=fnm;
-  document.getElementById('conv-title').textContent=fnm; document.getElementById('conv-subtitle').textContent=fav+' En ligne';
+  document.getElementById('conv-title').textContent=fnm; document.getElementById('conv-subtitle').innerHTML=avatarHTML(fav,favUrl||null,18)+' <span style="vertical-align:middle">En ligne</span>';
   if(CONV_POLL){ clearInterval(CONV_POLL); CONV_POLL=null; }
   openPanel('conv-panel'); await loadConvMessages(fid);
   if(SB) SB.from('messages').update({read:true}).eq('to_id',myId()).eq('from_id',fid).then(()=>checkBadges());
