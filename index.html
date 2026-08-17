@@ -2317,7 +2317,7 @@ window.openLeagueHub = openLeagueHub;
 
 function showLeagueHomeScreen(){
   document.getElementById('league-panel-title').textContent = 'Ligues';
-  document.getElementById('league-panel-sub').textContent = 'Avec tes amis — classement selon la banquise';
+  document.getElementById('league-panel-sub').textContent = 'Avec tes amis — classement selon les jours';
   const body = document.getElementById('league-panel-body');
   body.dataset.view = 'home';
   body.innerHTML = '<p class="league-step-p" style="margin-top:0">Crée une ligue ou rejoins-en une avec le nom exact.</p>' +
@@ -2330,9 +2330,9 @@ function showLeaguePickType(){
   document.getElementById('league-panel-sub').textContent = '';
   const body = document.getElementById('league-panel-body');
   body.dataset.view = 'pickType';
-  body.innerHTML = '<p class="league-step-p" style="margin-top:0">Le classement utilise le nombre d’animaux sur la banquise (requins, orques, pingouins, mouettes), dérivé des jours affichés sur la banquise.</p>' +
-    '<button type="button" class="league-opt" onclick="showLeagueCreateForm(\'innocents\')"><strong>🕊️ Ligue des innocents</strong><span>Le premier est celui qui a le plus d’animaux (banquise la plus fournie).</span></button>' +
-    '<button type="button" class="league-opt" onclick="showLeagueCreateForm(\'luxure\')"><strong>🔥 Ligue de la luxure</strong><span>Le premier est celui qui en a le moins — la banquise la plus « légère » gagne.</span></button>';
+  body.innerHTML = '<p class="league-step-p" style="margin-top:0">Le classement se base sur le nombre de <strong>jours</strong> de banquise (ta série).</p>' +
+    '<button type="button" class="league-opt" onclick="showLeagueCreateForm(\'innocents\')"><strong>🕊️ Ligue des innocents</strong><span>Le premier est celui qui a le <strong>plus de jours</strong> (la plus longue série).</span></button>' +
+    '<button type="button" class="league-opt" onclick="showLeagueCreateForm(\'luxure\')"><strong>🔥 Ligue de la luxure</strong><span>Le premier est celui qui a le <strong>moins de jours</strong>.</span></button>';
 }
 window.showLeaguePickType = showLeaguePickType;
 
@@ -2473,12 +2473,13 @@ function sortLeagueRows(rows, innocents){
     const db = b.days != null ? b.days : -1;
     const aa = a.animals != null ? a.animals : -1;
     const ab = b.animals != null ? b.animals : -1;
+    // Critère principal = nombre de JOURS (les animaux ne servent qu'au départage).
     if (innocents) {
+      if (db !== da) return db - da;   // plus de jours d'abord
       if (ab !== aa) return ab - aa;
-      if (db !== da) return db - da;
     } else {
+      if (da !== db) return da - db;   // moins de jours d'abord
       if (aa !== ab) return aa - ab;
-      if (da !== db) return da - db;
     }
     return String(a.pseudo || '').localeCompare(String(b.pseudo || ''));
   });
@@ -2488,8 +2489,8 @@ function sortLeagueRows(rows, innocents){
 function buildLeagueBoardHtml(league, rows){
   const innocents = league.league_type === 'innocents';
   const tag = innocents
-    ? '<span class="league-tag">Innocents — max animaux</span>'
-    : '<span class="league-tag lux">Luxure — min animaux</span>';
+    ? '<span class="league-tag">Innocents — plus de jours</span>'
+    : '<span class="league-tag lux">Luxure — moins de jours</span>';
   let html = '<div style="text-align:center;margin-bottom:12px"><span style="font-size:2rem">' + escLg(league.emoji || '🏆') + '</span><div style="font-weight:800;color:#fff;font-size:1.05rem;margin-top:4px">' + escLg(league.name) + '</div>' + tag + '</div>';
   rows.forEach((r, idx) => {
     const rank = idx + 1;
