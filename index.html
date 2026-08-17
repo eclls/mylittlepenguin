@@ -882,6 +882,7 @@ button{cursor:pointer}
           </div>
         </div>
       </div>
+      <div class="psec"><button class="logout-btn" id="repeuple-btn" style="color:#7ff0dd;border-color:rgba(78,205,196,.35);background:rgba(78,205,196,.08)"><span>🐧</span> Repeupler la banquise</button></div>
       <div class="psec"><button class="logout-btn" id="logout-btn"><span>❄️</span> Quitter la banquise</button></div>
       <div class="bsp"></div>
     </div>
@@ -1101,6 +1102,23 @@ button{cursor:pointer}
       <div class="ob-err" id="kill-date-err"></div>
       <div class="mb"><button class="mcn" onclick="showKillChoiceStep()">← Retour</button><button class="mck" onclick="doKillAntidate()">Valider ☠️</button></div>
     </div>
+  </div>
+</div>
+
+<div class="mo hidden" id="repeuple-modal">
+  <div class="mc-card">
+    <div style="font-size:3rem">🐧</div>
+    <h3>Repeupler la banquise</h3>
+    <p>Tu as tué ta banquise par erreur ?<br/>Indique depuis quand elle tient bon, le compteur repart de là.</p>
+    <div class="ob-tog" style="width:100%">
+      <button type="button" class="ob-tb on" id="rep-tog-date" onclick="repSetMode('date')">📅 Date</button>
+      <button type="button" class="ob-tb" id="rep-tog-days" onclick="repSetMode('days')">🔢 Jours</button>
+    </div>
+    <div class="ob-inp" id="rep-wrap-date"><span class="ob-inp-ic">📅</span><input type="date" id="rep-date-in"/></div>
+    <div class="ob-inp hidden" id="rep-wrap-days"><span class="ob-inp-ic">🔢</span><input type="number" id="rep-days-in" placeholder="ex: 42" min="0" max="9999"/></div>
+    <div class="ob-prev" id="rep-prev"></div>
+    <div class="ob-err" id="rep-err"></div>
+    <div class="mb"><button class="mcn" onclick="closeRepeuple()">Annuler</button><button class="mca" onclick="doRepeuple()">Repeupler 🐧</button></div>
   </div>
 </div>
 
@@ -1744,6 +1762,9 @@ function bindAll() {
   document.getElementById('date-in').oninput     = upPrev;
   document.getElementById('days-in').oninput     = upPrev;
   document.getElementById('kill-btn').onclick    = () => { showKillChoiceStep(); document.getElementById('kill-modal').classList.remove('hidden'); };
+  document.getElementById('repeuple-btn').onclick = openRepeuple;
+  document.getElementById('rep-date-in').oninput  = repUpPrev;
+  document.getElementById('rep-days-in').oninput  = repUpPrev;
   document.getElementById('logout-btn').onclick  = doLogout;
   document.getElementById('av-edit').onclick     = toggleAP;
   document.getElementById('av-ok').onclick       = confirmAV;
@@ -2150,6 +2171,78 @@ async function doKill(killDate){
   toast(nDays>0?`☠️ Banquise tuée ! Compteur relancé à ${nDays} jour${nDays>1?'s':''}.`:'☠️ Banquise tuée ! Demain on recommence…');
 }
 window.doKill=doKill;
+
+// ════════════════════════════════════════════════
+//  REPEUPLER (annuler un kill / re-dater le compteur)
+// ════════════════════════════════════════════════
+let REP_MODE='date';
+function openRepeuple(){
+  REP_MODE='date';
+  document.getElementById('rep-wrap-date').classList.remove('hidden');
+  document.getElementById('rep-wrap-days').classList.add('hidden');
+  document.getElementById('rep-tog-date').classList.add('on');
+  document.getElementById('rep-tog-days').classList.remove('on');
+  const today=new Date().toISOString().slice(0,10);
+  const di=document.getElementById('rep-date-in'); di.max=today; di.value=today;
+  document.getElementById('rep-days-in').value='';
+  document.getElementById('rep-err').textContent='';
+  repUpPrev();
+  document.getElementById('repeuple-modal').classList.remove('hidden');
+}
+window.openRepeuple=openRepeuple;
+
+function closeRepeuple(){document.getElementById('repeuple-modal').classList.add('hidden');}
+window.closeRepeuple=closeRepeuple;
+
+function repSetMode(m){
+  REP_MODE=m;
+  document.getElementById('rep-wrap-date').classList.toggle('hidden', m!=='date');
+  document.getElementById('rep-wrap-days').classList.toggle('hidden', m!=='days');
+  document.getElementById('rep-tog-date').classList.toggle('on', m==='date');
+  document.getElementById('rep-tog-days').classList.toggle('on', m==='days');
+  repUpPrev();
+}
+window.repSetMode=repSetMode;
+
+function repDays(){
+  if(REP_MODE==='date'){
+    const v=document.getElementById('rep-date-in').value; if(!v)return null;
+    const dt=new Date(v),now=new Date(); now.setHours(0,0,0,0); dt.setHours(0,0,0,0);
+    if(dt>now)return -1;
+    return Math.max(0,Math.floor((now-dt)/86400000));
+  }
+  const n=parseInt(document.getElementById('rep-days-in').value);
+  if(isNaN(n))return null;
+  if(n<0)return -1;
+  return n;
+}
+
+function repUpPrev(){
+  const el=document.getElementById('rep-prev'); const d=repDays();
+  if(d===null){el.textContent='';return;}
+  if(d===-1){el.textContent='';return;}
+  const {r,o,p,m}=bd(d); const pts=[];
+  if(r)pts.push(r+' 🦈'); if(o)pts.push(o+' 🐋'); if(p)pts.push(p+' 🐧'); if(m)pts.push(m+' 🐦');
+  el.textContent = d===0 ? 'Compteur remis à aujourd\'hui 🎉' : d+' jours → '+(pts.join(' + ')||'🐣');
+}
+
+async function doRepeuple(){
+  const err=document.getElementById('rep-err');
+  const d=repDays();
+  if(d===null){err.textContent=REP_MODE==='date'?'Choisis une date !':'Entre un nombre de jours !';return;}
+  if(d===-1){err.textContent=REP_MODE==='date'?'La date ne peut pas être dans le futur !':'Nombre invalide !';return;}
+  err.textContent='';
+  const ref=new Date(); ref.setHours(0,0,0,0); ref.setDate(ref.getDate()-d);
+  const refStr=ref.toISOString().slice(0,10);
+  P.last_kill_date=refStr;
+  localStorage.setItem('mlp_v2',JSON.stringify(P));
+  await syncProfile();
+  closeRepeuple();
+  const l=document.getElementById('al'); if(l){l.style.transition='opacity .6s'; l.style.opacity='0'; setTimeout(()=>{updateB();l.style.opacity='1';},660);} else updateB();
+  updateP();
+  toast(d>0?`🐧 Banquise repeuplée ! Compteur à ${d} jour${d>1?'s':''}.`:'🐧 Banquise repeuplée ! Compteur remis à aujourd\'hui.');
+}
+window.doRepeuple=doRepeuple;
 
 // ════════════════════════════════════════════════
 //  PROFIL & REGLAGES
