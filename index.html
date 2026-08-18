@@ -162,6 +162,8 @@ button{cursor:pointer}
 .acd-l{font-size:.7rem;color:#b8e0f7;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
 .nb-cube{cursor:pointer;transition:transform .15s,border-color .2s,background .2s}
 .nb-cube:active{transform:scale(.98);border-color:rgba(78,205,196,.4)}
+.nb-cube.has-new{border-color:rgba(139,120,255,.5);background:rgba(139,120,255,.07)}
+.nb-cube.has-new .nb-count{color:#c9b8ff}
 .nb-cube-in{display:flex;align-items:center;gap:14px}
 .nb-igloo{position:relative;width:54px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .nb-igloo-svg{display:block;filter:drop-shadow(0 2px 5px rgba(0,0,0,.4))}
@@ -172,6 +174,8 @@ button{cursor:pointer}
 .nb-chev{font-size:1.9rem;color:rgba(255,255,255,.35);font-weight:800;flex-shrink:0}
 .nh-list{max-height:min(58vh,440px);overflow-y:auto;margin:0;padding:2px;display:flex;flex-direction:column;gap:9px;width:100%}
 .nh-item{display:flex;align-items:center;gap:11px;padding:11px 12px;background:rgba(10,22,40,.55);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-md);text-align:left}
+.nh-item.new{border-color:rgba(139,120,255,.4);background:rgba(139,120,255,.09)}
+.nh-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#8b78ff;margin-right:6px;vertical-align:middle;box-shadow:0 0 6px rgba(139,120,255,.6)}
 .nh-ic{font-size:1.4rem;flex-shrink:0;line-height:1.2}
 .nh-bd{flex:1;min-width:0}
 .nh-tt{font-weight:800;color:#fff;font-size:.86rem}
@@ -748,7 +752,7 @@ button{cursor:pointer}
           </div>
           <div class="nb-cube-txt">
             <div class="nb-count" id="notif-hist-count">0</div>
-            <div class="nb-count-lbl">notification·s reçue·s</div>
+            <div class="nb-count-lbl" id="notif-hist-lbl">boîte à jour ✓</div>
           </div>
           <div class="nb-chev">›</div>
         </div>
@@ -1636,12 +1640,15 @@ async function scanNotifEvents() {
     notifWaterline = new Date().toISOString();
     localStorage.setItem('mlp_notif_waterline', notifWaterline);
   } catch (e) {}
+  // Tient le compteur "non-lus" (cube + badge Amis) à jour pendant que l'app est ouverte.
+  try { refreshNotifHist(); } catch (e) {}
 }
 
 // ════════════════════════════════════════════════
 //  HISTORIQUE DES NOTIFICATIONS (boîte aux lettres)
 // ════════════════════════════════════════════════
 let NOTIF_HIST = [];
+let NOTIF_UNREAD = new Set();   // clés non lues au dernier calcul
 
 function notifDelKey(){ return 'mlp_notif_del_' + (myId() || 'anon'); }
 function getDeletedNotifs(){
@@ -1650,6 +1657,26 @@ function getDeletedNotifs(){
 }
 function saveDeletedNotifs(set){
   try { localStorage.setItem(notifDelKey(), JSON.stringify([...set])); } catch (e) {}
+}
+
+// "Lu / non lu" : on mémorise les clés déjà vues (par utilisateur).
+function notifSeenKey(){ return 'mlp_notif_seen_' + (myId() || 'anon'); }
+function getSeenNotifs(){
+  try { return new Set(JSON.parse(localStorage.getItem(notifSeenKey()) || '[]')); }
+  catch (e) { return new Set(); }
+}
+function saveSeenNotifs(set){
+  try {
+    let arr = [...set];
+    // Borne le stockage : on garde en priorité les clés encore présentes dans l'historique.
+    if (arr.length > 800) {
+      const inHist = new Set(NOTIF_HIST.map(n => n.key));
+      const keep = arr.filter(k => inHist.has(k));
+      const rest = arr.filter(k => !inHist.has(k));
+      arr = rest.slice(Math.max(0, rest.length - (800 - keep.length))).concat(keep);
+    }
+    localStorage.setItem(notifSeenKey(), JSON.stringify(arr));
+  } catch (e) {}
 }
 
 async function buildNotifHistory(){
@@ -1712,15 +1739,60 @@ async function buildNotifHistory(){
   return items;
 }
 
-async function refreshNotifHist(){
+function computeUnread(){
+  const seen = getSeenNotifs();
+  NOTIF_UNREAD = new Set(NOTIF_HIST.filter(n => !seen.has(n.key)).map(n => n.key));
+  return NOTIF_UNREAD;
+}
+
+// Met à jour l'UI (compteur du cube + libellé + badge de l'onglet Amis) selon le nombre de non-lus.
+function updateNotifUI(){
+  const n = NOTIF_UNREAD.size;
   const el = document.getElementById('notif-hist-count');
-  if (!el) return;
+  if (el) el.textContent = n;
+  const lbl = document.getElementById('notif-hist-lbl');
+  if (lbl) lbl.textContent = n > 0 ? (n > 1 ? 'non lues' : 'non lue') : 'boîte à jour ✓';
+  const cube = document.getElementById('notif-hist-cube');
+  if (cube) cube.classList.toggle('has-new', n > 0);
+  const badge = document.getElementById('badge-amis');
+  if (badge) badge.classList.toggle('hidden', n === 0);
+}
+
+async function refreshNotifHist(){
+  const firstRun = localStorage.getItem(notifSeenKey()) === null;
   NOTIF_HIST = await buildNotifHistory();
-  el.textContent = NOTIF_HIST.length;
+  if (firstRun && SB && myId()) {
+    // Première exécution : tout l'historique déjà présent est considéré comme "déjà lu".
+    saveSeenNotifs(new Set(NOTIF_HIST.map(n => n.key)));
+  }
+  computeUnread();
+  updateNotifUI();
 }
 window.refreshNotifHist = refreshNotifHist;
 
-function renderNotifHist(){
+// Marque des notifs comme lues sans ouvrir la boîte (ex : lecture d'une conversation, acceptation d'un ami).
+function markNotifsSeen(keys){
+  if (!keys || !keys.length) return;
+  const set = getSeenNotifs();
+  let changed = false;
+  keys.forEach(k => { if (!set.has(k)) { set.add(k); changed = true; } });
+  if (!changed) return;
+  saveSeenNotifs(set);
+  computeUnread();
+  updateNotifUI();
+}
+window.markNotifsSeen = markNotifsSeen;
+
+function markAllNotifsSeen(){
+  const set = getSeenNotifs();
+  NOTIF_HIST.forEach(n => set.add(n.key));
+  saveSeenNotifs(set);
+  NOTIF_UNREAD = new Set();
+  updateNotifUI();
+}
+
+function renderNotifHist(highlight){
+  const hl = highlight || NOTIF_UNREAD;
   const list = document.getElementById('nh-list');
   const clearBtn = document.getElementById('nh-clear-btn');
   if (!list) return;
@@ -1732,9 +1804,10 @@ function renderNotifHist(){
   if (clearBtn) clearBtn.style.display = '';
   list.innerHTML = NOTIF_HIST.map(n => {
     const when = n.ts ? ('il y a ' + tAgo(new Date(n.ts))) : '';
-    return '<div class="nh-item">'
+    const isNew = hl.has(n.key);
+    return '<div class="nh-item' + (isNew ? ' new' : '') + '">'
       + '<div class="nh-ic">' + n.icon + '</div>'
-      + '<div class="nh-bd"><div class="nh-tt">' + escHTML(n.title) + '</div>'
+      + '<div class="nh-bd"><div class="nh-tt">' + (isNew ? '<span class="nh-dot"></span>' : '') + escHTML(n.title) + '</div>'
       + (n.body ? '<div class="nh-ms">' + escHTML(n.body) + '</div>' : '')
       + (when ? '<div class="nh-tm">' + when + '</div>' : '')
       + '</div>'
@@ -1748,7 +1821,9 @@ async function openNotifHistory(){
   if (NOTIF_HIST.length) renderNotifHist();
   else document.getElementById('nh-list').innerHTML = '<div class="nh-empty">Chargement…</div>';
   await refreshNotifHist();
-  renderNotifHist();
+  const openUnread = new Set(NOTIF_UNREAD);   // garde le surlignage "nouveau" pour cette ouverture
+  renderNotifHist(openUnread);
+  markAllNotifsSeen();                          // tout devient lu → compteur + badge remis à 0
 }
 window.openNotifHistory = openNotifHistory;
 
@@ -1762,8 +1837,8 @@ function deleteNotif(key){
   set.add(key);
   saveDeletedNotifs(set);
   NOTIF_HIST = NOTIF_HIST.filter(n => n.key !== key);
-  const el = document.getElementById('notif-hist-count');
-  if (el) el.textContent = NOTIF_HIST.length;
+  computeUnread();
+  updateNotifUI();
   renderNotifHist();
 }
 window.deleteNotif = deleteNotif;
@@ -1775,8 +1850,8 @@ function clearAllNotifs(){
   NOTIF_HIST.forEach(n => set.add(n.key));
   saveDeletedNotifs(set);
   NOTIF_HIST = [];
-  const el = document.getElementById('notif-hist-count');
-  if (el) el.textContent = '0';
+  NOTIF_UNREAD = new Set();
+  updateNotifUI();
   renderNotifHist();
   toast('Notifications effacées');
 }
@@ -2058,7 +2133,6 @@ function enterApp() {
   initNotifPolling();
   refreshPasswordBanner();
   void renderLeaguesBar();
-  void refreshNotifHist();
   /** Scores : sans cet appel, seul le localStorage (mlp_scores) compte ; le serveur n’est lu qu’après login MDP. */
   void pullScoresFromServer();
 }
@@ -2990,7 +3064,7 @@ async function loadF(){
   await renderLeaguesBar();
 }
 
-async function acceptF(id){ if(!SB)return; await SB.from('friendships').update({status:'accepted'}).eq('id',id); toast('Ami accepté ! 🎉'); loadF(); }
+async function acceptF(id){ if(!SB)return; await SB.from('friendships').update({status:'accepted'}).eq('id',id); try{ markNotifsSeen(['friend_'+id]); }catch(e){} toast('Ami accepté ! 🎉'); loadF(); }
 window.acceptF=acceptF;
 async function removeF(id){ if(!confirm('Retirer cet ami ?'))return; if(!SB)return; await SB.from('friendships').delete().eq('id',id); toast('Ami retiré'); loadF(); }
 window.removeF=removeF;
@@ -3444,6 +3518,8 @@ async function loadConvMessages(fid, opts){
       return`<div class="msg-bubble-wrap ${cls}"><div class="msg-bubble ${cls}">${escHTML(m.text||'')}</div>${msgMetaRow(cls,time,isMine,m)}</div>`;
     }).join('');
     setTimeout(()=>{ if(!silent||nearBottom) body.scrollTop=body.scrollHeight; }, silent?50:100);
+    // Lire une conversation marque ses messages comme "lus" dans la boîte aux lettres (compteur + badge).
+    try{ markNotifsSeen(msgs.filter(m=>m.from_id===fid).map(m=>'msg_'+m.id)); }catch(e){}
   }catch(e){ if(!silent) body.innerHTML=`<div style="color:#f87171;padding:20px">Erreur : ${e.message}</div>`; }
 }
 
@@ -3465,11 +3541,9 @@ async function sendGift(animal){
 }
 window.sendGift=sendGift;
 
+// Le badge "Amis" est désormais synchronisé avec la boîte aux lettres (non-lus tous types confondus).
 async function checkBadges(){
-  if(!SB||!myId())return;
-  const { data } = await SB.from('messages').select('id').eq('to_id', myId()).eq('read', false).limit(1);
-  const badge=document.getElementById('badge-amis');
-  if(badge) badge.classList.toggle('hidden',!data||!data.length);
+  await refreshNotifHist();
 }
 
 // ════════════════════════════════════════════════
