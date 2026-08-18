@@ -1291,11 +1291,10 @@ button{cursor:pointer}
 <div class="mo hidden" id="share-preview-modal" onclick="if(event.target===this)closeSharePreview()">
   <div class="mc-card share-preview-card" onclick="event.stopPropagation()">
     <h3>Ta story banquise</h3>
-    <p style="margin:0;font-size:.82rem;color:#b8e0f7;font-weight:600">Prête pour Instagram, Snapchat, WhatsApp…</p>
+    <p style="margin:0;font-size:.82rem;color:#b8e0f7;font-weight:600">À poster avant la prochaine fonte ❄️</p>
     <div class="share-preview-frame"><img class="share-preview-img" id="share-preview-img" alt="Aperçu de ta carte banquise"/></div>
     <div class="mb" style="flex-direction:column;width:100%">
       <button type="button" class="mca" onclick="confirmShareCard()">📤 Partager</button>
-      <button type="button" class="mcn" style="width:100%" onclick="saveShareCard()">💾 Enregistrer l'image</button>
       <button type="button" class="mcn" style="width:100%" onclick="closeSharePreview()">Fermer</button>
     </div>
   </div>
@@ -2062,19 +2061,6 @@ function buildStreakImageBlob(d){
       while (s.length > 1 && textW(s + '…') > maxW) s = s.slice(0, -1);
       return s + '…';
     }
-    function wrapLines(str, maxW){
-      const words = String(str || '').split(/\s+/).filter(Boolean);
-      const lines = [];
-      let cur = '';
-      words.forEach(w => {
-        const test = cur ? (cur + ' ' + w) : w;
-        if (textW(test) <= maxW) cur = test;
-        else { if (cur) lines.push(cur); cur = w; }
-      });
-      if (cur) lines.push(cur);
-      return lines.length ? lines : [''];
-    }
-
     const sky = x.createLinearGradient(0, 0, 0, H);
     sky.addColorStop(0, '#050b14');
     sky.addColorStop(0.28, '#0a1628');
@@ -2154,16 +2140,39 @@ function buildStreakImageBlob(d){
     y += 32;
 
     const lv = lvl(d);
-    setFont('600', 34, true);
-    x.fillStyle = 'rgba(255,255,255,.95)';
-    const gradeLines = wrapLines((lv.i ? lv.i + '  ' : '') + (lv.n || ''), innerW).slice(0, 2);
-    gradeLines.forEach(line => {
-      const s = fitSize(line, '600', 34, 22, innerW, true);
-      setFont('600', s, true);
-      x.fillText(line, CX, y);
-      y += s + 10;
-    });
-    y += 24;
+    const gEmoji = lv.i || '';
+    const gName = lv.n || '';
+    const gEmojiSlot = gEmoji ? 52 : 0;
+    const gGap = gEmoji ? 14 : 0;
+    const gPadX = 26;
+    const nameMax = Math.max(180, innerW - gEmojiSlot - gGap - gPadX * 2);
+    const gSize = fitSize(gName, '700', 30, 18, nameMax, false);
+    setFont('700', gSize, false);
+    const gNameW = textW(gName);
+    const gContentW = gEmojiSlot + gGap + gNameW;
+    const gPillW = Math.min(innerW, gContentW + gPadX * 2);
+    const gPillH = Math.max(58, gSize + 28);
+    const gPillX = CX - gPillW / 2;
+    x.fillStyle = 'rgba(255,255,255,.08)';
+    roundRect(gPillX, y, gPillW, gPillH, gPillH / 2); x.fill();
+    x.strokeStyle = 'rgba(255,255,255,.22)'; x.lineWidth = 1.5;
+    roundRect(gPillX, y, gPillW, gPillH, gPillH / 2); x.stroke();
+    const gStart = CX - gContentW / 2;
+    const gMid = y + gPillH / 2;
+    x.textBaseline = 'middle';
+    if (gEmoji) {
+      setFont('400', 34, true);
+      x.textAlign = 'center';
+      x.fillStyle = '#fff';
+      x.fillText(gEmoji, gStart + gEmojiSlot / 2, gMid);
+    }
+    setFont('700', gSize, false);
+    x.textAlign = 'left';
+    x.fillStyle = 'rgba(255,255,255,.96)';
+    x.fillText(gName, gStart + gEmojiSlot + gGap, gMid);
+    x.textAlign = 'center';
+    x.textBaseline = 'top';
+    y += gPillH + 28;
 
     const handle = (P && P.pseudo) ? '@' + P.pseudo : '@banquise';
     setFont('600', 26, false);
@@ -2226,16 +2235,9 @@ async function confirmShareCard(){
       try { await navigator.share({ title, text }); } catch (e) { if (e && e.name === 'AbortError') return; }
     }
   } catch (e) {}
-  saveShareCard();
+  toast('Ouvre Partager pour l\'envoyer ou la garder dans tes photos 🐧');
 }
 window.confirmShareCard = confirmShareCard;
-
-function saveShareCard(){
-  if (!SHARE_CARD.dataUrl) { toast('Image pas encore prête'); return; }
-  downloadDataUrl(SHARE_CARD.dataUrl, 'ma-banquise.png');
-  toast('Image enregistrée — partage-la où tu veux 🐧');
-}
-window.saveShareCard = saveShareCard;
 
 const MILESTONES = [7, 30, 100, 365];
 function msKey(){ return 'mlp_ms_' + (myId() || 'anon'); }
