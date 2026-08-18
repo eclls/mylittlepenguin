@@ -361,6 +361,34 @@ button{cursor:pointer}
 .conv-send-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1a4a8a,var(--teal));color:#fff;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
 .conv-send-btn:active{transform:scale(.9)}
 
+/* ══ PANEL QUESTIONS ══ */
+#questions-panel{background:var(--night)}
+.q-body{padding:16px;display:flex;flex-direction:column;gap:16px;padding-bottom:90px}
+.q-ask{background:rgba(139,120,255,.08);border:1.5px solid rgba(139,120,255,.28);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:10px}
+.q-ask-title{font-weight:800;color:#c9b8ff;font-size:.95rem}
+.q-textarea{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:11px 14px;color:#fff;font-size:.9rem;font-weight:600;resize:none;min-height:66px;line-height:1.45;font-family:inherit}
+.q-textarea::placeholder{color:rgba(255,255,255,.4)}
+.q-send-btn{padding:12px;border-radius:14px;background:linear-gradient(135deg,#6d5bd0,#8b78ff);color:#fff;font-size:.92rem;font-weight:800;transition:all .2s}
+.q-send-btn:active{transform:scale(.97)}
+.q-ask-note{font-size:.72rem;color:rgba(255,255,255,.42);text-align:center}
+.q-sec-title{font-weight:800;color:#b8e0f7;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;padding:0 2px}
+.q-card{background:rgba(10,22,40,.6);border:1.5px solid rgba(255,255,255,.12);border-radius:var(--r-lg);padding:14px;display:flex;flex-direction:column;gap:9px}
+.q-card.pending{border-color:rgba(255,196,78,.38);background:rgba(255,196,78,.06)}
+.q-q{font-weight:700;color:#fff;font-size:.92rem;line-height:1.4;word-break:break-word}
+.q-meta{font-size:.7rem;color:rgba(255,255,255,.42);font-weight:600}
+.q-a{background:rgba(78,205,196,.1);border-left:3px solid var(--teal);border-radius:8px;padding:9px 12px;color:#dffaf4;font-size:.88rem;font-weight:600;line-height:1.45;white-space:pre-wrap;word-break:break-word}
+.q-a-label{color:var(--teal);font-weight:800;font-size:.7rem;letter-spacing:.03em;text-transform:uppercase;display:block;margin-bottom:3px}
+.q-ans-input{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 12px;color:#fff;font-size:.88rem;font-weight:600;resize:none;min-height:58px;line-height:1.4;font-family:inherit;width:100%}
+.q-ans-input::placeholder{color:rgba(255,255,255,.38)}
+.q-actions{display:flex;gap:8px;flex-wrap:wrap}
+.q-abtn{flex:1;min-width:92px;padding:9px 8px;border-radius:11px;font-size:.79rem;font-weight:800;transition:all .2s}
+.q-abtn:active{transform:scale(.96)}
+.q-abtn.pub{background:rgba(78,205,196,.18);color:var(--teal);border:1px solid rgba(78,205,196,.35)}
+.q-abtn.save{background:rgba(255,255,255,.08);color:#b8e0f7;border:1px solid rgba(255,255,255,.18)}
+.q-abtn.del{background:rgba(239,68,68,.14);color:#f87171;border:1px solid rgba(239,68,68,.28)}
+.q-empty{text-align:center;color:rgba(255,255,255,.35);padding:22px 16px;font-size:.85rem;font-weight:600;line-height:1.5}
+.q-btn-badge{background:#8b78ff;color:#fff;font-size:.68rem;font-weight:800;border-radius:99px;padding:1px 7px;margin-left:7px;line-height:1.5}
+
 /* ══ PAGE PROFIL ══ */
 #page-profil{background:var(--night)}
 .p-bg{position:fixed;inset:0;background:radial-gradient(ellipse 130% 55% at 50% 0%,rgba(42,111,168,.28) 0%,transparent 60%);pointer-events:none}
@@ -895,6 +923,7 @@ button{cursor:pointer}
           </div>
         </div>
       </div>
+      <div class="psec"><button class="logout-btn" id="questions-btn" style="color:#c9b8ff;border-color:rgba(139,120,255,.35);background:rgba(139,120,255,.08)"><span>💬</span> Questions<span class="q-btn-badge hidden" id="q-btn-badge"></span></button></div>
       <div class="psec"><button class="logout-btn" id="repeuple-btn" style="color:#7ff0dd;border-color:rgba(78,205,196,.35);background:rgba(78,205,196,.08)"><span>🐧</span> Repeupler la banquise</button></div>
       <div class="psec"><button class="logout-btn" id="logout-btn"><span>❄️</span> Quitter la banquise</button></div>
       <div class="bsp"></div>
@@ -907,6 +936,32 @@ button{cursor:pointer}
     <button class="nb" data-page="amis" onclick="goPage('amis')"><span class="ni" style="position:relative">🐾<span class="nb-badge hidden" id="badge-amis"></span></span><span class="nl">Amis</span></button>
     <button class="nb" data-page="profil" onclick="goPage('profil')"><span class="ni">🐧</span><span class="nl">Profil</span></button>
   </nav>
+</div>
+
+<div class="panel" id="questions-panel">
+  <div class="panel-header">
+    <button class="panel-back" onclick="closePanel('questions-panel')">←</button>
+    <div>
+      <div class="panel-title">Questions</div>
+      <div style="font-size:.74rem;color:#b8e0f7;font-weight:600">Pose ta question, la réponse sera peut-être publiée ici</div>
+    </div>
+  </div>
+  <div class="q-body">
+    <div class="q-ask">
+      <div class="q-ask-title">💬 Pose ta question</div>
+      <textarea class="q-textarea" id="q-input" placeholder="Écris ta question…" rows="3" maxlength="500"></textarea>
+      <button class="q-send-btn" onclick="submitQuestion()">Envoyer ma question 🐧</button>
+      <div class="q-ask-note">Si la réponse est publiée, ta question apparaîtra ici de façon anonyme.</div>
+    </div>
+    <div id="q-admin-sec" class="hidden">
+      <div class="q-sec-title">📥 En attente <span id="q-pending-count"></span></div>
+      <div id="q-pending-list" style="display:flex;flex-direction:column;gap:12px;margin-top:8px"></div>
+    </div>
+    <div>
+      <div class="q-sec-title">✅ Questions &amp; réponses</div>
+      <div id="q-public-list" style="display:flex;flex-direction:column;gap:12px;margin-top:8px"></div>
+    </div>
+  </div>
 </div>
 
 <div class="panel" id="league-panel">
@@ -1181,6 +1236,11 @@ const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 // Remplace la valeur ci-dessous par ta clé publique (voir supabase/functions/send-push).
 // Tant qu'elle contient "REMPLACE", l'abonnement push est simplement ignoré (l'app marche normalement).
 const VAPID_PUBLIC_KEY = 'BCGvaS4Pw6UG5GrZzgAGsLFKH4lKjSe74tJ6IJTFlJPWQlN2spDKQUR8ENv40R3Nd8KrtEVqR6wmNe1ukHmDhMI';
+
+// 🔑 Pseudo de l'admin de la boîte à questions (celui qui reçoit/répond).
+// Mets ICI ton pseudo exact (insensible à la casse). Tant que c'est vide,
+// personne ne voit le panneau de modération (tout le monde peut quand même poser des questions).
+const ADMIN_PSEUDO = 'Louloute';
 
 /**
  * Clé MapTiler Cloud (copier-coller depuis cloud.maptiler.com → ton compte → clés API).
@@ -1856,6 +1916,7 @@ function bindAll() {
   document.getElementById('date-in').oninput     = upPrev;
   document.getElementById('days-in').oninput     = upPrev;
   document.getElementById('kill-btn').onclick    = () => { showKillChoiceStep(); document.getElementById('kill-modal').classList.remove('hidden'); };
+  document.getElementById('questions-btn').onclick = openQuestions;
   document.getElementById('repeuple-btn').onclick = openRepeuple;
   document.getElementById('rep-date-in').oninput  = repUpPrev;
   document.getElementById('rep-days-in').oninput  = repUpPrev;
@@ -2342,6 +2403,143 @@ async function doRepeuple(){
 window.doRepeuple=doRepeuple;
 
 // ════════════════════════════════════════════════
+//  QUESTIONS (boîte à questions publique, modérée)
+// ════════════════════════════════════════════════
+function isQAdmin(){
+  return !!(P && P.pseudo && ADMIN_PSEUDO && String(P.pseudo).trim().toLowerCase() === String(ADMIN_PSEUDO).trim().toLowerCase());
+}
+
+function openQuestions(){
+  openPanel('questions-panel');
+  document.getElementById('q-admin-sec').classList.toggle('hidden', !isQAdmin());
+  loadQuestions();
+}
+window.openQuestions=openQuestions;
+
+async function loadQuestions(){
+  const pubList=document.getElementById('q-public-list');
+  const pendList=document.getElementById('q-pending-list');
+  const admin=isQAdmin();
+  document.getElementById('q-admin-sec').classList.toggle('hidden', !admin);
+  if(!SB){ pubList.innerHTML='<div class="q-empty">Connexion impossible (hors ligne) 🐧</div>'; return; }
+  pubList.innerHTML='<div class="q-empty">Chargement…</div>';
+  try{
+    let query=SB.from('questions').select('*').order('created_at',{ascending:false}).limit(200);
+    if(!admin) query=query.eq('published',true);
+    const{data,error}=await query;
+    if(error) throw error;
+    const rows=data||[];
+    const published=rows.filter(r=>r.published);
+    pubList.innerHTML = published.length
+      ? published.map(renderPublicQ).join('')
+      : '<div class="q-empty">Aucune réponse publiée pour l\'instant 🐧<br/>Sois le·la premier·ère à poser une question !</div>';
+    if(admin){
+      const pending=rows.filter(r=>!r.published);
+      document.getElementById('q-pending-count').textContent = pending.length ? '('+pending.length+')' : '';
+      pendList.innerHTML = pending.length
+        ? pending.map(renderPendingQ).join('')
+        : '<div class="q-empty">Aucune question en attente ✨</div>';
+      refreshQuestionBadge(pending.length);
+    }
+  }catch(e){
+    pubList.innerHTML='<div class="q-empty">Erreur : '+escHTML(e.message||'inconnue')+'</div>';
+  }
+}
+window.loadQuestions=loadQuestions;
+
+function renderPublicQ(r){
+  const ans = r.answer ? '<div class="q-a"><span class="q-a-label">Réponse</span>'+escHTML(r.answer)+'</div>' : '';
+  const ctl = isQAdmin()
+    ? '<div class="q-actions"><button class="q-abtn save" onclick="unpublishQuestion(\''+r.id+'\')">↩︎ Dépublier</button><button class="q-abtn del" onclick="deleteQuestion(\''+r.id+'\')">🗑️ Supprimer</button></div>'
+    : '';
+  return '<div class="q-card"><div class="q-q">❓ '+escHTML(r.question)+'</div>'+ans+ctl+'</div>';
+}
+
+function renderPendingQ(r){
+  const who = r.asker_pseudo ? escHTML(r.asker_pseudo) : 'Anonyme';
+  const when = r.created_at ? tAgo(new Date(r.created_at)) : '';
+  return '<div class="q-card pending">'
+    + '<div class="q-q">❓ '+escHTML(r.question)+'</div>'
+    + '<div class="q-meta">De '+who+' · il y a '+when+'</div>'
+    + '<textarea class="q-ans-input" id="q-ans-'+r.id+'" placeholder="Ta réponse…" rows="2" maxlength="800">'+escHTML(r.answer||'')+'</textarea>'
+    + '<div class="q-actions">'
+    +   '<button class="q-abtn pub" onclick="answerQuestion(\''+r.id+'\',true)">✅ Publier</button>'
+    +   '<button class="q-abtn save" onclick="answerQuestion(\''+r.id+'\',false)">💾 Garder privé</button>'
+    +   '<button class="q-abtn del" onclick="deleteQuestion(\''+r.id+'\')">🗑️ Supprimer</button>'
+    + '</div>'
+    + '</div>';
+}
+
+async function submitQuestion(){
+  const inp=document.getElementById('q-input');
+  const t=(inp.value||'').trim();
+  if(t.length<3){ toast('Écris une vraie question 🐧'); return; }
+  if(!SB){ toast('Hors ligne, réessaie plus tard'); return; }
+  const{error}=await SB.from('questions').insert({
+    asker_id: myId()||null,
+    asker_pseudo: (P&&P.pseudo)||null,
+    question: t
+  });
+  if(error){ toast('Erreur à l\'envoi'); return; }
+  inp.value='';
+  toast('Question envoyée ! 🐧');
+  loadQuestions();
+}
+window.submitQuestion=submitQuestion;
+
+async function answerQuestion(id, publish){
+  if(!isQAdmin()||!SB) return;
+  const ta=document.getElementById('q-ans-'+id);
+  const ans=((ta&&ta.value)||'').trim();
+  if(publish && ans.length<1){ toast('Écris une réponse avant de publier'); return; }
+  const{error}=await SB.from('questions').update({
+    answer: ans||null,
+    published: !!publish,
+    answered_at: new Date().toISOString()
+  }).eq('id',id);
+  if(error){ toast('Erreur'); return; }
+  toast(publish?'Réponse publiée ✅':'Réponse enregistrée (privée) 💾');
+  loadQuestions();
+}
+window.answerQuestion=answerQuestion;
+
+async function unpublishQuestion(id){
+  if(!isQAdmin()||!SB) return;
+  const{error}=await SB.from('questions').update({published:false}).eq('id',id);
+  if(error){ toast('Erreur'); return; }
+  toast('Question retirée du public');
+  loadQuestions();
+}
+window.unpublishQuestion=unpublishQuestion;
+
+async function deleteQuestion(id){
+  if(!isQAdmin()||!SB) return;
+  if(!confirm('Supprimer définitivement cette question ?')) return;
+  const{error}=await SB.from('questions').delete().eq('id',id);
+  if(error){ toast('Erreur'); return; }
+  toast('Question supprimée');
+  loadQuestions();
+}
+window.deleteQuestion=deleteQuestion;
+
+async function refreshQuestionBadge(pendingCount){
+  const badge=document.getElementById('q-btn-badge');
+  if(!badge) return;
+  if(!isQAdmin()){ badge.classList.add('hidden'); return; }
+  let n=pendingCount;
+  if(n===undefined){
+    if(!SB){ badge.classList.add('hidden'); return; }
+    try{
+      const{count}=await SB.from('questions').select('id',{count:'exact',head:true}).eq('published',false);
+      n=count||0;
+    }catch(e){ badge.classList.add('hidden'); return; }
+  }
+  if(n>0){ badge.textContent=n; badge.classList.remove('hidden'); }
+  else badge.classList.add('hidden');
+}
+window.refreshQuestionBadge=refreshQuestionBadge;
+
+// ════════════════════════════════════════════════
 //  PROFIL & REGLAGES
 // ════════════════════════════════════════════════
 function updateP(){
@@ -2370,6 +2568,7 @@ function updateP(){
   document.getElementById('exp-priv-tog').classList.toggle('on',!!P.expedition_public);
   document.getElementById('alert-tog').classList.toggle('on',!!P.alert_friends);
   updateNotifPermissionUI();
+  refreshQuestionBadge();
 }
 
 function renderAvatarPreview(url, emoji){
