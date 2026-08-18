@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="MyLittlePenguin"/>
@@ -28,9 +28,9 @@
   --r-sm:12px;--r-md:20px;--r-lg:32px;--r-xl:48px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden;background:var(--night)}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--night);-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 body{font-family:var(--fb);color:#fff;-webkit-font-smoothing:antialiased;overscroll-behavior:none;user-select:none;-webkit-tap-highlight-color:transparent}
-input,textarea,button{font-family:var(--fb);border:none;outline:none}
+input,textarea,button{font-family:var(--fb);border:none;outline:none;font-size:16px}
 button{cursor:pointer}
 .hidden{display:none!important}
 .bsp{height:56px}
@@ -92,7 +92,7 @@ button{cursor:pointer}
 .ob-inp{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);border-radius:var(--r-md);padding:14px 16px;transition:border-color .2s}
 .ob-inp:focus-within{border-color:var(--teal);background:rgba(78,205,196,.1)}
 .ob-inp-ic{font-size:1.2rem;flex-shrink:0}
-.ob-inp input,.ob-inp textarea{flex:1;background:transparent;color:#fff;font-size:1rem;font-weight:700}
+.ob-inp input,.ob-inp textarea{flex:1;background:transparent;color:#fff;font-size:16px;font-weight:700}
 .ob-inp input::placeholder,.ob-inp textarea::placeholder{color:rgba(255,255,255,.45);font-weight:400}
 .ob-inp input[type=date]::-webkit-calendar-picker-indicator{filter:invert(1)}
 .ob-inp input[type=date]{color-scheme:dark}
@@ -382,7 +382,7 @@ button{cursor:pointer}
 .gs-btn{padding:7px 14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:99px;font-size:.8rem;font-weight:800;color:#b8e0f7;white-space:nowrap;flex-shrink:0;transition:all .2s}
 .gs-btn:active{background:rgba(78,205,196,.2);color:var(--teal)}
 .conv-row{display:flex;gap:8px;align-items:flex-end}
-.conv-textarea{flex:1;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:20px;padding:10px 14px;color:#fff;font-size:.9rem;font-weight:600;resize:none;max-height:80px;min-height:40px;line-height:1.4}
+.conv-textarea{flex:1;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:20px;padding:10px 14px;color:#fff;font-size:16px;font-weight:600;resize:none;max-height:80px;min-height:40px;line-height:1.4}
 .conv-textarea::placeholder{color:rgba(255,255,255,.4)}
 .conv-send-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#1a4a8a,var(--teal));color:#fff;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
 .conv-send-btn:active{transform:scale(.9)}
@@ -392,7 +392,7 @@ button{cursor:pointer}
 .q-body{padding:16px;display:flex;flex-direction:column;gap:16px;padding-bottom:90px}
 .q-ask{background:rgba(139,120,255,.08);border:1.5px solid rgba(139,120,255,.28);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:10px}
 .q-ask-title{font-weight:800;color:#c9b8ff;font-size:.95rem}
-.q-textarea{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:11px 14px;color:#fff;font-size:.9rem;font-weight:600;resize:none;min-height:66px;line-height:1.45;font-family:inherit}
+.q-textarea{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:11px 14px;color:#fff;font-size:16px;font-weight:600;resize:none;min-height:66px;line-height:1.45;font-family:inherit}
 .q-textarea::placeholder{color:rgba(255,255,255,.4)}
 .q-send-btn{padding:12px;border-radius:14px;background:linear-gradient(135deg,#6d5bd0,#8b78ff);color:#fff;font-size:.92rem;font-weight:800;transition:all .2s}
 .q-send-btn:active{transform:scale(.97)}
@@ -404,7 +404,7 @@ button{cursor:pointer}
 .q-meta{font-size:.7rem;color:rgba(255,255,255,.42);font-weight:600}
 .q-a{background:rgba(78,205,196,.1);border-left:3px solid var(--teal);border-radius:8px;padding:9px 12px;color:#dffaf4;font-size:.88rem;font-weight:600;line-height:1.45;white-space:pre-wrap;word-break:break-word}
 .q-a-label{color:var(--teal);font-weight:800;font-size:.7rem;letter-spacing:.03em;text-transform:uppercase;display:block;margin-bottom:3px}
-.q-ans-input{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 12px;color:#fff;font-size:.88rem;font-weight:600;resize:none;min-height:58px;line-height:1.4;font-family:inherit;width:100%}
+.q-ans-input{background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.18);border-radius:12px;padding:10px 12px;color:#fff;font-size:16px;font-weight:600;resize:none;min-height:58px;line-height:1.4;font-family:inherit;width:100%}
 .q-ans-input::placeholder{color:rgba(255,255,255,.38)}
 .q-actions{display:flex;gap:8px;flex-wrap:wrap}
 .q-abtn{flex:1;min-width:92px;padding:9px 8px;border-radius:11px;font-size:.79rem;font-weight:800;transition:all .2s}
@@ -496,6 +496,9 @@ button{cursor:pointer}
 .mo.hidden{display:none}
 @keyframes fi{from{opacity:0}to{opacity:1}}
 .mc-card{background:var(--deep);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-lg);padding:26px 22px;width:100%;max-width:320px;display:flex;flex-direction:column;align-items:center;gap:13px;text-align:center;animation:mci .3s cubic-bezier(.34,1.56,.64,1)}
+.share-preview-card{max-width:min(380px,94vw);padding:18px 16px 20px}
+.share-preview-frame{width:100%;display:flex;justify-content:center;background:rgba(0,0,0,.28);border-radius:18px;padding:8px;border:1px solid rgba(255,255,255,.1)}
+.share-preview-img{display:block;width:auto;height:min(52vh,460px);max-width:100%;aspect-ratio:1080/1920;object-fit:contain;border-radius:12px;background:#0a1628}
 @keyframes mci{from{transform:scale(.8) translateY(20px);opacity:0}to{transform:none;opacity:1}}
 .mc-card h3{font-family:var(--fd);font-size:1.38rem;font-weight:700;color:#fff}
 .mc-card p{font-size:.86rem;color:rgba(255,255,255,.75);line-height:1.55}
@@ -822,13 +825,13 @@ button{cursor:pointer}
         <h3 id="exp-form-title">Nouvelle expédition</h3>
         <div class="ob-inp"><span class="ob-inp-ic">✏️</span><input type="text" id="exp-title-in" placeholder="Titre de l'expédition…" maxlength="40"/></div>
         <div class="ob-inp" style="flex-direction:column;align-items:flex-start;gap:6px">
-          <textarea id="exp-note-in" placeholder="Note, souvenir…" maxlength="200" style="width:100%;background:transparent;color:#0a1628;font-size:.9rem;font-weight:600;resize:none;min-height:60px;border:none;outline:none"></textarea>
+          <textarea id="exp-note-in" placeholder="Note, souvenir…" maxlength="200" style="width:100%;background:transparent;color:#0a1628;font-size:16px;font-weight:600;resize:none;min-height:60px;border:none;outline:none"></textarea>
         </div>
         <div class="ob-inp"><span class="ob-inp-ic">📅</span><input type="date" id="exp-date-in"/></div>
         <div class="ob-inp" style="flex-direction:column;align-items:stretch;gap:8px">
           <span style="font-size:.74rem;font-weight:800;color:#1a4a8a">Lieu sur la carte (optionnel)</span>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;width:100%">
-            <input type="text" id="exp-place-in" placeholder="Ville, région, pays…" maxlength="90" style="flex:1;min-width:140px;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid rgba(10,22,40,.12);font-size:.88rem;font-weight:600;color:#0a1628;background:rgba(10,22,40,.03)"/>
+            <input type="text" id="exp-place-in" placeholder="Ville, région, pays…" maxlength="90" style="flex:1;min-width:140px;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid rgba(10,22,40,.12);font-size:16px;font-weight:600;color:#0a1628;background:rgba(10,22,40,.03)"/>
             <button type="button" class="expl-geocode-btn" id="exp-geocode-btn">Placer</button>
           </div>
           <button type="button" class="cn-btn" id="exp-clear-place-btn" style="align-self:flex-start;padding:6px 12px;font-size:.72rem;color:#b45309;border-color:rgba(180,83,9,.35)">Effacer le lieu</button>
@@ -933,8 +936,8 @@ button{cursor:pointer}
         <div class="slist">
           <div class="si pass-recovery-banner hidden" id="pass-recovery-banner" style="flex-direction:column;align-items:stretch;gap:10px;padding:14px;border-radius:var(--r-md);background:rgba(91,168,212,.12);border:1.5px solid rgba(26,74,138,.2)">
             <div class="si-l" style="margin-bottom:0"><span class="si-ic">🔐</span><div><div class="si-lb">Protège ton compte 🛟</div><div class="si-sb">Définis un mot de passe pour <strong>ne jamais perdre</strong> ta banquise et tes expéditions (récupération sur un autre appareil / après réinstallation).</div></div></div>
-            <div class="ob-inp"><input type="password" id="pass-setup" placeholder="Nouveau mot de passe (8+ car.)" minlength="8" autocomplete="new-password" style="width:100%;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid rgba(10,22,40,.12);font-size:.88rem;font-weight:600"/></div>
-            <div class="ob-inp"><input type="password" id="pass-setup2" placeholder="Confirmer" minlength="8" autocomplete="new-password" style="width:100%;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid rgba(10,22,40,.12);font-size:.88rem;font-weight:600"/></div>
+            <div class="ob-inp"><input type="password" id="pass-setup" placeholder="Nouveau mot de passe (8+ car.)" minlength="8" autocomplete="new-password" style="width:100%;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid rgba(10,22,40,.12);font-size:16px;font-weight:600"/></div>
+            <div class="ob-inp"><input type="password" id="pass-setup2" placeholder="Confirmer" minlength="8" autocomplete="new-password" style="width:100%;padding:12px 14px;border-radius:var(--r-md);border:1.5px solid rgba(10,22,40,.12);font-size:16px;font-weight:600"/></div>
             <div class="ob-err" id="pass-setup-err" style="min-height:1em"></div>
             <button type="button" class="ob-btn" id="pass-setup-btn" style="width:100%">Enregistrer le mot de passe</button>
           </div>
@@ -1282,6 +1285,19 @@ button{cursor:pointer}
     <div class="prof-lvl-list" id="prof-levels-list"></div>
     <p class="prof-exp-note">Dans <strong>Expéditions</strong> (frise), le pingouin en bas reflète ton <strong>grade</strong> : il évolue visuellement quand tu montes de niveau. Le chiffre sur son panneau indique les jours depuis ta dernière expédition.</p>
     <div class="mb" style="justify-content:center"><button type="button" class="mca" onclick="closeProfLevelsModal()">OK</button></div>
+  </div>
+</div>
+
+<div class="mo hidden" id="share-preview-modal" onclick="if(event.target===this)closeSharePreview()">
+  <div class="mc-card share-preview-card" onclick="event.stopPropagation()">
+    <h3>Ta carte banquise</h3>
+    <p style="margin:0;font-size:.82rem;color:#b8e0f7;font-weight:600">Format story 1080×1920 — Snapchat, Insta, WhatsApp, Messages…</p>
+    <div class="share-preview-frame"><img class="share-preview-img" id="share-preview-img" alt="Aperçu de ta carte banquise"/></div>
+    <div class="mb" style="flex-direction:column;width:100%">
+      <button type="button" class="mca" onclick="confirmShareCard()">📤 Partager</button>
+      <button type="button" class="mcn" style="width:100%" onclick="saveShareCard()">💾 Enregistrer l'image</button>
+      <button type="button" class="mcn" style="width:100%" onclick="closeSharePreview()">Fermer</button>
+    </div>
   </div>
 </div>
 
@@ -1912,6 +1928,19 @@ function initA11y(){
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     }
   });
+  // iOS : un champ trop petit peut zoomer la page et rester bloqué. On remet l'échelle à 1.
+  function restoreViewportScale(){
+    const meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) return;
+    const base = 'width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover';
+    meta.setAttribute('content', 'width=device-width,initial-scale=1.0001,maximum-scale=1,user-scalable=no,viewport-fit=cover');
+    setTimeout(() => meta.setAttribute('content', base), 50);
+    try { window.scrollTo(0, 0); } catch (e) {}
+  }
+  document.addEventListener('focusout', (e) => {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT')) restoreViewportScale();
+  });
 }
 
 // ════════════════════════════════════════════════
@@ -2006,46 +2035,78 @@ function downloadDataUrl(dataUrl, filename){
   try { const a = document.createElement('a'); a.href = dataUrl; a.download = filename || 'image.png'; document.body.appendChild(a); a.click(); a.remove(); } catch (e) {}
 }
 
+let SHARE_CARD = { blob: null, dataUrl: null };
+
 function buildStreakImageBlob(d){
   return new Promise((resolve) => {
-    const S = 1080;
-    const c = document.createElement('canvas'); c.width = S; c.height = S;
+    const W = 1080, H = 1920;
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
     const x = c.getContext('2d');
-    const g = x.createLinearGradient(0, 0, 0, S);
-    g.addColorStop(0, '#0a1628'); g.addColorStop(0.55, '#0d2847'); g.addColorStop(1, '#07131f');
-    x.fillStyle = g; x.fillRect(0, 0, S, S);
-    const rg = x.createRadialGradient(S / 2, S * 0.30, 60, S / 2, S * 0.30, S * 0.62);
-    rg.addColorStop(0, 'rgba(78,205,196,.32)'); rg.addColorStop(1, 'rgba(78,205,196,0)');
-    x.fillStyle = rg; x.fillRect(0, 0, S, S);
-    x.textAlign = 'center';
-    x.fillStyle = 'rgba(184,224,247,.85)'; x.font = '600 42px system-ui,Segoe UI,Roboto,sans-serif';
-    x.fillText('MA BANQUISE', S / 2, 175);
-    x.font = '190px system-ui,"Apple Color Emoji","Segoe UI Emoji"'; x.fillText('🐧', S / 2, 420);
+    const g = x.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#071018'); g.addColorStop(0.38, '#0a1628'); g.addColorStop(0.72, '#0d2847'); g.addColorStop(1, '#051422');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    function blob(cx, cy, r, col){
+      const rg = x.createRadialGradient(cx, cy, 20, cx, cy, r);
+      rg.addColorStop(0, col); rg.addColorStop(1, 'rgba(0,0,0,0)');
+      x.fillStyle = rg; x.fillRect(0, 0, W, H);
+    }
+    blob(W * 0.28, 280, 420, 'rgba(78,205,196,.34)');
+    blob(W * 0.78, 360, 380, 'rgba(168,85,247,.22)');
+    blob(W * 0.52, 180, 260, 'rgba(91,168,212,.22)');
+    x.fillStyle = '#0d3a6e';
+    x.beginPath(); x.ellipse(W / 2, H + 40, 780, 280, 0, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#8ec8e8';
+    x.beginPath(); x.ellipse(W / 2, H - 70, 420, 110, 0, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#d4edf8';
+    x.beginPath(); x.ellipse(W / 2, H - 110, 300, 70, 0, 0, Math.PI * 2); x.fill();
+    x.textAlign = 'center'; x.textBaseline = 'alphabetic';
+    x.fillStyle = 'rgba(184,224,247,.88)'; x.font = '600 46px system-ui,Segoe UI,Roboto,sans-serif';
+    x.fillText('MA BANQUISE', W / 2, 280);
+    x.font = '220px system-ui,"Apple Color Emoji","Segoe UI Emoji"';
+    x.fillText('🐧', W / 2, 620);
     const lv = lvl(d);
-    x.fillStyle = '#ffffff'; x.font = '800 300px system-ui,Segoe UI,Roboto,sans-serif';
-    x.fillText(String(d), S / 2, 705);
-    x.fillStyle = '#7ff0dd'; x.font = '700 58px system-ui,Segoe UI,Roboto,sans-serif';
-    x.fillText(d > 1 ? 'JOURS SANS CHASSE' : 'JOUR SANS CHASSE', S / 2, 785);
-    x.fillStyle = 'rgba(255,255,255,.92)'; x.font = '600 48px system-ui,"Segoe UI Emoji",sans-serif';
-    x.fillText(lv.i + '  ' + lv.n, S / 2, 885);
-    if (P && P.pseudo) { x.fillStyle = 'rgba(184,224,247,.75)'; x.font = '600 42px system-ui,sans-serif'; x.fillText('@' + P.pseudo, S / 2, 958); }
-    x.fillStyle = 'rgba(255,255,255,.5)'; x.font = '600 36px system-ui,"Segoe UI Emoji",sans-serif';
-    x.fillText('My Little Penguin 🐧', S / 2, 1032);
+    x.fillStyle = '#ffffff'; x.font = '800 280px system-ui,Segoe UI,Roboto,sans-serif';
+    x.fillText(String(d), W / 2, 1000);
+    x.fillStyle = '#7ff0dd'; x.font = '700 52px system-ui,Segoe UI,Roboto,sans-serif';
+    x.fillText(d > 1 ? 'JOURS SANS CHASSE' : 'JOUR SANS CHASSE', W / 2, 1100);
+    x.fillStyle = 'rgba(255,255,255,.94)'; x.font = '600 48px system-ui,"Segoe UI Emoji",sans-serif';
+    x.fillText(lv.i + '  ' + lv.n, W / 2, 1240);
+    if (P && P.pseudo) {
+      x.fillStyle = 'rgba(184,224,247,.78)'; x.font = '600 42px system-ui,sans-serif';
+      x.fillText('@' + P.pseudo, W / 2, 1340);
+    }
+    x.fillStyle = 'rgba(255,255,255,.48)'; x.font = '600 36px system-ui,"Segoe UI Emoji",sans-serif';
+    x.fillText('My Little Penguin 🐧', W / 2, 1760);
     const dataUrl = c.toDataURL('image/png');
     try { c.toBlob((b) => resolve({ blob: b || null, dataUrl }), 'image/png'); }
     catch (e) { resolve({ blob: null, dataUrl }); }
   });
 }
 
-async function shareStreakCard(){
+async function openSharePreview(){
   const d = calcD();
   toast('Préparation de l\'image… 🐧');
-  const { blob, dataUrl } = await buildStreakImageBlob(d);
+  SHARE_CARD = await buildStreakImageBlob(d);
+  const img = document.getElementById('share-preview-img');
+  if (img) img.src = SHARE_CARD.dataUrl || '';
+  document.getElementById('share-preview-modal').classList.remove('hidden');
+}
+window.shareStreakCard = openSharePreview;
+
+function closeSharePreview(){
+  const mo = document.getElementById('share-preview-modal');
+  if (mo) mo.classList.add('hidden');
+}
+window.closeSharePreview = closeSharePreview;
+
+async function confirmShareCard(){
+  if (!SHARE_CARD.dataUrl) await openSharePreview();
+  const d = calcD();
   const text = `${d} jour${d > 1 ? 's' : ''} sans chasse sur ma banquise 🐧 #MyLittlePenguin`;
   const title = 'Ma banquise 🐧';
   try {
-    if (blob && navigator.canShare) {
-      const file = new File([blob], 'ma-banquise.png', { type: 'image/png' });
+    if (SHARE_CARD.blob && navigator.canShare) {
+      const file = new File([SHARE_CARD.blob], 'ma-banquise.png', { type: 'image/png' });
       if (navigator.canShare({ files: [file] }) && navigator.share) {
         try { await navigator.share({ title, text, files: [file] }); return; }
         catch (e) { if (e && e.name === 'AbortError') return; }
@@ -2055,11 +2116,16 @@ async function shareStreakCard(){
       try { await navigator.share({ title, text }); } catch (e) { if (e && e.name === 'AbortError') return; }
     }
   } catch (e) {}
-  // Repli universel : on enregistre l'image (Snapchat/Insta/WhatsApp depuis la galerie).
-  downloadDataUrl(dataUrl, 'ma-banquise.png');
+  saveShareCard();
+}
+window.confirmShareCard = confirmShareCard;
+
+function saveShareCard(){
+  if (!SHARE_CARD.dataUrl) { toast('Image pas encore prête'); return; }
+  downloadDataUrl(SHARE_CARD.dataUrl, 'ma-banquise.png');
   toast('Image enregistrée — partage-la où tu veux 🐧');
 }
-window.shareStreakCard = shareStreakCard;
+window.saveShareCard = saveShareCard;
 
 const MILESTONES = [7, 30, 100, 365];
 function msKey(){ return 'mlp_ms_' + (myId() || 'anon'); }
@@ -2432,7 +2498,7 @@ function bindAll() {
   document.getElementById('date-in').oninput     = upPrev;
   document.getElementById('days-in').oninput     = upPrev;
   document.getElementById('kill-btn').onclick    = () => { showKillChoiceStep(); document.getElementById('kill-modal').classList.remove('hidden'); };
-  document.getElementById('share-btn').onclick = shareStreakCard;
+  document.getElementById('share-btn').onclick = openSharePreview;
   document.getElementById('questions-btn').onclick = openQuestions;
   document.getElementById('repeuple-btn').onclick = openRepeuple;
   document.getElementById('rep-date-in').oninput  = repUpPrev;
