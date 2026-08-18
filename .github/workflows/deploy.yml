@@ -1,0 +1,57 @@
+name: Deploy PWA to GitHub Pages
+
+# Déploie l'app sur GitHub Pages et réécrit CACHE_VERSION du service worker
+# avec l'empreinte du commit, pour forcer le rafraîchissement du cache (iOS/Android)
+# à chaque déploiement — fini les versions périmées coincées en cache.
+#
+# ⚙️ Une seule action manuelle requise (une fois) :
+#    Repo → Settings → Pages → "Build and deployment" → Source = "GitHub Actions".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Assemble site (assets publics uniquement)
+        run: |
+          set -e
+          mkdir -p _site
+          # On ne publie QUE les fichiers nécessaires à l'app.
+          # (CLE VAPID.txt, supabase/, .github/, tools/… restent privés, non servis.)
+          cp index.html manifest.json sw.js _site/
+          cp -r icons _site/icons
+          # Empreinte du commit -> CACHE_VERSION du service worker.
+          SHA="${GITHUB_SHA::7}"
+          sed -i "s/const CACHE_VERSION = '[^']*';/const CACHE_VERSION = 'mlp-${SHA}';/" _site/sw.js
+          echo "CACHE_VERSION => mlp-${SHA}"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

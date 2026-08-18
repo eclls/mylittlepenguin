@@ -9,10 +9,12 @@
  *  - Supabase (API/Storage)       : réseau uniquement (jamais en cache).
  *  - Tuiles de carte (OSM/MapTiler): réseau uniquement (évite un cache énorme).
  *
- * IMPORTANT : pense à incrémenter CACHE_VERSION à chaque déploiement notable
- * pour forcer le rafraîchissement des assets en cache.
+ * NOTE : la valeur de CACHE_VERSION est réécrite automatiquement à chaque
+ * déploiement par le workflow .github/workflows/deploy.yml (empreinte du commit),
+ * ce qui force le rafraîchissement du cache sur iOS/Android sans intervention.
+ * La valeur ci-dessous ne sert que de repli en dev / déploiement manuel.
  */
-const CACHE_VERSION = 'mlp-v3';
+const CACHE_VERSION = 'mlp-v4';
 const PRECACHE = [
   './',
   './index.html',

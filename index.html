@@ -978,6 +978,7 @@ button{cursor:pointer}
           </div>
         </div>
       </div>
+      <div class="psec"><button class="logout-btn" id="share-btn" style="color:#7ff0dd;border-color:rgba(78,205,196,.35);background:rgba(78,205,196,.08)"><span>📤</span> Partager ma banquise</button></div>
       <div class="psec"><button class="logout-btn" id="questions-btn" style="color:#c9b8ff;border-color:rgba(139,120,255,.35);background:rgba(139,120,255,.08)"><span>💬</span> Questions &amp; suggestions<span class="q-btn-badge hidden" id="q-btn-badge"></span></button></div>
       <div class="psec"><button class="logout-btn" id="repeuple-btn" style="color:#7ff0dd;border-color:rgba(78,205,196,.35);background:rgba(78,205,196,.08)"><span>🐧</span> Repeupler la banquise</button></div>
       <div class="psec"><button class="logout-btn" id="logout-btn"><span>❄️</span> Quitter la banquise</button></div>
@@ -1281,6 +1282,18 @@ button{cursor:pointer}
     <div class="prof-lvl-list" id="prof-levels-list"></div>
     <p class="prof-exp-note">Dans <strong>Expéditions</strong> (frise), le pingouin en bas reflète ton <strong>grade</strong> : il évolue visuellement quand tu montes de niveau. Le chiffre sur son panneau indique les jours depuis ta dernière expédition.</p>
     <div class="mb" style="justify-content:center"><button type="button" class="mca" onclick="closeProfLevelsModal()">OK</button></div>
+  </div>
+</div>
+
+<div class="mo hidden" id="milestone-modal" onclick="if(event.target===this)closeMilestone()">
+  <div class="mc-card" onclick="event.stopPropagation()">
+    <div id="ms-emoji" style="font-size:3.4rem">🎉</div>
+    <h3 id="ms-title">Bravo !</h3>
+    <p id="ms-text"></p>
+    <div class="mb" style="flex-direction:column;width:100%">
+      <button type="button" class="mca" onclick="shareStreakCard()">📤 Partager ma banquise</button>
+      <button type="button" class="mcn" style="width:100%" onclick="closeMilestone()">Continuer 🐧</button>
+    </div>
   </div>
 </div>
 
@@ -1735,6 +1748,20 @@ async function buildNotifHistory(){
       items.push({ key, icon: '👥', title: 'Demande d\'ami', body: who + ' veut rejoindre ton aventure !', ts: f.created_at });
     }
   });
+  // 3) Réponses publiées à MES questions/suggestions
+  let qans = [];
+  try {
+    const r = await SB.from('questions').select('id,question,answer,answered_at,published,asker_id')
+      .eq('asker_id', myId()).eq('published', true).order('answered_at', { ascending: false }).limit(100);
+    qans = r.data || [];
+  } catch (e) {}
+  qans.forEach(q => {
+    if (!q.answer) return;
+    const key = 'qans_' + q.id;
+    if (deleted.has(key)) return;
+    const qShort = (q.question || '').length > 60 ? (q.question.slice(0, 60) + '…') : (q.question || '');
+    items.push({ key, icon: '💡', title: 'Ta question a une réponse !', body: '« ' + qShort +' » → ' + q.answer, ts: q.answered_at });
+  });
   items.sort((a, b) => new Date(b.ts || 0) - new Date(a.ts || 0));
   return items;
 }
@@ -1856,6 +1883,214 @@ function clearAllNotifs(){
   toast('Notifications effacées');
 }
 window.clearAllNotifs = clearAllNotifs;
+
+// ════════════════════════════════════════════════
+//  ACCESSIBILITÉ (Échap, piège de focus, aria-labels)
+// ════════════════════════════════════════════════
+let A11Y_DONE = false;
+function initA11y(){
+  if (A11Y_DONE) return; A11Y_DONE = true;
+  document.querySelectorAll('.panel-back').forEach(b => { if (!b.getAttribute('aria-label')) b.setAttribute('aria-label', 'Retour'); });
+  document.querySelectorAll('.conv-send-btn').forEach(b => { if (!b.getAttribute('aria-label')) b.setAttribute('aria-label', 'Envoyer le message'); });
+  const killB = document.getElementById('kill-btn'); if (killB && !killB.getAttribute('aria-label')) killB.setAttribute('aria-label', 'Tuer la banquise (réinitialiser le compteur)');
+  document.querySelectorAll('.mo > .mc-card, .mo > .prof-hint-card').forEach(el => { el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modals = [...document.querySelectorAll('.mo:not(.hidden)')];
+      if (modals.length) { const top = modals[modals.length - 1]; top.classList.add('hidden'); if (top.id === 'kill-modal') showKillChoiceStep(); return; }
+      const panel = document.querySelector('.panel.open'); if (panel) { closePanel(panel.id); return; }
+      const avp = document.getElementById('av-picker'); if (avp && !avp.classList.contains('hidden')) { avp.classList.add('hidden'); return; }
+    } else if (e.key === 'Tab') {
+      const modals = [...document.querySelectorAll('.mo:not(.hidden)')];
+      if (!modals.length) return;
+      const modal = modals[modals.length - 1];
+      const foc = [...modal.querySelectorAll('button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])')].filter(el => !el.disabled && el.offsetParent !== null);
+      if (!foc.length) return;
+      const first = foc[0], last = foc[foc.length - 1];
+      if (!modal.contains(document.activeElement)) { e.preventDefault(); first.focus(); return; }
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+}
+
+// ════════════════════════════════════════════════
+//  FILE D'ATTENTE HORS-LIGNE (rejoue les envois perdus)
+// ════════════════════════════════════════════════
+function getOfflineQ(){ try { return JSON.parse(localStorage.getItem('mlp_offline_q') || '[]'); } catch (e) { return []; } }
+function saveOfflineQ(q){ try { localStorage.setItem('mlp_offline_q', JSON.stringify(q)); } catch (e) {} }
+function enqueueOffline(action){ const q = getOfflineQ(); q.push({ ...action, _id: genUUID(), _ts: Date.now() }); saveOfflineQ(q); }
+
+// Essaie l'insert tout de suite ; si hors-ligne ou échec, met en file pour rejouer plus tard.
+async function queueOrInsert(type, payload){
+  const table = type === 'message' ? 'messages' : 'questions';
+  if (SB && (typeof navigator === 'undefined' || navigator.onLine !== false)) {
+    try { const { error } = await SB.from(table).insert(payload); if (!error) return true; } catch (e) {}
+  }
+  enqueueOffline({ type, payload });
+  return false;
+}
+
+let OFFLINE_FLUSHING = false;
+async function flushOfflineQ(){
+  if (OFFLINE_FLUSHING || !SB) return;
+  let q = getOfflineQ(); if (!q.length) return;
+  OFFLINE_FLUSHING = true;
+  const remaining = [];
+  for (const item of q) {
+    try {
+      const table = item.type === 'message' ? 'messages' : (item.type === 'question' ? 'questions' : null);
+      if (!table) continue; // type inconnu → on abandonne l'item
+      const { error } = await SB.from(table).insert(item.payload);
+      if (error) throw error;
+    } catch (e) { remaining.push(item); }
+  }
+  saveOfflineQ(remaining);
+  OFFLINE_FLUSHING = false;
+  if (remaining.length < q.length) {
+    try { refreshNotifHist(); } catch (e) {}
+    try {
+      const cp = document.getElementById('conv-panel');
+      if (cp && cp.classList.contains('open') && CONV_FID) loadConvMessages(CONV_FID, { silent: true });
+    } catch (e) {}
+  }
+}
+window.flushOfflineQ = flushOfflineQ;
+
+let OFFLINE_INIT = false;
+function initOfflineSync(){
+  if (OFFLINE_INIT) return; OFFLINE_INIT = true;
+  window.addEventListener('online', () => { toast('De retour en ligne 🐧'); try { syncProfile(); } catch (e) {} flushOfflineQ(); });
+  flushOfflineQ();
+}
+
+// ════════════════════════════════════════════════
+//  COMPRESSION D'IMAGE (avant upload)
+// ════════════════════════════════════════════════
+function compressImage(file, maxDim, quality){
+  maxDim = maxDim || 1280; quality = quality || 0.82;
+  return new Promise((resolve) => {
+    try {
+      if (!file || !file.type || file.type.indexOf('image/') !== 0) { resolve({ blob: file, dataUrl: null }); return; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            let w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+            if (!w || !h) { resolve({ blob: file, dataUrl: reader.result }); return; }
+            const scale = Math.min(1, maxDim / Math.max(w, h));
+            const cw = Math.max(1, Math.round(w * scale)), ch = Math.max(1, Math.round(h * scale));
+            const canvas = document.createElement('canvas'); canvas.width = cw; canvas.height = ch;
+            const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, cw, ch);
+            const dataUrl = canvas.toDataURL('image/jpeg', quality);
+            canvas.toBlob((blob) => {
+              if (blob && blob.size < file.size) resolve({ blob, dataUrl });
+              else resolve({ blob: blob || file, dataUrl });
+            }, 'image/jpeg', quality);
+          } catch (e) { resolve({ blob: file, dataUrl: reader.result }); }
+        };
+        img.onerror = () => resolve({ blob: file, dataUrl: null });
+        img.src = reader.result;
+      };
+      reader.onerror = () => resolve({ blob: file, dataUrl: null });
+      reader.readAsDataURL(file);
+    } catch (e) { resolve({ blob: file, dataUrl: null }); }
+  });
+}
+
+// ════════════════════════════════════════════════
+//  CARTE DE PARTAGE + PALIERS (milestones)
+// ════════════════════════════════════════════════
+function downloadDataUrl(dataUrl, filename){
+  try { const a = document.createElement('a'); a.href = dataUrl; a.download = filename || 'image.png'; document.body.appendChild(a); a.click(); a.remove(); } catch (e) {}
+}
+
+function buildStreakImageBlob(d){
+  return new Promise((resolve) => {
+    const S = 1080;
+    const c = document.createElement('canvas'); c.width = S; c.height = S;
+    const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, S);
+    g.addColorStop(0, '#0a1628'); g.addColorStop(0.55, '#0d2847'); g.addColorStop(1, '#07131f');
+    x.fillStyle = g; x.fillRect(0, 0, S, S);
+    const rg = x.createRadialGradient(S / 2, S * 0.30, 60, S / 2, S * 0.30, S * 0.62);
+    rg.addColorStop(0, 'rgba(78,205,196,.32)'); rg.addColorStop(1, 'rgba(78,205,196,0)');
+    x.fillStyle = rg; x.fillRect(0, 0, S, S);
+    x.textAlign = 'center';
+    x.fillStyle = 'rgba(184,224,247,.85)'; x.font = '600 42px system-ui,Segoe UI,Roboto,sans-serif';
+    x.fillText('MA BANQUISE', S / 2, 175);
+    x.font = '190px system-ui,"Apple Color Emoji","Segoe UI Emoji"'; x.fillText('🐧', S / 2, 420);
+    const lv = lvl(d);
+    x.fillStyle = '#ffffff'; x.font = '800 300px system-ui,Segoe UI,Roboto,sans-serif';
+    x.fillText(String(d), S / 2, 705);
+    x.fillStyle = '#7ff0dd'; x.font = '700 58px system-ui,Segoe UI,Roboto,sans-serif';
+    x.fillText(d > 1 ? 'JOURS SANS CHASSE' : 'JOUR SANS CHASSE', S / 2, 785);
+    x.fillStyle = 'rgba(255,255,255,.92)'; x.font = '600 48px system-ui,"Segoe UI Emoji",sans-serif';
+    x.fillText(lv.i + '  ' + lv.n, S / 2, 885);
+    if (P && P.pseudo) { x.fillStyle = 'rgba(184,224,247,.75)'; x.font = '600 42px system-ui,sans-serif'; x.fillText('@' + P.pseudo, S / 2, 958); }
+    x.fillStyle = 'rgba(255,255,255,.5)'; x.font = '600 36px system-ui,"Segoe UI Emoji",sans-serif';
+    x.fillText('My Little Penguin 🐧', S / 2, 1032);
+    const dataUrl = c.toDataURL('image/png');
+    try { c.toBlob((b) => resolve({ blob: b || null, dataUrl }), 'image/png'); }
+    catch (e) { resolve({ blob: null, dataUrl }); }
+  });
+}
+
+async function shareStreakCard(){
+  const d = calcD();
+  toast('Préparation de l\'image… 🐧');
+  const { blob, dataUrl } = await buildStreakImageBlob(d);
+  const text = `${d} jour${d > 1 ? 's' : ''} sans chasse sur ma banquise 🐧 #MyLittlePenguin`;
+  const title = 'Ma banquise 🐧';
+  try {
+    if (blob && navigator.canShare) {
+      const file = new File([blob], 'ma-banquise.png', { type: 'image/png' });
+      if (navigator.canShare({ files: [file] }) && navigator.share) {
+        try { await navigator.share({ title, text, files: [file] }); return; }
+        catch (e) { if (e && e.name === 'AbortError') return; }
+      }
+    }
+    if (navigator.share) {
+      try { await navigator.share({ title, text }); } catch (e) { if (e && e.name === 'AbortError') return; }
+    }
+  } catch (e) {}
+  // Repli universel : on enregistre l'image (Snapchat/Insta/WhatsApp depuis la galerie).
+  downloadDataUrl(dataUrl, 'ma-banquise.png');
+  toast('Image enregistrée — partage-la où tu veux 🐧');
+}
+window.shareStreakCard = shareStreakCard;
+
+const MILESTONES = [7, 30, 100, 365];
+function msKey(){ return 'mlp_ms_' + (myId() || 'anon'); }
+function resetMilestones(){ try { localStorage.removeItem(msKey()); } catch (e) {} }
+function checkMilestone(d){
+  if (!P) return;
+  let done;
+  try { const raw = localStorage.getItem(msKey()); done = raw === null ? null : new Set(JSON.parse(raw)); }
+  catch (e) { done = new Set(); }
+  if (done === null) {
+    // Première fois (ou après un kill/repeuplement) : on considère les paliers déjà dépassés comme "déjà fêtés".
+    done = new Set(MILESTONES.filter(m => d >= m));
+    try { localStorage.setItem(msKey(), JSON.stringify([...done])); } catch (e) {}
+    return;
+  }
+  const hit = MILESTONES.filter(m => d >= m && !done.has(m));
+  if (!hit.length) return;
+  hit.forEach(m => done.add(m));
+  try { localStorage.setItem(msKey(), JSON.stringify([...done])); } catch (e) {}
+  showMilestone(Math.max(...hit), d);
+}
+function showMilestone(m, d){
+  const titles = { 7: 'Une semaine ! 🎉', 30: 'Un mois entier ! 🏔️', 100: '100 jours ! 🏆', 365: 'Un an ! 👑❄️' };
+  const emo = m >= 365 ? '👑' : (m >= 100 ? '🏆' : (m >= 30 ? '🏔️' : '🎉'));
+  const em = document.getElementById('ms-emoji'); if (em) em.textContent = emo;
+  const ti = document.getElementById('ms-title'); if (ti) ti.textContent = titles[m] || 'Bravo !';
+  const tx = document.getElementById('ms-text'); if (tx) tx.innerHTML = `<strong>${d} jours</strong> sans chasse sur ta banquise.<br/>Continue comme ça, petit pingouin !`;
+  const mo = document.getElementById('milestone-modal'); if (mo) mo.classList.remove('hidden');
+}
+function closeMilestone(){ const mo = document.getElementById('milestone-modal'); if (mo) mo.classList.add('hidden'); }
+window.closeMilestone = closeMilestone;
 
 // ════════════════════════════════════════════════
 //  INIT
@@ -2133,6 +2368,8 @@ function enterApp() {
   initNotifPolling();
   refreshPasswordBanner();
   void renderLeaguesBar();
+  initA11y();
+  initOfflineSync();
   /** Scores : sans cet appel, seul le localStorage (mlp_scores) compte ; le serveur n’est lu qu’après login MDP. */
   void pullScoresFromServer();
 }
@@ -2195,6 +2432,7 @@ function bindAll() {
   document.getElementById('date-in').oninput     = upPrev;
   document.getElementById('days-in').oninput     = upPrev;
   document.getElementById('kill-btn').onclick    = () => { showKillChoiceStep(); document.getElementById('kill-modal').classList.remove('hidden'); };
+  document.getElementById('share-btn').onclick = shareStreakCard;
   document.getElementById('questions-btn').onclick = openQuestions;
   document.getElementById('repeuple-btn').onclick = openRepeuple;
   document.getElementById('rep-date-in').oninput  = repUpPrev;
@@ -2514,6 +2752,7 @@ function updateB(){
   const d=calcD(); renderAL(d); renderACD(d);
   document.getElementById('days-num').textContent=d; document.getElementById('streak-num').textContent=d;
   refreshExplWaitPenguinVisual();
+  try{ checkMilestone(d); }catch(e){}
 }
 function renderAnimalsInto(layerEl, days){
   if(!layerEl)return;
@@ -2592,12 +2831,13 @@ window.doKillAntidate=doKillAntidate;
 async function doKill(killDate){
   closeKill(); const today=(typeof killDate==='string'&&killDate)?killDate:new Date().toISOString().slice(0,10);
   P.last_kill_date=today; P.kills=(P.kills||0)+1; localStorage.setItem('mlp_v2',JSON.stringify(P));
+  resetMilestones();
   if(SB&&P.alert_friends){
     try{
       const{data:fs}=await SB.from('friendships').select('user_a,user_b').or(`user_a.eq.${myId()},user_b.eq.${myId()}`).eq('status','accepted');
       if(fs){
         const friendIds=fs.map(f=>f.user_a===myId()?f.user_b:f.user_a);
-        for(const fid of friendIds){ await SB.from('messages').insert({from_id:myId(),to_id:fid,text:`☠️ ${P.pseudo} vient de tuer sa banquise ! Courage à demain…`,animal:null}); }
+        for(const fid of friendIds){ await queueOrInsert('message',{from_id:myId(),to_id:fid,text:`☠️ ${P.pseudo} vient de tuer sa banquise ! Courage à demain…`,animal:null}); }
       }
     }catch(e){}
   }
@@ -2673,6 +2913,7 @@ async function doRepeuple(){
   const refStr=ref.toISOString().slice(0,10);
   P.last_kill_date=refStr;
   localStorage.setItem('mlp_v2',JSON.stringify(P));
+  resetMilestones();
   await syncProfile();
   closeRepeuple();
   const l=document.getElementById('al'); if(l){l.style.transition='opacity .6s'; l.style.opacity='0'; setTimeout(()=>{updateB();l.style.opacity='1';},660);} else updateB();
@@ -2753,15 +2994,13 @@ async function submitQuestion(){
   const inp=document.getElementById('q-input');
   const t=(inp.value||'').trim();
   if(t.length<3){ toast('Écris ta question ou ta suggestion 🐧'); return; }
-  if(!SB){ toast('Hors ligne, réessaie plus tard'); return; }
-  const{error}=await SB.from('questions').insert({
+  const ok=await queueOrInsert('question',{
     asker_id: myId()||null,
     asker_pseudo: (P&&P.pseudo)||null,
     question: t
   });
-  if(error){ toast('Erreur à l\'envoi'); return; }
   inp.value='';
-  toast('Envoyé, merci ! 🐧');
+  toast(ok?'Envoyé, merci ! 🐧':'Hors ligne — envoi en file, il partira au retour du réseau 🐧');
   loadQuestions();
 }
 window.submitQuestion=submitQuestion;
@@ -2901,16 +3140,17 @@ async function confirmAV(){
   if(avUsePhoto){
     if(avPhotoFile){
       let url=null;
+      btn.textContent='Envoi…';
+      const comp=await compressImage(avPhotoFile,512,0.85);
+      const upBlob=comp.blob||avPhotoFile;
       if(SB){
         try{
-          const ext=(avPhotoFile.type&&avPhotoFile.type.indexOf('png')!==-1)?'png':'jpg';
-          const fname=`avatar_${myId()}_${Date.now()}.${ext}`;
-          btn.textContent='Envoi…';
-          const{error:upErr}=await SB.storage.from('expedition-photos').upload(fname,avPhotoFile,{contentType:avPhotoFile.type||'image/jpeg',upsert:true});
+          const fname=`avatar_${myId()}_${Date.now()}.jpg`;
+          const{error:upErr}=await SB.storage.from('expedition-photos').upload(fname,upBlob,{contentType:'image/jpeg',upsert:true});
           if(!upErr){ const{data:urlData}=SB.storage.from('expedition-photos').getPublicUrl(fname); url=urlData?.publicUrl||null; }
         }catch(e){ console.warn('Avatar upload:',e.message); }
       }
-      if(!url) url=avPhotoB64; // fallback local si upload impossible
+      if(!url) url=comp.dataUrl||avPhotoB64; // fallback local si upload impossible
       P.avatar_url=url;
     }
     // sinon : on garde la photo existante (P.avatar_url inchangé)
@@ -3525,19 +3765,20 @@ async function loadConvMessages(fid, opts){
 
 async function sendConvMsg(){
   const inp=document.getElementById('conv-msg-input'); const t=inp.value.trim(); if(!t)return;
-  if(!SB||!CONV_FID){toast('Non connecté');return;}
-  const{error}=await SB.from('messages').insert({from_id:myId(),to_id:CONV_FID,text:t});
-  if(error){toast('Erreur envoi');return;}
-  inp.value=''; inp.style.height='auto'; await loadConvMessages(CONV_FID);
+  if(!CONV_FID){toast('Non connecté');return;}
+  inp.value=''; inp.style.height='auto';
+  const ok=await queueOrInsert('message',{from_id:myId(),to_id:CONV_FID,text:t});
+  if(!ok) toast('Hors ligne — message en file, il partira au retour du réseau 🐧');
+  await loadConvMessages(CONV_FID);
 }
 window.sendConvMsg=sendConvMsg;
 
 async function sendGift(animal){
-  if(!SB||!CONV_FID){toast('Ouvre une conversation d\'abord !');return;}
-  const{error}=await SB.from('messages').insert({from_id:myId(),to_id:CONV_FID,animal});
-  if(error){toast('Erreur');return;}
+  if(!CONV_FID){toast('Ouvre une conversation d\'abord !');return;}
+  const ok=await queueOrInsert('message',{from_id:myId(),to_id:CONV_FID,animal});
   const labels={mouette:'🐦 Mouette',pingouin:'🐧 Pingouin',orque:'🐋 Orque',requin:'🦈 Requin',iceberg:'🧊 Iceberg'};
-  toast(labels[animal]+' envoyé·e !'); await loadConvMessages(CONV_FID);
+  toast(ok?(labels[animal]+' envoyé·e !'):(labels[animal]+' en file (hors ligne) 🐧'));
+  await loadConvMessages(CONV_FID);
 }
 window.sendGift=sendGift;
 
@@ -3967,17 +4208,22 @@ async function saveExpedition(){
   if(prevImg) photoUrl=prevImg;
   if(expPhotoRemoved) photoUrl=null;
 
-  if(selectedPhotoFile&&SB){
-    try{
-      const fname=`${myId()}_${Date.now()}.jpg`;
-      const{error:upErr}=await SB.storage.from('expedition-photos').upload(fname,selectedPhotoFile,{contentType:'image/jpeg',upsert:true});
-      if(!upErr){
-        const{data:urlData}=SB.storage.from('expedition-photos').getPublicUrl(fname);
-        photoUrl=urlData?.publicUrl||null;
-      }
-    }catch(e){console.warn('Photo upload:',e.message);}
+  let expCompUrl=null;
+  if(selectedPhotoFile){
+    const comp=await compressImage(selectedPhotoFile,1280,0.82);
+    expCompUrl=comp.dataUrl;
+    if(SB){
+      try{
+        const fname=`${myId()}_${Date.now()}.jpg`;
+        const{error:upErr}=await SB.storage.from('expedition-photos').upload(fname,comp.blob||selectedPhotoFile,{contentType:'image/jpeg',upsert:true});
+        if(!upErr){
+          const{data:urlData}=SB.storage.from('expedition-photos').getPublicUrl(fname);
+          photoUrl=urlData?.publicUrl||null;
+        }
+      }catch(e){console.warn('Photo upload:',e.message);}
+    }
   }
-  if(!photoUrl&&selectedPhotoB64) photoUrl=selectedPhotoB64;
+  if(!photoUrl&&(expCompUrl||selectedPhotoB64)) photoUrl=expCompUrl||selectedPhotoB64;
 
   const placeEl=document.getElementById('exp-place-in');
   const placeTxt=placeEl?placeEl.value.trim():'';
