@@ -175,11 +175,16 @@ button{cursor:pointer}
 .nh-list{max-height:min(58vh,440px);overflow-y:auto;margin:0;padding:2px;display:flex;flex-direction:column;gap:9px;width:100%}
 .nh-item{display:flex;align-items:center;gap:11px;padding:11px 12px;background:rgba(10,22,40,.55);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-md);text-align:left}
 .nh-item.new{border-color:rgba(139,120,255,.4);background:rgba(139,120,255,.09)}
+.nh-item.horn{align-items:flex-start;border-color:rgba(232,184,74,.38);background:rgba(232,184,74,.07)}
+.nh-item.horn.new{border-color:rgba(127,240,221,.5);background:rgba(127,240,221,.08)}
 .nh-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#8b78ff;margin-right:6px;vertical-align:middle;box-shadow:0 0 6px rgba(139,120,255,.6)}
 .nh-ic{font-size:1.4rem;flex-shrink:0;line-height:1.2}
+.nh-ic-svg{width:36px;height:36px;display:block;filter:drop-shadow(0 1px 3px rgba(0,0,0,.35))}
 .nh-bd{flex:1;min-width:0}
 .nh-tt{font-weight:800;color:#fff;font-size:.86rem}
 .nh-ms{color:#cfe6f5;font-size:.8rem;font-weight:600;margin-top:2px;word-break:break-word;line-height:1.35}
+.nh-item.horn .nh-ms{white-space:pre-wrap;font-size:.78rem;line-height:1.45;margin-top:6px}
+.nh-item.horn .nh-del{align-self:flex-start;margin-top:2px}
 .nh-tm{color:rgba(255,255,255,.4);font-size:.68rem;font-weight:600;margin-top:3px}
 .nh-del{flex-shrink:0;padding:7px 11px;border-radius:var(--r-md);font-size:.74rem;font-weight:800;background:rgba(239,68,68,.14);color:#f87171;border:1px solid rgba(239,68,68,.28)}
 .nh-del:active{transform:scale(.94)}
@@ -414,6 +419,16 @@ button{cursor:pointer}
 .q-abtn.del{background:rgba(239,68,68,.14);color:#f87171;border:1px solid rgba(239,68,68,.28)}
 .q-empty{text-align:center;color:rgba(255,255,255,.35);padding:22px 16px;font-size:.85rem;font-weight:600;line-height:1.5}
 .q-btn-badge{background:#8b78ff;color:#fff;font-size:.68rem;font-weight:800;border-radius:99px;padding:1px 7px;margin-left:7px;line-height:1.5}
+.horn-box{background:rgba(232,184,74,.08);border:1.5px solid rgba(232,184,74,.32);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.horn-help{margin:0;font-size:.74rem;color:rgba(255,255,255,.62);font-weight:600;line-height:1.45}
+.horn-title-inp{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.2);border-radius:14px;padding:11px 14px;color:#fff;font-size:.9rem;font-weight:700;font-family:inherit;width:100%}
+.horn-title-inp::placeholder{color:rgba(255,255,255,.4);font-weight:600}
+.horn-body{min-height:180px;font-size:.84rem;font-weight:600}
+.horn-sent{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.horn-sent-item{display:flex;align-items:center;gap:10px;padding:9px 11px;background:rgba(10,22,40,.45);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-md);font-size:.8rem}
+.horn-sent-item .hs-t{flex:1;min-width:0;font-weight:800;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.horn-sent-item .hs-d{color:rgba(255,255,255,.4);font-weight:600;font-size:.7rem;white-space:nowrap}
+.horn-sent-item .nh-ic-svg{width:28px;height:28px}
 
 /* ══ PAGE PROFIL ══ */
 #page-profil{background:var(--night)}
@@ -1013,6 +1028,17 @@ button{cursor:pointer}
       <div class="q-ask-note">Si elle est publiée, ta contribution apparaîtra ici de façon anonyme.</div>
     </div>
     <div id="q-admin-sec" class="hidden">
+      <div class="horn-box">
+        <div class="q-sec-title" style="color:#f3d06a">Corne de brume</div>
+        <p class="horn-help">Un mot pour toute la colonie : ça arrive dans <strong>chaque boîte aux lettres</strong>, avec la pastille pingouin-corne (pas le crâne, pas l’enveloppe).</p>
+        <input type="text" class="horn-title-inp" id="horn-title" maxlength="80" placeholder="Objet — ex. La corne de brume a sonné"/>
+        <textarea class="q-textarea horn-body" id="horn-body" rows="10" maxlength="2500" placeholder="Le message…"></textarea>
+        <div class="q-actions">
+          <button type="button" class="q-abtn save" onclick="fillHornTemplate()">📝 Modèle d’actu</button>
+          <button type="button" class="q-abtn pub" onclick="sendHornAnnouncement()">Souffler dans la corne</button>
+        </div>
+        <div class="horn-sent" id="horn-sent-list"></div>
+      </div>
       <div class="q-sec-title">📥 En attente <span id="q-pending-count"></span></div>
       <div id="q-pending-list" style="display:flex;flex-direction:column;gap:12px;margin-top:8px"></div>
     </div>
@@ -1777,6 +1803,23 @@ async function buildNotifHistory(){
     const qShort = (q.question || '').length > 60 ? (q.question.slice(0, 60) + '…') : (q.question || '');
     items.push({ key, icon: '💡', title: 'Ta question a une réponse !', body: '« ' + qShort +' » → ' + q.answer, ts: q.answered_at });
   });
+  // 4) Corne de brume (messages du modérateur)
+  try {
+    const r = await SB.from('announcements').select('id,title,body,created_at')
+      .order('created_at', { ascending: false }).limit(50);
+    (r.data || []).forEach(a => {
+      const key = 'horn_' + a.id;
+      if (deleted.has(key)) return;
+      items.push({
+        key,
+        kind: 'horn',
+        icon: hornIconSVG(),
+        title: a.title || 'La corne de brume a sonné',
+        body: a.body || '',
+        ts: a.created_at
+      });
+    });
+  } catch (e) {}
   items.sort((a, b) => new Date(b.ts || 0) - new Date(a.ts || 0));
   return items;
 }
@@ -1833,6 +1876,24 @@ function markAllNotifsSeen(){
   updateNotifUI();
 }
 
+function hornIconSVG(){
+  return '<svg class="nh-ic-svg" viewBox="0 0 40 40" width="36" height="36" aria-hidden="true">'
+    + '<circle cx="20" cy="20" r="18.4" fill="#14283c" stroke="#7ff0dd" stroke-width="1.7"/>'
+    + '<ellipse cx="13.2" cy="24.6" rx="6.4" ry="8" fill="#1a1a28"/>'
+    + '<ellipse cx="13.2" cy="26" rx="3.5" ry="5" fill="#f4efe6"/>'
+    + '<circle cx="13.2" cy="16.6" r="5.1" fill="#1a1a28"/>'
+    + '<circle cx="13.2" cy="17.3" r="3.15" fill="#f4efe6"/>'
+    + '<circle cx="11.7" cy="16.5" r="1.15" fill="#0a0a18"/>'
+    + '<circle cx="14.8" cy="16.5" r="1.15" fill="#0a0a18"/>'
+    + '<path d="M12 18.7 L13.3 20.6 L14.6 18.7 Z" fill="#e07800"/>'
+    + '<rect x="16.4" y="18.5" width="3.4" height="3.5" rx=".8" fill="#c4922a"/>'
+    + '<path d="M18 19.2 L27.6 15.2 L27.6 24.8 Z" fill="#e8b84a"/>'
+    + '<ellipse cx="28.2" cy="20" rx="2.3" ry="5.1" fill="#f3d06a" stroke="#c4922a" stroke-width=".8"/>'
+    + '<path d="M32 14.2 Q36.2 20 32 25.8" fill="none" stroke="#7ff0dd" stroke-width="1.45" stroke-linecap="round"/>'
+    + '<path d="M34.4 11.8 Q39.8 20 34.4 28.2" fill="none" stroke="#7ff0dd" stroke-width="1.15" stroke-linecap="round" opacity=".7"/>'
+    + '</svg>';
+}
+
 function renderNotifHist(highlight){
   const hl = highlight || NOTIF_UNREAD;
   const list = document.getElementById('nh-list');
@@ -1847,10 +1908,12 @@ function renderNotifHist(highlight){
   list.innerHTML = NOTIF_HIST.map(n => {
     const when = n.ts ? ('il y a ' + tAgo(new Date(n.ts))) : '';
     const isNew = hl.has(n.key);
-    return '<div class="nh-item' + (isNew ? ' new' : '') + '">'
+    const isHorn = n.kind === 'horn';
+    const body = n.body ? '<div class="nh-ms">' + (isHorn ? escHTML(n.body).replace(/\n/g, '<br>') : escHTML(n.body)) + '</div>' : '';
+    return '<div class="nh-item' + (isNew ? ' new' : '') + (isHorn ? ' horn' : '') + '">'
       + '<div class="nh-ic">' + n.icon + '</div>'
       + '<div class="nh-bd"><div class="nh-tt">' + (isNew ? '<span class="nh-dot"></span>' : '') + escHTML(n.title) + '</div>'
-      + (n.body ? '<div class="nh-ms">' + escHTML(n.body) + '</div>' : '')
+      + body
       + (when ? '<div class="nh-tm">' + when + '</div>' : '')
       + '</div>'
       + '<button class="nh-del" onclick="deleteNotif(\'' + n.key + '\')">Supprimer</button>'
@@ -3112,6 +3175,7 @@ function openQuestions(){
   openPanel('questions-panel');
   document.getElementById('q-admin-sec').classList.toggle('hidden', !isQAdmin());
   loadQuestions();
+  if (isQAdmin()) loadHornSent();
 }
 window.openQuestions=openQuestions;
 
@@ -3218,6 +3282,100 @@ async function deleteQuestion(id){
   loadQuestions();
 }
 window.deleteQuestion=deleteQuestion;
+
+const HORN_LETTER_TEMPLATE_TITLE = 'La corne de brume a sonné';
+const HORN_LETTER_TEMPLATE_BODY =
+`Hello mon petit explorateur,
+
+J’espère que ta visite de la banquise se passe bien. Ne reste pas trop longtemps ici, tu risques de devenir tout froid.
+
+Pour te réchauffer, voici quelques nouvelles fonctionnalités :
+
+• La boîte aux lettres — tes notifs (amis, messages, cadeaux, kills…) vivent dans l’igloo de la Banquise.
+• Questions & suggestions — pose une question, propose une idée, je réponds.
+• Ta story banquise — un visuel à partager pour flexer tes jours sans chasse.
+• Photo d’avatar — tu n’es plus obligé·e d’être un emoji.
+• Kill & repeuplement — tu peux dater un retour, ou repeupler si tu t’es trompé·e.
+• Expéditions plus perso — tu choisis si ta frise est publique ou privée.
+• Amis triés tout seuls — le plus récent en haut, comme une vraie messagerie.
+
+Si jamais tu as des idées à suggérer, n’hésite pas à les partager dans la page Questions & Suggestions. Même les idées un peu givrées.
+
+Allez, file te réchauffer — mini-jeu, discussion, ou juste tes pingouins. Moi je range la corne avant qu’elle gèle.
+
+La bise polaire
+— La gardienne de la banquise`;
+
+function fillHornTemplate(){
+  const ti = document.getElementById('horn-title');
+  const bo = document.getElementById('horn-body');
+  if (ti) ti.value = HORN_LETTER_TEMPLATE_TITLE;
+  if (bo) bo.value = HORN_LETTER_TEMPLATE_BODY;
+  toast('Modèle chargé — tu peux encore le triturer 🐧');
+}
+window.fillHornTemplate = fillHornTemplate;
+
+async function sendHornAnnouncement(){
+  if (!isQAdmin() || !SB) return;
+  const title = ((document.getElementById('horn-title') || {}).value || '').trim();
+  const body = ((document.getElementById('horn-body') || {}).value || '').trim();
+  if (title.length < 3) { toast('Il faut un objet (un titre un peu drôle, idéalement)'); return; }
+  if (body.length < 10) { toast('Le message est trop court pour une corne de brume'); return; }
+  if (!confirm('Souffler dans la corne ?\nÇa arrive dans la boîte aux lettres de toute la colonie.')) return;
+  const { error } = await SB.from('announcements').insert({
+    title,
+    body,
+    author_pseudo: (P && P.pseudo) || ADMIN_PSEUDO
+  });
+  if (error) {
+    const miss = /announcements|schema cache|does not exist/i.test(error.message || '');
+    toast(miss
+      ? 'Table manquante : exécute supabase/announcements.sql dans Supabase'
+      : ('Erreur : ' + (error.message || 'inconnue')));
+    return;
+  }
+  toast('Corne de brume lancée — toute la colonie est prévenue 🐧');
+  loadHornSent();
+  try { refreshNotifHist(); } catch (e) {}
+}
+window.sendHornAnnouncement = sendHornAnnouncement;
+
+async function loadHornSent(){
+  const el = document.getElementById('horn-sent-list');
+  if (!el || !isQAdmin() || !SB) return;
+  try {
+    const { data, error } = await SB.from('announcements').select('id,title,created_at')
+      .order('created_at', { ascending: false }).limit(20);
+    if (error) throw error;
+    const rows = data || [];
+    if (!rows.length) {
+      el.innerHTML = '<div class="q-empty" style="padding:10px">Aucune corne lancée pour l’instant.</div>';
+      return;
+    }
+    el.innerHTML = rows.map(a => {
+      const when = a.created_at ? tAgo(new Date(a.created_at)) : '';
+      return '<div class="horn-sent-item">'
+        + '<div class="nh-ic" style="width:28px;height:28px">' + hornIconSVG() + '</div>'
+        + '<div class="hs-t">' + escHTML(a.title || 'Sans titre') + '</div>'
+        + (when ? '<div class="hs-d">il y a ' + when + '</div>' : '')
+        + '<button type="button" class="nh-del" onclick="deleteHornAnnouncement(\'' + a.id + '\')">Retirer</button>'
+        + '</div>';
+    }).join('');
+  } catch (e) {
+    el.innerHTML = '<div class="q-empty" style="padding:10px">Lance d’abord supabase/announcements.sql dans Supabase.</div>';
+  }
+}
+
+async function deleteHornAnnouncement(id){
+  if (!isQAdmin() || !SB) return;
+  if (!confirm('Retirer cette corne de brume pour tout le monde ?')) return;
+  const { error } = await SB.from('announcements').delete().eq('id', id);
+  if (error) { toast('Erreur'); return; }
+  toast('Corne rangée');
+  loadHornSent();
+  try { refreshNotifHist(); } catch (e) {}
+}
+window.deleteHornAnnouncement = deleteHornAnnouncement;
 
 async function refreshQuestionBadge(pendingCount){
   const badge=document.getElementById('q-btn-badge');
