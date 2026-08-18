@@ -160,6 +160,27 @@ button{cursor:pointer}
 .acd-it{display:flex;align-items:center;gap:8px;background:rgba(10,22,40,.7);border:1.5px solid rgba(255,255,255,.12);border-radius:var(--r-md);padding:10px 14px;flex:1;min-width:110px}
 .acd-n{font-family:var(--fd);font-size:1.65rem;font-weight:800;color:#fff}
 .acd-l{font-size:.7rem;color:#b8e0f7;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.nb-cube{cursor:pointer;transition:transform .15s,border-color .2s,background .2s}
+.nb-cube:active{transform:scale(.98);border-color:rgba(78,205,196,.4)}
+.nb-cube-in{display:flex;align-items:center;gap:14px}
+.nb-igloo{position:relative;font-size:2.5rem;line-height:1;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45))}
+.nb-mail{position:absolute;right:-8px;bottom:-4px;font-size:1.2rem;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+.nb-cube-txt{flex:1;display:flex;flex-direction:column;min-width:0}
+.nb-count{font-family:var(--fd);font-size:2rem;font-weight:800;color:#fff;line-height:1}
+.nb-count-lbl{font-size:.7rem;color:#b8e0f7;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
+.nb-chev{font-size:1.9rem;color:rgba(255,255,255,.35);font-weight:800;flex-shrink:0}
+.nh-list{max-height:min(58vh,440px);overflow-y:auto;margin:0;padding:2px;display:flex;flex-direction:column;gap:9px;width:100%}
+.nh-item{display:flex;align-items:center;gap:11px;padding:11px 12px;background:rgba(10,22,40,.55);border:1px solid rgba(255,255,255,.1);border-radius:var(--r-md);text-align:left}
+.nh-ic{font-size:1.4rem;flex-shrink:0;line-height:1.2}
+.nh-bd{flex:1;min-width:0}
+.nh-tt{font-weight:800;color:#fff;font-size:.86rem}
+.nh-ms{color:#cfe6f5;font-size:.8rem;font-weight:600;margin-top:2px;word-break:break-word;line-height:1.35}
+.nh-tm{color:rgba(255,255,255,.4);font-size:.68rem;font-weight:600;margin-top:3px}
+.nh-del{flex-shrink:0;padding:7px 11px;border-radius:var(--r-md);font-size:.74rem;font-weight:800;background:rgba(239,68,68,.14);color:#f87171;border:1px solid rgba(239,68,68,.28)}
+.nh-del:active{transform:scale(.94)}
+.nh-empty{color:rgba(255,255,255,.4);font-size:.85rem;font-weight:600;padding:28px 10px;text-align:center;line-height:1.5}
+.nh-clear{margin-top:4px;font-size:.78rem;font-weight:800;color:#f87171;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.24);border-radius:var(--r-md);padding:9px 14px;width:100%}
+.nh-clear:active{transform:scale(.98)}
 .dp{display:flex;align-items:flex-end;justify-content:center}
 .sp-wr{display:flex;flex-direction:column;align-items:center}
 .sp-post{width:8px;height:26px;background:#8b5e3c;border-radius:2px}
@@ -674,6 +695,17 @@ button{cursor:pointer}
     </div>
     <div class="sc">
       <div class="ss"><div class="sl">Ton troupeau 🐾</div><div class="acd" id="acd"></div></div>
+      <div class="ss nb-cube" id="notif-hist-cube" role="button" tabindex="0" onclick="openNotifHistory()">
+        <div class="sl">Boîte aux lettres 📫</div>
+        <div class="nb-cube-in">
+          <div class="nb-igloo">🛖<span class="nb-mail">📫</span></div>
+          <div class="nb-cube-txt">
+            <div class="nb-count" id="notif-hist-count">0</div>
+            <div class="nb-count-lbl">notification·s reçue·s</div>
+          </div>
+          <div class="nb-chev">›</div>
+        </div>
+      </div>
       <div class="ss">
         <div class="dp">
           <div class="peng-svg hold" style="margin-right:-6px">
@@ -1211,6 +1243,15 @@ button{cursor:pointer}
   </div>
 </div>
 
+<div class="mo hidden" id="notif-hist-modal" onclick="if(event.target===this)closeNotifHistory()">
+  <div class="mc-card prof-hint-card" onclick="event.stopPropagation()" style="max-width:min(440px,94vw)">
+    <h3 style="width:100%;text-align:center">📫 Tes notifications</h3>
+    <div class="nh-list" id="nh-list"></div>
+    <button type="button" class="nh-clear" id="nh-clear-btn" onclick="clearAllNotifs()">🗑️ Tout effacer</button>
+    <div class="mb" style="justify-content:center;width:100%"><button type="button" class="mca" onclick="closeNotifHistory()">Fermer</button></div>
+  </div>
+</div>
+
 <div class="mo hidden" id="prof-levels-modal" onclick="if(event.target===this)closeProfLevelsModal()">
   <div class="mc-card prof-hint-card" id="prof-levels-card" onclick="event.stopPropagation()">
     <h3>Grades banquise</h3>
@@ -1579,6 +1620,150 @@ async function scanNotifEvents() {
 }
 
 // ════════════════════════════════════════════════
+//  HISTORIQUE DES NOTIFICATIONS (boîte aux lettres)
+// ════════════════════════════════════════════════
+let NOTIF_HIST = [];
+
+function notifDelKey(){ return 'mlp_notif_del_' + (myId() || 'anon'); }
+function getDeletedNotifs(){
+  try { return new Set(JSON.parse(localStorage.getItem(notifDelKey()) || '[]')); }
+  catch (e) { return new Set(); }
+}
+function saveDeletedNotifs(set){
+  try { localStorage.setItem(notifDelKey(), JSON.stringify([...set])); } catch (e) {}
+}
+
+async function buildNotifHistory(){
+  if (!SB || !myId()) return [];
+  const deleted = getDeletedNotifs();
+  const items = [];
+  const fromIds = [];
+  // 1) Messages reçus (messages, cadeaux, alertes de kill)
+  let msgs = [];
+  try {
+    const r = await SB.from('messages').select('id,text,animal,created_at,from_id')
+      .eq('to_id', myId()).order('created_at', { ascending: false }).limit(300);
+    msgs = r.data || [];
+  } catch (e) {}
+  msgs.forEach(m => { if (m.from_id) fromIds.push(m.from_id); });
+  // 2) Demandes d'amis reçues
+  let fr = [];
+  try {
+    let r = await SB.from('friendships').select('id,user_a,status,created_at')
+      .eq('user_b', myId()).order('created_at', { ascending: false }).limit(200);
+    if (r.error) r = await SB.from('friendships').select('id,user_a,status').eq('user_b', myId()).limit(200);
+    fr = r.data || [];
+  } catch (e) {}
+  fr.forEach(f => { if (f.user_a) fromIds.push(f.user_a); });
+  // Résolution des pseudos
+  const pseudoMap = {};
+  const uniq = [...new Set(fromIds)];
+  if (uniq.length) {
+    try {
+      const { data: profs } = await SB.from('profiles').select('id,pseudo').in('id', uniq);
+      (profs || []).forEach(p => { pseudoMap[p.id] = p.pseudo; });
+    } catch (e) {}
+  }
+  msgs.forEach(m => {
+    const key = 'msg_' + m.id;
+    if (deleted.has(key)) return;
+    const who = pseudoMap[m.from_id] || 'Quelqu\'un';
+    const isKill = m.text && m.text.indexOf('tuer sa banquise') !== -1;
+    if (isKill) {
+      items.push({ key, icon: '☠️', title: 'Banquise tuée', body: m.text || (who + ' a tué sa banquise.'), ts: m.created_at });
+    } else if (m.animal) {
+      const em = { mouette:'🐦', pingouin:'🐧', orque:'🐋', requin:'🦈', iceberg:'🧊' }[m.animal] || '🎁';
+      const label = m.animal.charAt(0).toUpperCase() + m.animal.slice(1);
+      items.push({ key, icon: em, title: 'Cadeau reçu', body: who + ' t\'a offert : ' + label, ts: m.created_at });
+    } else {
+      items.push({ key, icon: '✉️', title: 'Message de ' + who, body: m.text || '', ts: m.created_at });
+    }
+  });
+  fr.forEach(f => {
+    const key = 'friend_' + f.id;
+    if (deleted.has(key)) return;
+    const who = pseudoMap[f.user_a] || 'Un explorateur';
+    if (f.status === 'accepted') {
+      items.push({ key, icon: '🤝', title: 'Nouvel ami', body: 'Toi et ' + who + ' êtes désormais amis.', ts: f.created_at });
+    } else {
+      items.push({ key, icon: '👥', title: 'Demande d\'ami', body: who + ' veut rejoindre ton aventure !', ts: f.created_at });
+    }
+  });
+  items.sort((a, b) => new Date(b.ts || 0) - new Date(a.ts || 0));
+  return items;
+}
+
+async function refreshNotifHist(){
+  const el = document.getElementById('notif-hist-count');
+  if (!el) return;
+  NOTIF_HIST = await buildNotifHistory();
+  el.textContent = NOTIF_HIST.length;
+}
+window.refreshNotifHist = refreshNotifHist;
+
+function renderNotifHist(){
+  const list = document.getElementById('nh-list');
+  const clearBtn = document.getElementById('nh-clear-btn');
+  if (!list) return;
+  if (!NOTIF_HIST.length) {
+    list.innerHTML = '<div class="nh-empty">Aucune notification 🐧<br/>Ta boîte aux lettres est vide.</div>';
+    if (clearBtn) clearBtn.style.display = 'none';
+    return;
+  }
+  if (clearBtn) clearBtn.style.display = '';
+  list.innerHTML = NOTIF_HIST.map(n => {
+    const when = n.ts ? ('il y a ' + tAgo(new Date(n.ts))) : '';
+    return '<div class="nh-item">'
+      + '<div class="nh-ic">' + n.icon + '</div>'
+      + '<div class="nh-bd"><div class="nh-tt">' + escHTML(n.title) + '</div>'
+      + (n.body ? '<div class="nh-ms">' + escHTML(n.body) + '</div>' : '')
+      + (when ? '<div class="nh-tm">' + when + '</div>' : '')
+      + '</div>'
+      + '<button class="nh-del" onclick="deleteNotif(\'' + n.key + '\')">Supprimer</button>'
+      + '</div>';
+  }).join('');
+}
+
+async function openNotifHistory(){
+  document.getElementById('notif-hist-modal').classList.remove('hidden');
+  if (NOTIF_HIST.length) renderNotifHist();
+  else document.getElementById('nh-list').innerHTML = '<div class="nh-empty">Chargement…</div>';
+  await refreshNotifHist();
+  renderNotifHist();
+}
+window.openNotifHistory = openNotifHistory;
+
+function closeNotifHistory(){
+  document.getElementById('notif-hist-modal').classList.add('hidden');
+}
+window.closeNotifHistory = closeNotifHistory;
+
+function deleteNotif(key){
+  const set = getDeletedNotifs();
+  set.add(key);
+  saveDeletedNotifs(set);
+  NOTIF_HIST = NOTIF_HIST.filter(n => n.key !== key);
+  const el = document.getElementById('notif-hist-count');
+  if (el) el.textContent = NOTIF_HIST.length;
+  renderNotifHist();
+}
+window.deleteNotif = deleteNotif;
+
+function clearAllNotifs(){
+  if (!NOTIF_HIST.length) return;
+  if (!confirm('Effacer toutes les notifications ?')) return;
+  const set = getDeletedNotifs();
+  NOTIF_HIST.forEach(n => set.add(n.key));
+  saveDeletedNotifs(set);
+  NOTIF_HIST = [];
+  const el = document.getElementById('notif-hist-count');
+  if (el) el.textContent = '0';
+  renderNotifHist();
+  toast('Notifications effacées');
+}
+window.clearAllNotifs = clearAllNotifs;
+
+// ════════════════════════════════════════════════
 //  INIT
 // ════════════════════════════════════════════════
 function initSB() {
@@ -1854,6 +2039,7 @@ function enterApp() {
   initNotifPolling();
   refreshPasswordBanner();
   void renderLeaguesBar();
+  void refreshNotifHist();
   /** Scores : sans cet appel, seul le localStorage (mlp_scores) compte ; le serveur n’est lu qu’après login MDP. */
   void pullScoresFromServer();
 }
@@ -1862,7 +2048,7 @@ function goPage(name) {
   document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nb').forEach(b => b.classList.toggle('on', b.dataset.page===name));
-  if (name==='profil') updateP(); if (name==='amis') loadF(); if (name==='exploration') loadExploration();
+  if (name==='profil') updateP(); if (name==='amis') loadF(); if (name==='exploration') loadExploration(); if (name==='banquise') refreshNotifHist();
 }
 window.goPage = goPage;
 
