@@ -163,8 +163,9 @@ button{cursor:pointer}
 .nb-cube{cursor:pointer;transition:transform .15s,border-color .2s,background .2s}
 .nb-cube:active{transform:scale(.98);border-color:rgba(78,205,196,.4)}
 .nb-cube-in{display:flex;align-items:center;gap:14px}
-.nb-igloo{position:relative;font-size:2.5rem;line-height:1;flex-shrink:0;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45))}
-.nb-mail{position:absolute;right:-8px;bottom:-4px;font-size:1.2rem;filter:drop-shadow(0 1px 3px rgba(0,0,0,.5))}
+.nb-igloo{position:relative;width:54px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.nb-igloo-svg{display:block;filter:drop-shadow(0 2px 5px rgba(0,0,0,.4))}
+.nb-mail{position:absolute;right:-9px;bottom:-3px;font-size:1.15rem;filter:drop-shadow(0 1px 3px rgba(0,0,0,.55))}
 .nb-cube-txt{flex:1;display:flex;flex-direction:column;min-width:0}
 .nb-count{font-family:var(--fd);font-size:2rem;font-weight:800;color:#fff;line-height:1}
 .nb-count-lbl{font-size:.7rem;color:#b8e0f7;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-top:3px}
@@ -695,17 +696,6 @@ button{cursor:pointer}
     </div>
     <div class="sc">
       <div class="ss"><div class="sl">Ton troupeau 🐾</div><div class="acd" id="acd"></div></div>
-      <div class="ss nb-cube" id="notif-hist-cube" role="button" tabindex="0" onclick="openNotifHistory()">
-        <div class="sl">Boîte aux lettres 📫</div>
-        <div class="nb-cube-in">
-          <div class="nb-igloo">🛖<span class="nb-mail">📫</span></div>
-          <div class="nb-cube-txt">
-            <div class="nb-count" id="notif-hist-count">0</div>
-            <div class="nb-count-lbl">notification·s reçue·s</div>
-          </div>
-          <div class="nb-chev">›</div>
-        </div>
-      </div>
       <div class="ss">
         <div class="dp">
           <div class="peng-svg hold" style="margin-right:-6px">
@@ -732,6 +722,35 @@ button{cursor:pointer}
             </div>
             <div class="sp-post"></div>
           </div>
+        </div>
+      </div>
+      <div class="ss nb-cube" id="notif-hist-cube" role="button" tabindex="0" onclick="openNotifHistory()">
+        <div class="sl">Boîte aux lettres 📫</div>
+        <div class="nb-cube-in">
+          <div class="nb-igloo">
+            <svg class="nb-igloo-svg" viewBox="0 0 64 52" width="54" height="44" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <linearGradient id="iglooG" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stop-color="#f2faff"/><stop offset="1" stop-color="#bcdcf0"/>
+                </linearGradient>
+              </defs>
+              <ellipse cx="32" cy="47" rx="28" ry="4" fill="rgba(0,0,0,.28)"/>
+              <path d="M4 44 A28 27 0 0 1 60 44 Z" fill="url(#iglooG)" stroke="#8fb8d6" stroke-width="1.3"/>
+              <path d="M7 36 A25 22 0 0 1 57 36" stroke="#9cc0dd" stroke-width="1"/>
+              <path d="M12 27 A20 18 0 0 1 52 27" stroke="#9cc0dd" stroke-width="1"/>
+              <path d="M20 20 A12 12 0 0 1 44 20" stroke="#9cc0dd" stroke-width="1"/>
+              <path d="M18 44 L18 36 M32 44 L32 36 M46 44 L46 36" stroke="#9cc0dd" stroke-width="1"/>
+              <path d="M24 36 L24 27 M40 36 L40 27 M32 27 L32 20" stroke="#9cc0dd" stroke-width="1"/>
+              <path d="M25 45 L25 35 A7 7.5 0 0 1 39 35 L39 45 Z" fill="#c4dcee" stroke="#8fb8d6" stroke-width="1.1"/>
+              <path d="M28.5 45 L28.5 37 A3.5 4 0 0 1 35.5 37 L35.5 45 Z" fill="#3f5f7a"/>
+            </svg>
+            <span class="nb-mail">📫</span>
+          </div>
+          <div class="nb-cube-txt">
+            <div class="nb-count" id="notif-hist-count">0</div>
+            <div class="nb-count-lbl">notification·s reçue·s</div>
+          </div>
+          <div class="nb-chev">›</div>
         </div>
       </div>
       <div class="ss">
