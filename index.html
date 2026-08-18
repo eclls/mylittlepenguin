@@ -1290,8 +1290,8 @@ button{cursor:pointer}
 
 <div class="mo hidden" id="share-preview-modal" onclick="if(event.target===this)closeSharePreview()">
   <div class="mc-card share-preview-card" onclick="event.stopPropagation()">
-    <h3>Ta carte banquise</h3>
-    <p style="margin:0;font-size:.82rem;color:#b8e0f7;font-weight:600">Format story 1080×1920 — Snapchat, Insta, WhatsApp, Messages…</p>
+    <h3>Ta story banquise</h3>
+    <p style="margin:0;font-size:.82rem;color:#b8e0f7;font-weight:600">Prête pour Instagram, Snapchat, WhatsApp…</p>
     <div class="share-preview-frame"><img class="share-preview-img" id="share-preview-img" alt="Aperçu de ta carte banquise"/></div>
     <div class="mb" style="flex-direction:column;width:100%">
       <button type="button" class="mca" onclick="confirmShareCard()">📤 Partager</button>
@@ -2026,44 +2026,140 @@ let SHARE_CARD = { blob: null, dataUrl: null };
 
 function buildStreakImageBlob(d){
   return new Promise((resolve) => {
-    const W = 1080, H = 1920;
+    const W = 1080, H = 1920, CX = W / 2;
+    const FONT = 'system-ui,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif';
+    const EMOJI = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",' + FONT;
     const c = document.createElement('canvas'); c.width = W; c.height = H;
     const x = c.getContext('2d');
-    const g = x.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, '#071018'); g.addColorStop(0.38, '#0a1628'); g.addColorStop(0.72, '#0d2847'); g.addColorStop(1, '#051422');
-    x.fillStyle = g; x.fillRect(0, 0, W, H);
-    function blob(cx, cy, r, col){
-      const rg = x.createRadialGradient(cx, cy, 20, cx, cy, r);
+    x.textAlign = 'center';
+
+    function roundRect(px, py, w, h, r){
+      const rr = Math.min(r, w / 2, h / 2);
+      x.beginPath();
+      x.moveTo(px + rr, py);
+      x.arcTo(px + w, py, px + w, py + h, rr);
+      x.arcTo(px + w, py + h, px, py + h, rr);
+      x.arcTo(px, py + h, px, py, rr);
+      x.arcTo(px, py, px + w, py, rr);
+      x.closePath();
+    }
+    function tracked(str, cx, y, tracking){
+      const chars = Array.from(str);
+      if (chars.length < 2) { x.textAlign = 'center'; x.fillText(str, cx, y); return; }
+      const widths = chars.map(ch => x.measureText(ch).width);
+      const total = widths.reduce((a, b) => a + b, 0) + tracking * (chars.length - 1);
+      let px = cx - total / 2;
+      x.textAlign = 'left';
+      chars.forEach((ch, i) => { x.fillText(ch, px, y); px += widths[i] + tracking; });
+      x.textAlign = 'center';
+    }
+    function fitSize(str, weight, start, min, maxW){
+      let s = start;
+      while (s > min) {
+        x.font = weight + ' ' + s + 'px ' + FONT;
+        if (x.measureText(str).width <= maxW) return s;
+        s -= 6;
+      }
+      return min;
+    }
+
+    const sky = x.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0, '#050b14');
+    sky.addColorStop(0.28, '#0a1628');
+    sky.addColorStop(0.62, '#0e2a4a');
+    sky.addColorStop(1, '#071526');
+    x.fillStyle = sky; x.fillRect(0, 0, W, H);
+
+    function glow(gx, gy, r, col){
+      const rg = x.createRadialGradient(gx, gy, 10, gx, gy, r);
       rg.addColorStop(0, col); rg.addColorStop(1, 'rgba(0,0,0,0)');
       x.fillStyle = rg; x.fillRect(0, 0, W, H);
     }
-    blob(W * 0.28, 280, 420, 'rgba(78,205,196,.34)');
-    blob(W * 0.78, 360, 380, 'rgba(168,85,247,.22)');
-    blob(W * 0.52, 180, 260, 'rgba(91,168,212,.22)');
-    x.fillStyle = '#0d3a6e';
-    x.beginPath(); x.ellipse(W / 2, H + 40, 780, 280, 0, 0, Math.PI * 2); x.fill();
-    x.fillStyle = '#8ec8e8';
-    x.beginPath(); x.ellipse(W / 2, H - 70, 420, 110, 0, 0, Math.PI * 2); x.fill();
-    x.fillStyle = '#d4edf8';
-    x.beginPath(); x.ellipse(W / 2, H - 110, 300, 70, 0, 0, Math.PI * 2); x.fill();
-    x.textAlign = 'center'; x.textBaseline = 'alphabetic';
-    x.fillStyle = 'rgba(184,224,247,.88)'; x.font = '600 52px system-ui,Segoe UI,Roboto,sans-serif';
-    x.fillText('MA BANQUISE', W / 2, Math.round(H * 0.14));
-    x.font = '240px system-ui,"Apple Color Emoji","Segoe UI Emoji"';
-    x.fillText('🐧', W / 2, Math.round(H * 0.32));
-    const lv = lvl(d);
-    x.fillStyle = '#ffffff'; x.font = '800 260px system-ui,Segoe UI,Roboto,sans-serif';
-    x.fillText(String(d), W / 2, Math.round(H * 0.52));
-    x.fillStyle = '#7ff0dd'; x.font = '700 54px system-ui,Segoe UI,Roboto,sans-serif';
-    x.fillText(d > 1 ? 'JOURS SANS CHASSE' : 'JOUR SANS CHASSE', W / 2, Math.round(H * 0.58));
-    x.fillStyle = 'rgba(255,255,255,.94)'; x.font = '600 50px system-ui,"Segoe UI Emoji",sans-serif';
-    x.fillText(lv.i + '  ' + lv.n, W / 2, Math.round(H * 0.68));
-    if (P && P.pseudo) {
-      x.fillStyle = 'rgba(184,224,247,.78)'; x.font = '600 44px system-ui,sans-serif';
-      x.fillText('@' + P.pseudo, W / 2, Math.round(H * 0.74));
+    glow(CX, 260, 520, 'rgba(78,205,196,.28)');
+    glow(180, 420, 380, 'rgba(91,168,212,.18)');
+    glow(900, 380, 340, 'rgba(168,85,247,.16)');
+
+    x.fillStyle = 'rgba(255,255,255,.9)';
+    const starSeed = [80,140,180,90,260,220,340,70,420,180,510,110,620,60,740,150,820,95,940,200,160,320,980,280,70,480,1010,520];
+    for (let i = 0; i < starSeed.length; i += 2) {
+      x.globalAlpha = (i % 6 === 0) ? 0.9 : 0.45;
+      x.beginPath(); x.arc(starSeed[i], starSeed[i + 1], (i % 8 === 0) ? 2.2 : 1.3, 0, Math.PI * 2); x.fill();
     }
-    x.fillStyle = 'rgba(255,255,255,.48)'; x.font = '600 38px system-ui,"Segoe UI Emoji",sans-serif';
-    x.fillText('My Little Penguin 🐧', W / 2, Math.round(H * 0.91));
+    x.globalAlpha = 1;
+
+    x.fillStyle = '#0a2e52';
+    x.beginPath(); x.ellipse(CX, H + 80, 820, 300, 0, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#7ec4e6';
+    x.beginPath(); x.ellipse(CX, H - 86, 460, 118, 0, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#d7eef8';
+    x.beginPath(); x.ellipse(CX, H - 128, 300, 72, 0, 0, Math.PI * 2); x.fill();
+    x.fillStyle = 'rgba(255,255,255,.55)';
+    x.beginPath(); x.ellipse(CX - 70, H - 148, 70, 22, -0.4, 0, Math.PI * 2); x.fill();
+
+    const cardW = 860, cardH = 1180, cardX = (W - cardW) / 2, cardY = 300;
+    x.fillStyle = 'rgba(8,18,34,.62)';
+    roundRect(cardX, cardY, cardW, cardH, 52); x.fill();
+    x.strokeStyle = 'rgba(255,255,255,.18)'; x.lineWidth = 2;
+    roundRect(cardX, cardY, cardW, cardH, 52); x.stroke();
+    const sheen = x.createLinearGradient(0, cardY, 0, cardY + cardH);
+    sheen.addColorStop(0, 'rgba(78,205,196,.10)');
+    sheen.addColorStop(0.5, 'rgba(255,255,255,.02)');
+    sheen.addColorStop(1, 'rgba(26,74,138,.12)');
+    x.fillStyle = sheen;
+    roundRect(cardX, cardY, cardW, cardH, 52); x.fill();
+
+    const maxInner = cardW - 120;
+    x.textBaseline = 'alphabetic';
+
+    x.fillStyle = 'rgba(184,224,247,.72)';
+    x.font = '700 26px ' + FONT;
+    tracked('MY LITTLE PENGUIN', CX, cardY + 92, 8);
+
+    x.strokeStyle = 'rgba(127,240,221,.45)'; x.lineWidth = 2;
+    x.beginPath(); x.moveTo(CX - 48, cardY + 118); x.lineTo(CX + 48, cardY + 118); x.stroke();
+
+    x.font = '92px ' + EMOJI;
+    x.fillStyle = '#fff';
+    x.fillText('🐧', CX, cardY + 250);
+
+    const num = String(d);
+    const numSize = fitSize(num, '800', num.length >= 4 ? 200 : 280, 140, maxInner);
+    x.fillStyle = '#ffffff';
+    x.font = '800 ' + numSize + 'px ' + FONT;
+    x.fillText(num, CX, cardY + 520);
+
+    x.fillStyle = '#7ff0dd';
+    x.font = '700 30px ' + FONT;
+    tracked(d > 1 ? 'JOURS SANS CHASSE' : 'JOUR SANS CHASSE', CX, cardY + 590, 7);
+
+    x.strokeStyle = 'rgba(255,255,255,.14)'; x.lineWidth = 1.5;
+    x.beginPath(); x.moveTo(CX - 160, cardY + 660); x.lineTo(CX + 160, cardY + 660); x.stroke();
+
+    const lv = lvl(d);
+    const grade = (lv.i ? lv.i + '   ' : '') + (lv.n || '');
+    const gSize = fitSize(grade, '600', 40, 28, maxInner);
+    x.fillStyle = 'rgba(255,255,255,.95)';
+    x.font = '600 ' + gSize + 'px ' + EMOJI;
+    x.fillText(grade, CX, cardY + 750);
+
+    const handle = (P && P.pseudo) ? '@' + P.pseudo : 'ma banquise';
+    x.font = '600 28px ' + FONT;
+    const pillW = Math.min(560, Math.max(280, x.measureText(handle).width + 88));
+    const pillH = 64, pillX = CX - pillW / 2, pillY = cardY + 820;
+    x.fillStyle = 'rgba(78,205,196,.14)';
+    roundRect(pillX, pillY, pillW, pillH, 32); x.fill();
+    x.strokeStyle = 'rgba(78,205,196,.4)'; x.lineWidth = 1.5;
+    roundRect(pillX, pillY, pillW, pillH, 32); x.stroke();
+    x.fillStyle = '#b8e0f7';
+    x.font = '600 28px ' + FONT;
+    x.textBaseline = 'middle';
+    x.fillText(handle, CX, pillY + pillH / 2);
+
+    x.fillStyle = 'rgba(255,255,255,.42)';
+    x.font = '600 28px ' + EMOJI;
+    x.textBaseline = 'alphabetic';
+    x.fillText('My Little Penguin  🐧', CX, H - 118);
+
     const dataUrl = c.toDataURL('image/png');
     try { c.toBlob((b) => resolve({ blob: b || null, dataUrl }), 'image/png'); }
     catch (e) { resolve({ blob: null, dataUrl }); }
