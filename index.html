@@ -2031,7 +2031,6 @@ function buildStreakImageBlob(d){
     const EMOJI = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",' + FONT;
     const c = document.createElement('canvas'); c.width = W; c.height = H;
     const x = c.getContext('2d');
-    x.textAlign = 'center';
 
     function roundRect(px, py, w, h, r){
       const rr = Math.min(r, w / 2, h / 2);
@@ -2043,24 +2042,37 @@ function buildStreakImageBlob(d){
       x.arcTo(px, py, px + w, py, rr);
       x.closePath();
     }
-    function tracked(str, cx, y, tracking){
-      const chars = Array.from(str);
-      if (chars.length < 2) { x.textAlign = 'center'; x.fillText(str, cx, y); return; }
-      const widths = chars.map(ch => x.measureText(ch).width);
-      const total = widths.reduce((a, b) => a + b, 0) + tracking * (chars.length - 1);
-      let px = cx - total / 2;
-      x.textAlign = 'left';
-      chars.forEach((ch, i) => { x.fillText(ch, px, y); px += widths[i] + tracking; });
-      x.textAlign = 'center';
+    function setFont(weight, size, emoji){
+      x.font = weight + ' ' + size + 'px ' + (emoji ? EMOJI : FONT);
     }
-    function fitSize(str, weight, start, min, maxW){
+    function textW(str){ return x.measureText(str).width; }
+    function fitSize(str, weight, start, min, maxW, emoji){
       let s = start;
       while (s > min) {
-        x.font = weight + ' ' + s + 'px ' + FONT;
-        if (x.measureText(str).width <= maxW) return s;
-        s -= 6;
+        setFont(weight, s, emoji);
+        if (textW(str) <= maxW) return s;
+        s -= 4;
       }
+      setFont(weight, min, emoji);
       return min;
+    }
+    function ellipsize(str, maxW){
+      if (textW(str) <= maxW) return str;
+      let s = str;
+      while (s.length > 1 && textW(s + '…') > maxW) s = s.slice(0, -1);
+      return s + '…';
+    }
+    function wrapLines(str, maxW){
+      const words = String(str || '').split(/\s+/).filter(Boolean);
+      const lines = [];
+      let cur = '';
+      words.forEach(w => {
+        const test = cur ? (cur + ' ' + w) : w;
+        if (textW(test) <= maxW) cur = test;
+        else { if (cur) lines.push(cur); cur = w; }
+      });
+      if (cur) lines.push(cur);
+      return lines.length ? lines : [''];
     }
 
     const sky = x.createLinearGradient(0, 0, 0, H);
@@ -2093,72 +2105,87 @@ function buildStreakImageBlob(d){
     x.beginPath(); x.ellipse(CX, H - 86, 460, 118, 0, 0, Math.PI * 2); x.fill();
     x.fillStyle = '#d7eef8';
     x.beginPath(); x.ellipse(CX, H - 128, 300, 72, 0, 0, Math.PI * 2); x.fill();
-    x.fillStyle = 'rgba(255,255,255,.55)';
-    x.beginPath(); x.ellipse(CX - 70, H - 148, 70, 22, -0.4, 0, Math.PI * 2); x.fill();
 
-    const cardW = 860, cardH = 1180, cardX = (W - cardW) / 2, cardY = 300;
-    x.fillStyle = 'rgba(8,18,34,.62)';
-    roundRect(cardX, cardY, cardW, cardH, 52); x.fill();
+    const cardW = 820, cardH = 1120, cardX = (W - cardW) / 2, cardY = 280;
+    const inset = 64, innerW = cardW - inset * 2;
+    x.fillStyle = 'rgba(8,18,34,.72)';
+    roundRect(cardX, cardY, cardW, cardH, 48); x.fill();
     x.strokeStyle = 'rgba(255,255,255,.18)'; x.lineWidth = 2;
-    roundRect(cardX, cardY, cardW, cardH, 52); x.stroke();
-    const sheen = x.createLinearGradient(0, cardY, 0, cardY + cardH);
-    sheen.addColorStop(0, 'rgba(78,205,196,.10)');
-    sheen.addColorStop(0.5, 'rgba(255,255,255,.02)');
-    sheen.addColorStop(1, 'rgba(26,74,138,.12)');
-    x.fillStyle = sheen;
-    roundRect(cardX, cardY, cardW, cardH, 52); x.fill();
+    roundRect(cardX, cardY, cardW, cardH, 48); x.stroke();
 
-    const maxInner = cardW - 120;
-    x.textBaseline = 'alphabetic';
+    x.save();
+    roundRect(cardX, cardY, cardW, cardH, 48);
+    x.clip();
+    x.textAlign = 'center';
+    x.textBaseline = 'top';
 
-    x.fillStyle = 'rgba(184,224,247,.72)';
-    x.font = '700 26px ' + FONT;
-    tracked('MY LITTLE PENGUIN', CX, cardY + 92, 8);
+    let y = cardY + 56;
 
-    x.strokeStyle = 'rgba(127,240,221,.45)'; x.lineWidth = 2;
-    x.beginPath(); x.moveTo(CX - 48, cardY + 118); x.lineTo(CX + 48, cardY + 118); x.stroke();
+    setFont('700', 22, false);
+    x.fillStyle = 'rgba(184,224,247,.75)';
+    x.fillText('MY LITTLE PENGUIN', CX, y);
+    y += 40;
 
-    x.font = '92px ' + EMOJI;
+    x.strokeStyle = 'rgba(127,240,221,.5)'; x.lineWidth = 2;
+    x.beginPath(); x.moveTo(CX - 40, y); x.lineTo(CX + 40, y); x.stroke();
+    y += 36;
+
+    setFont('400', 72, true);
     x.fillStyle = '#fff';
-    x.fillText('🐧', CX, cardY + 250);
+    x.fillText('🐧', CX, y);
+    y += 96;
 
     const num = String(d);
-    const numSize = fitSize(num, '800', num.length >= 4 ? 200 : 280, 140, maxInner);
+    const numSize = fitSize(num, '800', 200, 96, innerW, false);
+    setFont('800', numSize, false);
     x.fillStyle = '#ffffff';
-    x.font = '800 ' + numSize + 'px ' + FONT;
-    x.fillText(num, CX, cardY + 520);
+    x.fillText(num, CX, y);
+    y += numSize + 18;
 
+    const label = d > 1 ? 'jours sans chasse' : 'jour sans chasse';
+    const labSize = fitSize(label, '700', 34, 22, innerW, false);
+    setFont('700', labSize, false);
     x.fillStyle = '#7ff0dd';
-    x.font = '700 30px ' + FONT;
-    tracked(d > 1 ? 'JOURS SANS CHASSE' : 'JOUR SANS CHASSE', CX, cardY + 590, 7);
+    x.fillText(label, CX, y);
+    y += labSize + 36;
 
     x.strokeStyle = 'rgba(255,255,255,.14)'; x.lineWidth = 1.5;
-    x.beginPath(); x.moveTo(CX - 160, cardY + 660); x.lineTo(CX + 160, cardY + 660); x.stroke();
+    x.beginPath(); x.moveTo(CX - 120, y); x.lineTo(CX + 120, y); x.stroke();
+    y += 32;
 
     const lv = lvl(d);
-    const grade = (lv.i ? lv.i + '   ' : '') + (lv.n || '');
-    const gSize = fitSize(grade, '600', 40, 28, maxInner);
+    setFont('600', 34, true);
     x.fillStyle = 'rgba(255,255,255,.95)';
-    x.font = '600 ' + gSize + 'px ' + EMOJI;
-    x.fillText(grade, CX, cardY + 750);
+    const gradeLines = wrapLines((lv.i ? lv.i + '  ' : '') + (lv.n || ''), innerW).slice(0, 2);
+    gradeLines.forEach(line => {
+      const s = fitSize(line, '600', 34, 22, innerW, true);
+      setFont('600', s, true);
+      x.fillText(line, CX, y);
+      y += s + 10;
+    });
+    y += 24;
 
-    const handle = (P && P.pseudo) ? '@' + P.pseudo : 'ma banquise';
-    x.font = '600 28px ' + FONT;
-    const pillW = Math.min(560, Math.max(280, x.measureText(handle).width + 88));
-    const pillH = 64, pillX = CX - pillW / 2, pillY = cardY + 820;
+    const handle = (P && P.pseudo) ? '@' + P.pseudo : '@banquise';
+    setFont('600', 26, false);
+    const shown = ellipsize(handle, innerW - 72);
+    const pillW = Math.min(innerW, Math.max(220, textW(shown) + 64));
+    const pillH = 56;
+    const pillX = CX - pillW / 2;
     x.fillStyle = 'rgba(78,205,196,.14)';
-    roundRect(pillX, pillY, pillW, pillH, 32); x.fill();
+    roundRect(pillX, y, pillW, pillH, 28); x.fill();
     x.strokeStyle = 'rgba(78,205,196,.4)'; x.lineWidth = 1.5;
-    roundRect(pillX, pillY, pillW, pillH, 32); x.stroke();
+    roundRect(pillX, y, pillW, pillH, 28); x.stroke();
     x.fillStyle = '#b8e0f7';
-    x.font = '600 28px ' + FONT;
     x.textBaseline = 'middle';
-    x.fillText(handle, CX, pillY + pillH / 2);
+    x.fillText(shown, CX, y + pillH / 2);
 
-    x.fillStyle = 'rgba(255,255,255,.42)';
-    x.font = '600 28px ' + EMOJI;
+    x.restore();
+
+    x.textAlign = 'center';
     x.textBaseline = 'alphabetic';
-    x.fillText('My Little Penguin  🐧', CX, H - 118);
+    setFont('600', 24, true);
+    x.fillStyle = 'rgba(255,255,255,.42)';
+    x.fillText('My Little Penguin  🐧', CX, H - 120);
 
     const dataUrl = c.toDataURL('image/png');
     try { c.toBlob((b) => resolve({ blob: b || null, dataUrl }), 'image/png'); }
@@ -2536,6 +2563,7 @@ function closePanel(id) {
   document.getElementById(id).classList.remove('open');
   document.body.style.overflow = '';
   if (id === 'conv-panel' && CONV_POLL) { clearInterval(CONV_POLL); CONV_POLL = null; }
+  if (id === 'conv-panel') { try { loadF(); } catch (e) {} }
 }
 window.closePanel = closePanel;
 
@@ -3420,7 +3448,14 @@ async function loadF(){
   }
   listEl.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:20px;font-size:.85rem">Chargement…</div>';
   try{
-    const{data:fs,error}=await SB.from('friendships').select('id,status,user_a,user_b').or(`user_a.eq.${myId()},user_b.eq.${myId()}`);
+    let fs=null, error=null;
+    {
+      const r1=await SB.from('friendships').select('id,status,user_a,user_b,created_at').or(`user_a.eq.${myId()},user_b.eq.${myId()}`);
+      if(r1.error){
+        const r2=await SB.from('friendships').select('id,status,user_a,user_b').or(`user_a.eq.${myId()},user_b.eq.${myId()}`);
+        fs=r2.data; error=r2.error;
+      } else { fs=r1.data; error=r1.error; }
+    }
     if(error)throw error;
     if(!fs||!fs.length){
       listEl.innerHTML='<div class="ef"><div style="font-size:3rem">🐧</div><p>Ton expédition est encore solitaire…<br/>Ajoute des amis pour partager l\'aventure !</p></div>';
@@ -3428,10 +3463,23 @@ async function loadF(){
       return;
     }
     const otherIds=fs.map(f=>f.user_a===myId()?f.user_b:f.user_a);
-    const{data:profiles}=await SB.from('profiles').select('id,pseudo,avatar,avatar_url,start_date,last_kill_date,banquise_public').in('id',otherIds);
+    const[{data:profiles},{data:unread},{data:recentMsgs}]=await Promise.all([
+      SB.from('profiles').select('id,pseudo,avatar,avatar_url,start_date,last_kill_date,banquise_public').in('id',otherIds),
+      SB.from('messages').select('from_id').eq('to_id', myId()).eq('read', false),
+      SB.from('messages').select('from_id,to_id,created_at').or(`from_id.eq.${myId()},to_id.eq.${myId()}`).order('created_at',{ascending:false}).limit(400)
+    ]);
     const pm={};(profiles||[]).forEach(p=>pm[p.id]=p);
-    const { data: unread } = await SB.from('messages').select('from_id').eq('to_id', myId()).eq('read', false);
     const unreadSet=new Set((unread||[]).map(m=>m.from_id));
+    const lastTs={};
+    (recentMsgs||[]).forEach(m=>{
+      const oid=m.from_id===myId()?m.to_id:m.from_id;
+      if(!lastTs[oid]) lastTs[oid]=m.created_at;
+    });
+    const tsOf=f=>{
+      const oid=f.user_a===myId()?f.user_b:f.user_a;
+      return new Date(lastTs[oid]||f.created_at||0).getTime();
+    };
+    fs.sort((a,b)=>tsOf(b)-tsOf(a));
 
     listEl.innerHTML=fs.map(f=>{
       const oid=f.user_a===myId()?f.user_b:f.user_a; const ot=pm[oid]; if(!ot)return'';
