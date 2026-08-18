@@ -955,7 +955,7 @@ button{cursor:pointer}
           </div>
         </div>
       </div>
-      <div class="psec"><button class="logout-btn" id="questions-btn" style="color:#c9b8ff;border-color:rgba(139,120,255,.35);background:rgba(139,120,255,.08)"><span>💬</span> Questions<span class="q-btn-badge hidden" id="q-btn-badge"></span></button></div>
+      <div class="psec"><button class="logout-btn" id="questions-btn" style="color:#c9b8ff;border-color:rgba(139,120,255,.35);background:rgba(139,120,255,.08)"><span>💬</span> Questions &amp; suggestions<span class="q-btn-badge hidden" id="q-btn-badge"></span></button></div>
       <div class="psec"><button class="logout-btn" id="repeuple-btn" style="color:#7ff0dd;border-color:rgba(78,205,196,.35);background:rgba(78,205,196,.08)"><span>🐧</span> Repeupler la banquise</button></div>
       <div class="psec"><button class="logout-btn" id="logout-btn"><span>❄️</span> Quitter la banquise</button></div>
       <div class="bsp"></div>
@@ -974,23 +974,23 @@ button{cursor:pointer}
   <div class="panel-header">
     <button class="panel-back" onclick="closePanel('questions-panel')">←</button>
     <div>
-      <div class="panel-title">Questions</div>
-      <div style="font-size:.74rem;color:#b8e0f7;font-weight:600">Pose ta question, la réponse sera peut-être publiée ici</div>
+      <div class="panel-title">Questions &amp; suggestions</div>
+      <div style="font-size:.74rem;color:#b8e0f7;font-weight:600">Pose une question ou propose une idée</div>
     </div>
   </div>
   <div class="q-body">
     <div class="q-ask">
-      <div class="q-ask-title">💬 Pose ta question</div>
-      <textarea class="q-textarea" id="q-input" placeholder="Écris ta question…" rows="3" maxlength="500"></textarea>
-      <button class="q-send-btn" onclick="submitQuestion()">Envoyer ma question 🐧</button>
-      <div class="q-ask-note">Si la réponse est publiée, ta question apparaîtra ici de façon anonyme.</div>
+      <div class="q-ask-title">💬 Une question ou une suggestion ?</div>
+      <textarea class="q-textarea" id="q-input" placeholder="Écris ta question ou ta suggestion…" rows="3" maxlength="500"></textarea>
+      <button class="q-send-btn" onclick="submitQuestion()">Envoyer 🐧</button>
+      <div class="q-ask-note">Si elle est publiée, ta contribution apparaîtra ici de façon anonyme.</div>
     </div>
     <div id="q-admin-sec" class="hidden">
       <div class="q-sec-title">📥 En attente <span id="q-pending-count"></span></div>
       <div id="q-pending-list" style="display:flex;flex-direction:column;gap:12px;margin-top:8px"></div>
     </div>
     <div>
-      <div class="q-sec-title">✅ Questions &amp; réponses</div>
+      <div class="q-sec-title">✅ Réponses publiées</div>
       <div id="q-public-list" style="display:flex;flex-direction:column;gap:12px;margin-top:8px"></div>
     </div>
   </div>
@@ -2618,7 +2618,7 @@ async function loadQuestions(){
     const published=rows.filter(r=>r.published);
     pubList.innerHTML = published.length
       ? published.map(renderPublicQ).join('')
-      : '<div class="q-empty">Aucune réponse publiée pour l\'instant 🐧<br/>Sois le·la premier·ère à poser une question !</div>';
+      : '<div class="q-empty">Aucune réponse publiée pour l\'instant 🐧<br/>Envoie la première question ou suggestion !</div>';
     if(admin){
       const pending=rows.filter(r=>!r.published);
       document.getElementById('q-pending-count').textContent = pending.length ? '('+pending.length+')' : '';
@@ -2638,14 +2638,14 @@ function renderPublicQ(r){
   const ctl = isQAdmin()
     ? '<div class="q-actions"><button class="q-abtn save" onclick="unpublishQuestion(\''+r.id+'\')">↩︎ Dépublier</button><button class="q-abtn del" onclick="deleteQuestion(\''+r.id+'\')">🗑️ Supprimer</button></div>'
     : '';
-  return '<div class="q-card"><div class="q-q">❓ '+escHTML(r.question)+'</div>'+ans+ctl+'</div>';
+  return '<div class="q-card"><div class="q-q">💬 '+escHTML(r.question)+'</div>'+ans+ctl+'</div>';
 }
 
 function renderPendingQ(r){
   const who = r.asker_pseudo ? escHTML(r.asker_pseudo) : 'Anonyme';
   const when = r.created_at ? tAgo(new Date(r.created_at)) : '';
   return '<div class="q-card pending">'
-    + '<div class="q-q">❓ '+escHTML(r.question)+'</div>'
+    + '<div class="q-q">💬 '+escHTML(r.question)+'</div>'
     + '<div class="q-meta">De '+who+' · il y a '+when+'</div>'
     + '<textarea class="q-ans-input" id="q-ans-'+r.id+'" placeholder="Ta réponse…" rows="2" maxlength="800">'+escHTML(r.answer||'')+'</textarea>'
     + '<div class="q-actions">'
@@ -2659,7 +2659,7 @@ function renderPendingQ(r){
 async function submitQuestion(){
   const inp=document.getElementById('q-input');
   const t=(inp.value||'').trim();
-  if(t.length<3){ toast('Écris une vraie question 🐧'); return; }
+  if(t.length<3){ toast('Écris ta question ou ta suggestion 🐧'); return; }
   if(!SB){ toast('Hors ligne, réessaie plus tard'); return; }
   const{error}=await SB.from('questions').insert({
     asker_id: myId()||null,
@@ -2668,7 +2668,7 @@ async function submitQuestion(){
   });
   if(error){ toast('Erreur à l\'envoi'); return; }
   inp.value='';
-  toast('Question envoyée ! 🐧');
+  toast('Envoyé, merci ! 🐧');
   loadQuestions();
 }
 window.submitQuestion=submitQuestion;
