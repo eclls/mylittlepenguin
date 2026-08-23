@@ -4047,9 +4047,9 @@ async function loadFriendExpeditions(fid, isPublic){
   nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem">Chargement…</div>';
   if(!SB){ nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem">Indisponible hors-ligne.</div>'; return; }
   try{
-    const{data,error}=await SB.from('expeditions').select('*').eq('user_id',fid).order('exp_date',{ascending:true});
-    if(error)throw error;
-    const exps=data||[];
+    let remote = await fetchExpeditionMeta(fid);
+    remote = await attachExpeditionPhotos(remote);
+    const exps=remote||[];
     if(!exps.length){ nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem;font-weight:600">Aucune expédition partagée pour l\'instant 🗺️</div>'; return; }
     nodes.innerHTML=exps.map(exp=>{
       const imgUrl=expeditionImageUrl(exp);
@@ -4680,13 +4680,47 @@ function expRowHasGeo(e){
 }
 function mergeLocalGeoOntoRemoteRow(remoteRow, localRow){
   if (!remoteRow || !localRow || remoteRow.id == null) return remoteRow;
-  if (expRowHasGeo(remoteRow) || !expRowHasGeo(localRow)) return remoteRow;
-  return {
-    ...remoteRow,
-    geo_lat: +localRow.geo_lat,
-    geo_lng: +localRow.geo_lng,
-    geo_label: localRow.geo_label != null ? localRow.geo_label : remoteRow.geo_label
-  };
+  let out = remoteRow;
+  if (!expRowHasGeo(remoteRow) && expRowHasGeo(localRow)) {
+    out = {
+      ...remoteRow,
+      geo_lat: +localRow.geo_lat,
+      geo_lng: +localRow.geo_lng,
+      geo_label: localRow.geo_label != null ? localRow.geo_label : remoteRow.geo_label
+    };
+  }
+  const hasRemotePhoto = !!(out.photo_url || out.photoUrl || out.photo);
+  const localPhoto = localRow.photo_url || localRow.photoUrl || localRow.photo;
+  if (!hasRemotePhoto && localPhoto) out = { ...out, photo_url: localPhoto };
+  return out;
+}
+
+const EXP_META_COLS = 'id,user_id,title,note,exp_date,created_at,geo_lat,geo_lng,geo_label';
+const EXP_META_COLS_MIN = 'id,user_id,title,note,exp_date,created_at';
+
+/** Métadonnées d'abord (sans photo_url) : un select(*) avec 15 photos base64 sature Safari/PostgREST. */
+async function fetchExpeditionMeta(userId){
+  let r = await SB.from('expeditions').select(EXP_META_COLS).eq('user_id', userId).order('exp_date', { ascending: true });
+  if (r.error) r = await SB.from('expeditions').select(EXP_META_COLS_MIN).eq('user_id', userId).order('exp_date', { ascending: true });
+  if (r.error) throw r.error;
+  return r.data || [];
+}
+
+async function attachExpeditionPhotos(rows){
+  if (!rows || !rows.length) return rows;
+  const CHUNK = 2;
+  for (let i = 0; i < rows.length; i += CHUNK) {
+    const slice = rows.slice(i, i + CHUNK);
+    await Promise.all(slice.map(async (row) => {
+      if (row.photo_url && String(row.photo_url).indexOf('http') === 0) return;
+      try {
+        const { data, error } = await SB.from('expeditions').select('photo_url').eq('id', row.id).maybeSingle();
+        if (error || !data || !data.photo_url) return;
+        row.photo_url = data.photo_url;
+      } catch (e) {}
+    }));
+  }
+  return rows;
 }
 
 function showExplError(msg){
@@ -4706,17 +4740,16 @@ window.retryLoadExploration=retryLoadExploration;
 async function loadExploration(){
   const nodesEl=document.getElementById('expl-nodes');
   let remote=[]; let remoteFailed=false;
-  if(SB){
-    try{
-      const{data,error}=await SB.from('expeditions').select('*').eq('user_id',myId()).order('exp_date',{ascending:true});
-      if(error) throw error;
-      remote=data||[];
-    }catch(e){ remoteFailed=true; }
-  }
   const local=JSON.parse(localStorage.getItem('mlp_exps')||'[]');
   const localById=new Map();
   local.forEach(e=>{ if(e&&e.id!=null)localById.set(String(e.id),e); });
-  remote=remote.map(e=>mergeLocalGeoOntoRemoteRow(e,localById.get(String(e.id))));
+  if(SB){
+    try{
+      remote = await fetchExpeditionMeta(myId());
+      remote=remote.map(e=>mergeLocalGeoOntoRemoteRow(e, localById.get(String(e.id))));
+      remote = await attachExpeditionPhotos(remote);
+    }catch(e){ remoteFailed=true; }
+  }
   const byId=new Map();
   remote.forEach(e=>{ if(e&&e.id!=null) byId.set(String(e.id),e); });
   local.forEach(e=>{ if(e&&e.id!=null&&!byId.has(String(e.id))) byId.set(String(e.id),e); });
