@@ -16,7 +16,7 @@
   <link rel="preconnect" href="https://cirdtmjrsgbqbstwrgzx.supabase.co" crossorigin/>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin/>
   <link rel="dns-prefetch" href="https://cdn.jsdelivr.net"/>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&display=swap" rel="stylesheet"/>
 <style>
 /* ══ ROOT ══ */
 :root{
@@ -24,7 +24,8 @@
   --glacier:#5ba8d4;--sky:#a8d8f0;--teal:#4ecdc4;--snow:#f0f8ff;
   --belly:#f5f0e8;--black:#1a1a2e;--beak:#ff8c42;--foot:#ff7a1a;
   --red:#ef4444;--gold:#fbbf24;
-  --fd:'Fredoka',sans-serif;--fb:'Nunito',sans-serif;
+  --fd:'Fredoka',system-ui,sans-serif;
+  --fb:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   --r-sm:12px;--r-md:20px;--r-lg:32px;--r-xl:48px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -42,12 +43,27 @@ button{cursor:pointer;touch-action:manipulation}
 #app.active{opacity:1;pointer-events:all}
 .page{position:absolute;inset:0;bottom:76px;opacity:0;pointer-events:none;transition:opacity .35s;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
 .page.active{opacity:1;pointer-events:all}
+.page:not(.active) .ss{backdrop-filter:none}
+#page-banquise:not(.active) .aur,
+#page-banquise:not(.active) .atk,
+#page-banquise:not(.active) .star,
+#page-banquise:not(.active) .wave,
+#page-banquise:not(.active) .peng-svg,
+#friend-bq-panel:not(.open) .aur,
+#friend-bq-panel:not(.open) .atk,
+#friend-bq-panel:not(.open) .wave,
+#friend-bq-panel:not(.open) .peng-svg,
+body.bg-quiet .aur,
+body.bg-quiet .atk,
+body.bg-quiet .star,
+body.bg-quiet .wave,
+body.bg-quiet .peng-svg{animation:none!important}
 
 /* Slide-over panel */
 .panel{position:fixed;inset:0;background:var(--night);z-index:80;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto}
 .panel.open{transform:translateX(0)}
 .panel-header{display:flex;align-items:center;gap:12px;padding:56px 20px 16px;background:rgba(10,22,40,.9);backdrop-filter:blur(20px);position:sticky;top:0;z-index:2}
-.panel-back{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.panel-back{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.1);color:#fff;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;touch-action:manipulation}
 .panel-title{font-family:var(--fd);font-size:1.3rem;font-weight:700;color:#fff}
 .friend-bq-body{padding-bottom:24px}
 .friend-bq-private{padding:36px 22px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:16px}
@@ -119,7 +135,7 @@ button{cursor:pointer;touch-action:manipulation}
 
 /* ══ BOTTOM NAV ══ */
 .bnav{position:fixed;bottom:0;left:0;right:0;height:76px;background:rgba(10,22,40,.96);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:stretch;z-index:50;padding-bottom:env(safe-area-inset-bottom,0px)}
-.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:transparent;color:rgba(255,255,255,.38);transition:all .25s cubic-bezier(.34,1.56,.64,1);border-radius:var(--r-md);margin:5px 3px}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:transparent;color:rgba(255,255,255,.38);transition:all .25s cubic-bezier(.34,1.56,.64,1);border-radius:var(--r-md);margin:5px 3px;touch-action:manipulation}
 .nb.on{background:rgba(42,111,168,.28);color:var(--teal)}
 .nb:active{transform:scale(.88)}
 .ni{font-size:1.3rem;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
@@ -162,7 +178,7 @@ button{cursor:pointer;touch-action:manipulation}
 .acd-it{display:flex;align-items:center;gap:8px;background:rgba(10,22,40,.7);border:1.5px solid rgba(255,255,255,.12);border-radius:var(--r-md);padding:10px 14px;flex:1;min-width:110px}
 .acd-n{font-family:var(--fd);font-size:1.65rem;font-weight:800;color:#fff}
 .acd-l{font-size:.7rem;color:#b8e0f7;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
-.nb-cube{cursor:pointer;transition:transform .15s,border-color .2s,background .2s}
+.nb-cube{cursor:pointer;transition:transform .15s,border-color .2s,background .2s;touch-action:manipulation}
 .nb-cube:active{transform:scale(.98);border-color:rgba(78,205,196,.4)}
 .nb-cube.has-new{border-color:rgba(139,120,255,.5);background:rgba(139,120,255,.07)}
 .nb-cube.has-new .nb-count{color:#c9b8ff}
@@ -212,7 +228,7 @@ button{cursor:pointer;touch-action:manipulation}
 
 /* Mini-jeux */
 .games-row{display:flex;gap:10px;flex-wrap:wrap}
-.game-card{flex:1;min-width:calc(50% - 8px);background:rgba(10,22,40,.7);border:1.5px solid rgba(255,255,255,.15);border-radius:var(--r-md);padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:all .2s;text-align:center}
+.game-card{flex:1;min-width:calc(50% - 8px);background:rgba(10,22,40,.7);border:1.5px solid rgba(255,255,255,.15);border-radius:var(--r-md);padding:16px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:all .2s;text-align:center;touch-action:manipulation}
 .game-card:active{transform:scale(.95);background:rgba(42,111,168,.3)}
 .game-icon{font-size:1.8rem}
 .game-name{font-size:.72rem;font-weight:800;color:#b8e0f7;text-transform:uppercase;letter-spacing:.05em}
@@ -1441,6 +1457,9 @@ let explorationPinIconCache = null;
 let explorationDotIconCache = null;
 let expPendingLat = null, expPendingLng = null, expPlaceLabel = '';
 let notifPollTimer = null;
+let notifHistFetchedAt = 0;
+let notifHistInflight = null;
+const NOTIF_HIST_TTL_MS = 28000;
 let notifWaterline = null;
 
 // ════════════════════════════════════════════════
@@ -1689,6 +1708,7 @@ async function scanNotifEvents() {
   if (!P || !P.notif_enabled || !SB || !myId()) return;
   if (!('Notification' in window) || Notification.permission !== 'granted') return;
   const since = notifWaterline || new Date(0).toISOString();
+  let foundNew = false;
   try {
     if (P.notif_friends !== false) {
       const { data: pend } = await SB.from('friendships').select('id,user_a').eq('user_b', myId()).eq('status', 'pending');
@@ -1696,6 +1716,7 @@ async function scanNotifEvents() {
         const k = 'mlp_nf_' + row.id;
         if (localStorage.getItem(k)) continue;
         localStorage.setItem(k, '1');
+        foundNew = true;
         tryShowBrowserNotification('Nouvelle demande d\'ami', 'Un explorateur veut rejoindre ton aventure !', 'friend_' + row.id);
       }
     }
@@ -1704,6 +1725,7 @@ async function scanNotifEvents() {
       const k = 'mlp_nm_' + m.id;
       if (localStorage.getItem(k)) continue;
       localStorage.setItem(k, '1');
+      foundNew = true;
       const kill = m.text && m.text.indexOf('tuer sa banquise') !== -1;
       if (kill) {
         if (P.notif_kill === false) continue;
@@ -1717,8 +1739,7 @@ async function scanNotifEvents() {
     notifWaterline = new Date().toISOString();
     localStorage.setItem('mlp_notif_waterline', notifWaterline);
   } catch (e) {}
-  // Tient le compteur "non-lus" (cube + badge Amis) à jour pendant que l'app est ouverte.
-  try { refreshNotifHist(); } catch (e) {}
+  try { refreshNotifHist(foundNew ? { force: true } : undefined); } catch (e) {}
 }
 
 // ════════════════════════════════════════════════
@@ -1759,26 +1780,30 @@ function saveSeenNotifs(set){
 async function buildNotifHistory(){
   if (!SB || !myId()) return [];
   const deleted = getDeletedNotifs();
+  const uid = myId();
+  const [msgs, fr, qans, horns] = await Promise.all([
+    SB.from('messages').select('id,text,animal,created_at,from_id')
+      .eq('to_id', uid).order('created_at', { ascending: false }).limit(300)
+      .then(r => r.data || []).catch(() => []),
+    (async () => {
+      try {
+        let r = await SB.from('friendships').select('id,user_a,status,created_at')
+          .eq('user_b', uid).order('created_at', { ascending: false }).limit(200);
+        if (r.error) r = await SB.from('friendships').select('id,user_a,status').eq('user_b', uid).limit(200);
+        return r.data || [];
+      } catch (e) { return []; }
+    })(),
+    SB.from('questions').select('id,question,answer,answered_at,published,asker_id')
+      .eq('asker_id', uid).eq('published', true).order('answered_at', { ascending: false }).limit(100)
+      .then(r => r.data || []).catch(() => []),
+    SB.from('announcements').select('id,title,body,created_at')
+      .order('created_at', { ascending: false }).limit(50)
+      .then(r => r.data || []).catch(() => [])
+  ]);
   const items = [];
   const fromIds = [];
-  // 1) Messages reçus (messages, cadeaux, alertes de kill)
-  let msgs = [];
-  try {
-    const r = await SB.from('messages').select('id,text,animal,created_at,from_id')
-      .eq('to_id', myId()).order('created_at', { ascending: false }).limit(300);
-    msgs = r.data || [];
-  } catch (e) {}
-  msgs.forEach(m => { if (m.from_id) fromIds.push(m.from_id); });
-  // 2) Demandes d'amis reçues
-  let fr = [];
-  try {
-    let r = await SB.from('friendships').select('id,user_a,status,created_at')
-      .eq('user_b', myId()).order('created_at', { ascending: false }).limit(200);
-    if (r.error) r = await SB.from('friendships').select('id,user_a,status').eq('user_b', myId()).limit(200);
-    fr = r.data || [];
-  } catch (e) {}
-  fr.forEach(f => { if (f.user_a) fromIds.push(f.user_a); });
-  // Résolution des pseudos
+  (msgs || []).forEach(m => { if (m.from_id) fromIds.push(m.from_id); });
+  (fr || []).forEach(f => { if (f.user_a) fromIds.push(f.user_a); });
   const pseudoMap = {};
   const uniq = [...new Set(fromIds)];
   if (uniq.length) {
@@ -1787,7 +1812,7 @@ async function buildNotifHistory(){
       (profs || []).forEach(p => { pseudoMap[p.id] = p.pseudo; });
     } catch (e) {}
   }
-  msgs.forEach(m => {
+  (msgs || []).forEach(m => {
     const key = 'msg_' + m.id;
     if (deleted.has(key)) return;
     const who = pseudoMap[m.from_id] || 'Quelqu\'un';
@@ -1802,7 +1827,7 @@ async function buildNotifHistory(){
       items.push({ key, icon: '✉️', title: 'Message de ' + who, body: m.text || '', ts: m.created_at });
     }
   });
-  fr.forEach(f => {
+  (fr || []).forEach(f => {
     const key = 'friend_' + f.id;
     if (deleted.has(key)) return;
     const who = pseudoMap[f.user_a] || 'Un explorateur';
@@ -1812,37 +1837,25 @@ async function buildNotifHistory(){
       items.push({ key, icon: '👥', title: 'Demande d\'ami', body: who + ' veut rejoindre ton aventure !', ts: f.created_at });
     }
   });
-  // 3) Réponses publiées à MES questions/suggestions
-  let qans = [];
-  try {
-    const r = await SB.from('questions').select('id,question,answer,answered_at,published,asker_id')
-      .eq('asker_id', myId()).eq('published', true).order('answered_at', { ascending: false }).limit(100);
-    qans = r.data || [];
-  } catch (e) {}
-  qans.forEach(q => {
+  (qans || []).forEach(q => {
     if (!q.answer) return;
     const key = 'qans_' + q.id;
     if (deleted.has(key)) return;
     const qShort = (q.question || '').length > 60 ? (q.question.slice(0, 60) + '…') : (q.question || '');
     items.push({ key, icon: '💡', title: 'Ta question a une réponse !', body: '« ' + qShort +' » → ' + q.answer, ts: q.answered_at });
   });
-  // 4) Corne de brume (messages du modérateur)
-  try {
-    const r = await SB.from('announcements').select('id,title,body,created_at')
-      .order('created_at', { ascending: false }).limit(50);
-    (r.data || []).forEach(a => {
-      const key = 'horn_' + a.id;
-      if (deleted.has(key)) return;
-      items.push({
-        key,
-        kind: 'horn',
-        icon: hornIconSVG(),
-        title: a.title || 'La corne de brume a sonné',
-        body: a.body || '',
-        ts: a.created_at
-      });
+  (horns || []).forEach(a => {
+    const key = 'horn_' + a.id;
+    if (deleted.has(key)) return;
+    items.push({
+      key,
+      kind: 'horn',
+      icon: hornIconSVG(),
+      title: a.title || 'La corne de brume a sonné',
+      body: a.body || '',
+      ts: a.created_at
     });
-  } catch (e) {}
+  });
   items.sort((a, b) => new Date(b.ts || 0) - new Date(a.ts || 0));
   return items;
 }
@@ -1866,15 +1879,32 @@ function updateNotifUI(){
   if (badge) badge.classList.toggle('hidden', n === 0);
 }
 
-async function refreshNotifHist(){
-  const firstRun = localStorage.getItem(notifSeenKey()) === null;
-  NOTIF_HIST = await buildNotifHistory();
-  if (firstRun && SB && myId()) {
-    // Première exécution : tout l'historique déjà présent est considéré comme "déjà lu".
-    saveSeenNotifs(new Set(NOTIF_HIST.map(n => n.key)));
+async function refreshNotifHist(opts){
+  const force = !!(opts && opts.force);
+  if (!force && NOTIF_HIST.length && (Date.now() - notifHistFetchedAt) < NOTIF_HIST_TTL_MS) {
+    computeUnread();
+    updateNotifUI();
+    return;
   }
-  computeUnread();
-  updateNotifUI();
+  if (notifHistInflight) {
+    if (!force) return notifHistInflight;
+    try { await notifHistInflight; } catch (e) {}
+  }
+  notifHistInflight = (async () => {
+    try {
+      const firstRun = localStorage.getItem(notifSeenKey()) === null;
+      NOTIF_HIST = await buildNotifHistory();
+      if (firstRun && SB && myId()) {
+        saveSeenNotifs(new Set(NOTIF_HIST.map(n => n.key)));
+      }
+      notifHistFetchedAt = Date.now();
+      computeUnread();
+      updateNotifUI();
+    } finally {
+      notifHistInflight = null;
+    }
+  })();
+  return notifHistInflight;
 }
 window.refreshNotifHist = refreshNotifHist;
 
@@ -1948,7 +1978,7 @@ async function openNotifHistory(){
   document.getElementById('notif-hist-modal').classList.remove('hidden');
   if (NOTIF_HIST.length) renderNotifHist();
   else document.getElementById('nh-list').innerHTML = '<div class="nh-empty">Chargement…</div>';
-  await refreshNotifHist();
+  await refreshNotifHist({ force: true });
   const openUnread = new Set(NOTIF_UNREAD);   // garde le surlignage "nouveau" pour cette ouverture
   renderNotifHist(openUnread);
   markAllNotifsSeen();                          // tout devient lu → compteur + badge remis à 0
@@ -2049,7 +2079,7 @@ async function flushOfflineQ(){
   saveOfflineQ(remaining);
   OFFLINE_FLUSHING = false;
   if (remaining.length < q.length) {
-    try { refreshNotifHist(); } catch (e) {}
+    try { refreshNotifHist({ force: true }); } catch (e) {}
     try {
       const cp = document.getElementById('conv-panel');
       if (cp && cp.classList.contains('open') && CONV_FID) loadConvMessages(CONV_FID, { silent: true });
@@ -2586,6 +2616,8 @@ window.addEventListener('DOMContentLoaded', () => {
   initSB();
   updateScoreDisplay();
   registerServiceWorker();
+  document.addEventListener('visibilitychange', syncMotionBudget);
+  syncMotionBudget();
   // Splash très court : supabase-js (defer) est déjà exécuté à DOMContentLoaded.
   setTimeout(boot, 80);
 });
@@ -2681,8 +2713,13 @@ function goPage(name) {
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nb').forEach(b => b.classList.toggle('on', b.dataset.page===name));
   if (name==='profil') updateP(); if (name==='amis') loadF(); if (name==='exploration') loadExploration(); if (name==='banquise') refreshNotifHist();
+  syncMotionBudget();
 }
 window.goPage = goPage;
+
+function syncMotionBudget(){
+  document.body.classList.toggle('bg-quiet', document.visibilityState === 'hidden');
+}
 
 function openPanel(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
 function closePanel(id) {
@@ -3435,7 +3472,7 @@ async function sendHornAnnouncement(){
   }
   toast('Corne de brume lancée — toute la colonie est prévenue 🐧');
   loadHornSent();
-  try { refreshNotifHist(); } catch (e) {}
+  try { refreshNotifHist({ force: true }); } catch (e) {}
 }
 window.sendHornAnnouncement = sendHornAnnouncement;
 
@@ -3472,7 +3509,7 @@ async function deleteHornAnnouncement(id){
   if (error) { toast('Erreur'); return; }
   toast('Corne rangée');
   loadHornSent();
-  try { refreshNotifHist(); } catch (e) {}
+  try { refreshNotifHist({ force: true }); } catch (e) {}
 }
 window.deleteHornAnnouncement = deleteHornAnnouncement;
 
@@ -5555,7 +5592,7 @@ window.stopGlide = stopGlide;
 // ════════════════════════════════════════════════
 function genStars(){
   const c=document.getElementById('st-c'); if(!c)return;
-  for(let i=0;i<38;i++){const s=document.createElement('div');s.className='star';const sz=rnd(1,3);s.style.cssText=`width:${sz}px;height:${sz}px;left:${rnd(0,100)}%;top:${rnd(0,82)}%;--d:${(2+Math.random()*4).toFixed(1)}s;--dl:${(Math.random()*4).toFixed(1)}s`;c.appendChild(s);}
+  for(let i=0;i<18;i++){const s=document.createElement('div');s.className='star';const sz=rnd(1,3);s.style.cssText=`width:${sz}px;height:${sz}px;left:${rnd(0,100)}%;top:${rnd(0,82)}%;--d:${(2+Math.random()*4).toFixed(1)}s;--dl:${(Math.random()*4).toFixed(1)}s`;c.appendChild(s);}
 }
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3000);}
 function tAgo(d){const df=Date.now()-d;const m=Math.floor(df/60000),h=Math.floor(df/3600000),dy=Math.floor(df/86400000);if(m<1)return'à l\'instant';if(m<60)return m+'min';if(h<24)return h+'h';return dy+'j';}
