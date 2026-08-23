@@ -278,7 +278,7 @@ button{cursor:pointer}
 .exp-node.right .exp-bubble { text-align: right; }
 .exp-dot { width: 20px; height: 20px; border-radius: 50%; background: #1a4a8a; border: 3px solid #fff; box-shadow: 0 0 8px rgba(26,74,138,.3); flex-shrink: 0; margin: 0 16px; z-index: 1; }
 .exp-dot.first { background: var(--gold); }
-.exp-photo { width: 100%; min-height: 88px; height: auto; max-height: 160px; object-fit: cover; border-radius: var(--r-sm); margin-bottom: 6px; display: block; background: rgba(10,22,40,.06); }
+.exp-photo { width: 100%; min-height: 48px; height: auto; max-height: 96px; object-fit: cover; border-radius: var(--r-sm); margin-bottom: 6px; display: block; background: rgba(10,22,40,.06); }
 .exp-photo-placeholder { width: 100%; height: 50px; background: rgba(10,22,40,.05); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 6px; color: #1a4a8a; }
 .exp-title { font-weight: 800; font-size: .88rem; color: #0a1628; margin-bottom: 2px; }
 .exp-date { font-size: .7rem; color: #1a4a8a; font-weight: 700; }
@@ -288,6 +288,27 @@ button{cursor:pointer}
 .expl-pingu-rank { font-size: .72rem; font-weight: 800; color: #1a4a8a; letter-spacing: .04em; text-align: center; opacity: .92; max-width: 320px; }
 .expl-pingu-label { font-size: .8rem; color: #1a4a8a; font-weight: 700; text-align: center; line-height: 1.35; max-width: 320px; }
 
+.nid-box { background: rgba(255,255,255,.88); border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-lg); padding: 14px; margin: 0 0 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+.nid-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.nid-title { font-weight: 800; font-size: .92rem; color: #0a1628; }
+.nid-sub { font-size: .72rem; font-weight: 600; color: rgba(10,22,40,.58); line-height: 1.4; margin-top: 3px; max-width: 240px; }
+.nid-form { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.nid-form.hidden { display: none; }
+.nid-form .ob-inp { background: rgba(10,22,40,.05); border-color: rgba(10,22,40,.1); }
+.nid-form .ob-inp input { color: #0a1628; }
+.nid-form .ob-inp input::placeholder { color: rgba(10,22,40,.4); }
+.nid-form .ob-inp input[type=date] { color-scheme: light; }
+.nid-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.nid-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fff; border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-md); }
+.nid-card .nid-nm { font-weight: 800; color: #0a1628; font-size: .88rem; }
+.nid-card .nid-days { font-family: var(--fd); font-weight: 800; font-size: 1.15rem; color: #1a4a8a; line-height: 1; }
+.nid-card .nid-meta { font-size: .7rem; font-weight: 600; color: rgba(10,22,40,.55); margin-top: 2px; }
+.nid-card .nid-bd { flex: 1; min-width: 0; }
+.nid-card.ended { opacity: .62; }
+.nid-mini { font-size: .72rem; font-weight: 800; padding: 6px 8px; border-radius: 10px; border: 1.5px solid rgba(26,74,138,.25); background: #fff; color: #1a4a8a; }
+.nid-mini.danger { color: #b91c1c; border-color: rgba(185,28,28,.3); }
+.share-opt { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; font-size: .8rem; font-weight: 700; color: #b8e0f7; margin: 2px 0 6px; }
+.share-opt input { width: 18px; height: 18px; accent-color: var(--teal); flex-shrink: 0; }
 .add-exp-form { background: #fff; border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-lg); padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,.1); color: #0a1628; }
 .add-exp-form h3 { font-family: var(--fd); font-size: 1.2rem; color: #0a1628; }
 .add-exp-form .ob-inp { background: rgba(10,22,40,.05); border-color: rgba(10,22,40,.1); }
@@ -449,6 +470,9 @@ button{cursor:pointer}
 .av-op.sel{border-color:var(--teal);background:rgba(78,205,196,.15)}
 .p-st{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
 @media(max-width:340px){.p-st{grid-template-columns:repeat(2,1fr)}}
+.stc-wide{grid-column:1/-1;padding:14px 10px}
+.stc-split{display:flex;width:100%;justify-content:space-around;gap:8px}
+.stc-split>div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
 .stc{background:rgba(10,22,40,.7);border:1.5px solid rgba(255,255,255,.12);border-radius:var(--r-md);padding:16px;display:flex;flex-direction:column;align-items:center;gap:4px}
 .stc-i{font-size:1.35rem}
 .stc-v{font-family:var(--fd);font-size:1.8rem;font-weight:800;color:#fff}
@@ -816,6 +840,22 @@ button{cursor:pointer}
           <button type="button" class="expl-delete-flow-btn" id="show-exp-delete-picker">Supprimer</button>
         </div>
       </div>
+      <div class="nid-box">
+        <div class="nid-head">
+          <div>
+            <div class="nid-title">Nids 🐧💕</div>
+            <div class="nid-sub">Couple, plan régulier… le compteur tourne tout seul, sans une expédition à chaque fois.</div>
+          </div>
+          <button type="button" class="add-exp-btn" onclick="toggleNidForm()">+ Nid</button>
+        </div>
+        <div class="nid-form hidden" id="nid-form">
+          <div class="ob-inp"><span class="ob-inp-ic">💌</span><input type="text" id="nid-name-in" placeholder="Prénom / surnom" maxlength="28"/></div>
+          <div class="ob-inp"><span class="ob-inp-ic">📅</span><input type="date" id="nid-since-in"/></div>
+          <button type="button" class="ob-btn" onclick="saveNid()">Enregistrer le nid</button>
+          <button type="button" class="cn-btn" onclick="toggleNidForm()" style="color:#1a4a8a;border-color:rgba(26,74,138,.3)">Annuler</button>
+        </div>
+        <div class="nid-list" id="nid-list"></div>
+      </div>
       <div class="expl-view-seg" role="tablist" aria-label="Affichage des expéditions">
         <button type="button" class="expl-view-btn on" id="expl-view-btn-timeline" data-expl-view="timeline">Frise</button>
         <button type="button" class="expl-view-btn" id="expl-view-btn-map" data-expl-view="map">Carte</button>
@@ -937,6 +977,12 @@ button{cursor:pointer}
         <div class="stc stc-hint" data-prof-hint="pingouins" tabindex="0" role="button" aria-label="Aide : pingouins"><div class="stc-i">🐧</div><div class="stc-v" id="st-p">0</div><div class="stc-l">Pingouins</div></div>
         <div class="stc stc-hint" data-prof-hint="orques" tabindex="0" role="button" aria-label="Aide : orques"><div class="stc-i">🐋</div><div class="stc-v" id="st-o">0</div><div class="stc-l">Orques</div></div>
         <div class="stc stc-hint" data-prof-hint="requins" tabindex="0" role="button" aria-label="Aide : requins"><div class="stc-i">🦈</div><div class="stc-v" id="st-r">0</div><div class="stc-l">Requins</div></div>
+        <div class="stc stc-wide stc-hint" data-prof-hint="records" tabindex="0" role="button" aria-label="Aide : record et plus courte série">
+          <div class="stc-split">
+            <div><div class="stc-i">🏆</div><div class="stc-v" id="st-best">0</div><div class="stc-l">Record</div></div>
+            <div><div class="stc-i">🧊</div><div class="stc-v" id="st-worst">—</div><div class="stc-l">Plus courte</div></div>
+          </div>
+        </div>
       </div>
       <div class="psec">
         <div class="sl">Progression</div>
@@ -1318,6 +1364,7 @@ button{cursor:pointer}
   <div class="mc-card share-preview-card" onclick="event.stopPropagation()">
     <h3>Ta story banquise</h3>
     <p style="margin:0;font-size:.82rem;color:#b8e0f7;font-weight:600">À poster avant la prochaine fonte ❄️</p>
+    <label class="share-opt"><input type="checkbox" id="share-include-records" onchange="onShareRecordsToggle()"/>Afficher mon record et ma plus courte série</label>
     <div class="share-preview-frame"><img class="share-preview-img" id="share-preview-img" alt="Aperçu de ta carte banquise"/></div>
     <div class="mb" style="flex-direction:column;width:100%">
       <button type="button" class="mca" onclick="confirmShareCard()">📤 Partager</button>
@@ -1391,6 +1438,7 @@ const PROF_HINT = {
   pingouins: { title: '🐧 Pingouins', body: '<p>Les blocs de <strong>30 jours complets</strong> dans la partie « milieu » de ta série.</p><p class="prof-hint-foot">1 pingouin = 30 mouettes · 6 pingouins = 1 orque</p>' },
   orques: { title: '🐋 Orques', body: '<p>Un palier de <strong>180 jours</strong> dans le reliquat ; l’affichage peut être <strong>0 ou 1</strong> selon où tu en es.</p><p class="prof-hint-foot">1 orque = 6 pingouins = 180 mouettes</p>' },
   requins: { title: '🦈 Requins', body: '<p>Une unité tous les <strong>360 jours</strong> de série sur la banquise.</p><p class="prof-hint-foot">1 requin = 2 orques = 12 pingouins = 360 mouettes</p>' },
+  records: { title: '🏆 Record & plus courte', body: '<p>Le <strong>record</strong>, c’est ta plus longue série (jours sans chasse), y compris celle en cours.</p><p>La <strong>plus courte</strong>, c’est le plus petit écart entre deux dates : du départ (ou d’un kill) jusqu’au kill suivant. Elle ne se calcule que quand une série se termine.</p>' },
 };
 const AVS = ['🐧','🐦','🐋','🦈','🦭','🐟','❄️','🌊','🏔️','⭐','🔥','🎯'];
 let avUsePhoto = false;   // true = l'avatar confirmé sera la photo
@@ -2046,7 +2094,7 @@ function initOfflineSync(){
 //  COMPRESSION D'IMAGE (avant upload)
 // ════════════════════════════════════════════════
 function compressImage(file, maxDim, quality){
-  maxDim = maxDim || 1280; quality = quality || 0.82;
+  maxDim = maxDim || 640; quality = quality == null ? 0.62 : quality;
   return new Promise((resolve) => {
     try {
       if (!file || !file.type || file.type.indexOf('image/') !== 0) { resolve({ blob: file, dataUrl: null }); return; }
@@ -2086,7 +2134,8 @@ function downloadDataUrl(dataUrl, filename){
 
 let SHARE_CARD = { blob: null, dataUrl: null };
 
-function buildStreakImageBlob(d){
+function buildStreakImageBlob(d, opts){
+  const showRecords = !!(opts && opts.showRecords);
   return new Promise((resolve) => {
     const W = 1080, H = 1920, CX = W / 2;
     const FONT = 'system-ui,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif';
@@ -2196,7 +2245,20 @@ function buildStreakImageBlob(d){
     setFont('700', labSize, false);
     x.fillStyle = '#7ff0dd';
     x.fillText(label, CX, y);
-    y += labSize + 36;
+    y += labSize + 20;
+
+    if (showRecords) {
+      const rec = liveStreakStats();
+      let recLine = 'Record  ' + rec.best + ' j';
+      if (rec.worst != null) recLine += '   ·   Plus courte  ' + rec.worst + ' j';
+      const recSize = fitSize(recLine, '600', 26, 18, innerW, false);
+      setFont('600', recSize, false);
+      x.fillStyle = 'rgba(251,191,36,.95)';
+      x.fillText(recLine, CX, y);
+      y += recSize + 28;
+    } else {
+      y += 16;
+    }
 
     x.strokeStyle = 'rgba(255,255,255,.14)'; x.lineWidth = 1.5;
     x.beginPath(); x.moveTo(CX - 120, y); x.lineTo(CX + 120, y); x.stroke();
@@ -2265,15 +2327,33 @@ function buildStreakImageBlob(d){
   });
 }
 
-async function openSharePreview(){
+async function refreshSharePreview(){
   const d = calcD();
-  toast('Préparation de l\'image… 🐧');
-  SHARE_CARD = await buildStreakImageBlob(d);
+  const chk = document.getElementById('share-include-records');
+  if (chk) {
+    try {
+      const saved = localStorage.getItem('mlp_share_records');
+      if (saved !== null && chk.dataset.ready !== '1') chk.checked = saved === '1';
+      chk.dataset.ready = '1';
+    } catch (e) {}
+  }
+  SHARE_CARD = await buildStreakImageBlob(d, { showRecords: !!(chk && chk.checked) });
   const img = document.getElementById('share-preview-img');
   if (img) img.src = SHARE_CARD.dataUrl || '';
+}
+async function openSharePreview(){
+  toast('Préparation de l\'image… 🐧');
+  await refreshSharePreview();
   document.getElementById('share-preview-modal').classList.remove('hidden');
 }
 window.shareStreakCard = openSharePreview;
+
+function onShareRecordsToggle(){
+  const chk = document.getElementById('share-include-records');
+  try { localStorage.setItem('mlp_share_records', (chk && chk.checked) ? '1' : '0'); } catch (e) {}
+  refreshSharePreview();
+}
+window.onShareRecordsToggle = onShareRecordsToggle;
 
 function closeSharePreview(){
   const mo = document.getElementById('share-preview-modal');
@@ -2391,7 +2471,10 @@ function rowToP(row) {
     banquise_public: row.banquise_public !== false,
     expedition_public: row.expedition_public === true,
     alert_friends: row.alert_friends !== false,
-    glacons: typeof row.glacons === 'number' && !isNaN(row.glacons) ? row.glacons : 0
+    glacons: typeof row.glacons === 'number' && !isNaN(row.glacons) ? row.glacons : 0,
+    streak_best: typeof row.streak_best === 'number' && !isNaN(row.streak_best) ? row.streak_best : 0,
+    streak_worst: (typeof row.streak_worst === 'number' && !isNaN(row.streak_worst)) ? row.streak_worst : null,
+    nids: Array.isArray(row.nids) ? row.nids : []
   };
 }
 async function pullScoresFromServer() {
@@ -2584,7 +2667,14 @@ async function syncProfile() {
       alert_friends: P.alert_friends !== false
     };
     if (P._passwordHashPending) row.password_hash = P._passwordHashPending;
-    await SB.from('profiles').upsert(row, { onConflict: 'id' });
+    if (typeof P.streak_best === 'number') row.streak_best = P.streak_best;
+    if (P.streak_worst == null || typeof P.streak_worst === 'number') row.streak_worst = P.streak_worst;
+    if (Array.isArray(P.nids)) row.nids = P.nids;
+    const { error } = await SB.from('profiles').upsert(row, { onConflict: 'id' });
+    if (error) {
+      delete row.streak_best; delete row.streak_worst; delete row.nids;
+      await SB.from('profiles').upsert(row, { onConflict: 'id' });
+    }
     if (P._passwordHashPending) delete P._passwordHashPending;
   } catch (e) {}
 }
@@ -2605,6 +2695,7 @@ function enterApp() {
   document.getElementById('splash').classList.remove('active'); document.getElementById('onboarding').classList.remove('active');
   document.getElementById('app').classList.add('active');
   updateScoreDisplay(); updateB(); updateP(); checkBadges();
+  renderNids();
   updateNotifPermissionUI();
   initNotifPolling();
   refreshPasswordBanner();
@@ -2619,7 +2710,7 @@ function goPage(name) {
   document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nb').forEach(b => b.classList.toggle('on', b.dataset.page===name));
-  if (name==='profil') updateP(); if (name==='amis') loadF(); if (name==='exploration') loadExploration(); if (name==='banquise') refreshNotifHist();
+  if (name==='profil') updateP(); if (name==='amis') loadF(); if (name==='exploration') { loadExploration(); renderNids(); } if (name==='banquise') refreshNotifHist();
 }
 window.goPage = goPage;
 
@@ -2810,7 +2901,7 @@ function onPN() {
 async function finishOnboardingNoSupabase(sd) {
   const uid = genUUID();
   localStorage.setItem('mlp_id', uid);
-  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
+  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0, streak_best: 0, streak_worst: null, nids: [] };
   localStorage.setItem('mlp_v2', JSON.stringify(P));
   await syncProfile();
   if (P.notif_enabled) askNotificationPermission();
@@ -2859,7 +2950,7 @@ async function onPassDone() {
   e.textContent = 'Création…';
   const uid = genUUID();
   localStorage.setItem('mlp_id', uid);
-  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
+  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0, streak_best: 0, streak_worst: null, nids: [] };
   localStorage.setItem('mlp_v2', JSON.stringify(P));
   try {
     P._passwordHashPending = await pbkdf2HashPassword(pw);
@@ -2883,6 +2974,33 @@ function calcD(){
 function calcDF(sd,kd){
   const ref=kd||sd; const d=new Date(ref),now=new Date(); now.setHours(0,0,0,0); d.setHours(0,0,0,0);
   return Math.max(0,Math.floor((now-d)/86400000));
+}
+function daysBetween(a,b){
+  if(!a||!b) return 0;
+  const d1=new Date(a), d2=new Date(b);
+  d1.setHours(0,0,0,0); d2.setHours(0,0,0,0);
+  return Math.max(0,Math.floor((d2-d1)/86400000));
+}
+function liveStreakStats(){
+  const cur=calcD();
+  const best=Math.max(cur, (P && typeof P.streak_best==='number') ? P.streak_best : 0);
+  const worst=(P && typeof P.streak_worst==='number') ? P.streak_worst : null;
+  return { cur, best, worst };
+}
+function persistLiveStreakBest(){
+  if(!P) return;
+  const s=liveStreakStats();
+  if((P.streak_best||0) < s.best){
+    P.streak_best=s.best;
+    try { localStorage.setItem('mlp_v2',JSON.stringify(P)); } catch(e) {}
+  }
+}
+function recordEndedStreak(endedDays){
+  if(!P || endedDays==null || endedDays<0) return;
+  P.streak_best=Math.max(P.streak_best||0, endedDays);
+  if(endedDays>0){
+    P.streak_worst=(typeof P.streak_worst==='number') ? Math.min(P.streak_worst, endedDays) : endedDays;
+  }
 }
 function bd(days){ let r=days; const rq=Math.floor(r/360);r%=360; const oq=Math.floor(r/180);r%=180; const pq=Math.floor(r/30);r%=30; return{r:rq,o:oq,p:pq,m:r}; }
 function banquiseAnimalTotal(days){ const x=bd(days); return (x.r||0)+(x.o||0)+(x.p||0)+(x.m||0); }
@@ -2993,6 +3111,7 @@ function refreshExplWaitPenguinVisual(){
 function updateB(){
   const d=calcD(); renderAL(d); renderACD(d);
   document.getElementById('days-num').textContent=d; document.getElementById('streak-num').textContent=d;
+  persistLiveStreakBest();
   refreshExplWaitPenguinVisual();
   try{ checkMilestone(d); }catch(e){}
 }
@@ -3072,6 +3191,8 @@ window.doKillAntidate=doKillAntidate;
 
 async function doKill(killDate){
   closeKill(); const today=(typeof killDate==='string'&&killDate)?killDate:new Date().toISOString().slice(0,10);
+  const prevRef=P.last_kill_date||P.start_date;
+  recordEndedStreak(daysBetween(prevRef, today));
   P.last_kill_date=today; P.kills=(P.kills||0)+1; localStorage.setItem('mlp_v2',JSON.stringify(P));
   resetMilestones();
   if(SB&&P.alert_friends){
@@ -3163,6 +3284,106 @@ async function doRepeuple(){
   toast(d>0?`🐧 Banquise repeuplée ! Compteur à ${d} jour${d>1?'s':''}.`:'🐧 Banquise repeuplée ! Compteur remis à aujourd\'hui.');
 }
 window.doRepeuple=doRepeuple;
+
+function getNids(){
+  if(!P) return [];
+  if(!Array.isArray(P.nids)) P.nids=[];
+  return P.nids;
+}
+function saveNidsLocal(){
+  if(!P) return;
+  try { localStorage.setItem('mlp_v2', JSON.stringify(P)); } catch(e) {}
+}
+function nidDays(n){
+  const end = n.until || new Date().toISOString().slice(0,10);
+  return daysBetween(n.since, end);
+}
+function toggleNidForm(){
+  const f=document.getElementById('nid-form');
+  if(!f) return;
+  const open=f.classList.contains('hidden');
+  f.classList.toggle('hidden', !open);
+  if(open){
+    const name=document.getElementById('nid-name-in');
+    const dt=document.getElementById('nid-since-in');
+    if(name) name.value='';
+    if(dt){ const t=new Date().toISOString().slice(0,10); dt.max=t; dt.value=t; }
+  }
+}
+window.toggleNidForm=toggleNidForm;
+
+async function saveNid(){
+  if(!P) return;
+  const name=((document.getElementById('nid-name-in')||{}).value||'').trim();
+  const since=((document.getElementById('nid-since-in')||{}).value||'').trim();
+  if(name.length<1){ toast('Il faut un prénom ou un surnom 🐧'); return; }
+  if(!since){ toast('Choisis depuis quand'); return; }
+  const today=new Date().toISOString().slice(0,10);
+  if(since>today){ toast('Pas dans le futur 🐧'); return; }
+  getNids().unshift({ id: genUUID(), name, since, until: null });
+  saveNidsLocal();
+  await syncProfile();
+  toggleNidForm();
+  renderNids();
+  toast('Nid installé 🐧💕');
+}
+window.saveNid=saveNid;
+
+async function endNid(id){
+  const n=getNids().find(x=>x.id===id);
+  if(!n) return;
+  n.until=new Date().toISOString().slice(0,10);
+  saveNidsLocal();
+  await syncProfile();
+  renderNids();
+}
+window.endNid=endNid;
+
+async function reopenNid(id){
+  const n=getNids().find(x=>x.id===id);
+  if(!n) return;
+  n.until=null;
+  saveNidsLocal();
+  await syncProfile();
+  renderNids();
+}
+window.reopenNid=reopenNid;
+
+async function deleteNid(id){
+  if(!confirm('Retirer ce nid ?')) return;
+  P.nids=getNids().filter(x=>x.id!==id);
+  saveNidsLocal();
+  await syncProfile();
+  renderNids();
+}
+window.deleteNid=deleteNid;
+
+function renderNids(){
+  const el=document.getElementById('nid-list');
+  if(!el) return;
+  const list=getNids();
+  if(!list.length){
+    el.innerHTML='<div style="font-size:.78rem;font-weight:600;color:rgba(10,22,40,.45);padding:4px 2px">Aucun nid pour l’instant. Pour un couple ou une habitude, ça évite de logger chaque fois.</div>';
+    return;
+  }
+  el.innerHTML=list.map(n=>{
+    const ended=!!n.until;
+    const d=nidDays(n);
+    const since=n.since?new Date(n.since).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}):'';
+    const sub=ended
+      ? ('Terminé · '+d+' jour'+(d>1?'s':'')+' ensemble')
+      : ('Depuis '+since);
+    const act=ended
+      ? '<button type="button" class="nid-mini" onclick="reopenNid(\''+n.id+'\')">Reprendre</button>'
+      : '<button type="button" class="nid-mini" onclick="endNid(\''+n.id+'\')">Clore</button>';
+    return '<div class="nid-card'+(ended?' ended':'')+'">'
+      + '<div class="nid-bd"><div class="nid-nm">'+escHTML(n.name)+'</div><div class="nid-meta">'+escHTML(sub)+'</div></div>'
+      + '<div class="nid-days">'+d+'<span style="font-size:.62rem;font-weight:800;color:rgba(26,74,138,.7);margin-left:3px">j</span></div>'
+      + act
+      + '<button type="button" class="nid-mini danger" onclick="deleteNid(\''+n.id+'\')">✕</button>'
+      + '</div>';
+  }).join('');
+}
 
 // ════════════════════════════════════════════════
 //  QUESTIONS (boîte à questions publique, modérée)
@@ -3413,6 +3634,10 @@ function updateP(){
   document.getElementById('st-ice').textContent=P.glacons||0;
   document.getElementById('st-d').textContent=d; document.getElementById('st-m').textContent=m;
   document.getElementById('st-p').textContent=p; document.getElementById('st-o').textContent=o; document.getElementById('st-r').textContent=r;
+  persistLiveStreakBest();
+  const rec=liveStreakStats();
+  const bestEl=document.getElementById('st-best'); if(bestEl) bestEl.textContent=rec.best;
+  const worstEl=document.getElementById('st-worst'); if(worstEl) worstEl.textContent=(rec.worst==null?'—':rec.worst);
   
   document.getElementById('notif-tog').classList.toggle('on',!!P.notif_enabled);
   document.getElementById('notif-sub').style.display=P.notif_enabled!==false?'flex':'none';
@@ -4562,12 +4787,12 @@ async function saveExpedition(){
   let photoUrl=null;
   const prevExp=editingExpeditionId?explorationExps.find(e=>String(e.id)===String(editingExpeditionId)):null;
   const prevImg=prevExp?expeditionImageUrl(prevExp):'';
-  if(prevImg) photoUrl=prevImg;
+  if(prevImg && String(prevImg).indexOf('http')===0) photoUrl=prevImg;
   if(expPhotoRemoved) photoUrl=null;
 
   let expCompUrl=null;
   if(selectedPhotoFile){
-    const comp=await compressImage(selectedPhotoFile,1280,0.82);
+    const comp=await compressImage(selectedPhotoFile,640,0.6);
     expCompUrl=comp.dataUrl;
     if(SB){
       try{
@@ -4578,13 +4803,14 @@ async function saveExpedition(){
           photoUrl=urlData?.publicUrl||null;
         }
       }catch(e){console.warn('Photo upload:',e.message);}
+    } else {
+      photoUrl=expCompUrl||selectedPhotoB64||photoUrl;
     }
   }
-  if(!photoUrl&&(expCompUrl||selectedPhotoB64)) photoUrl=expCompUrl||selectedPhotoB64;
 
   const placeEl=document.getElementById('exp-place-in');
   const placeTxt=placeEl?placeEl.value.trim():'';
-  const exp={title,note:note||null,exp_date:date,photo_url:photoUrl};
+  const exp={title,note:note||null,exp_date:date,photo_url:(photoUrl && String(photoUrl).indexOf('http')===0)?photoUrl:(SB?null:photoUrl)};
   if(expPendingLat!=null&&expPendingLng!=null){
     exp.geo_lat=expPendingLat; exp.geo_lng=expPendingLng;
     exp.geo_label=(placeTxt||expPlaceLabel||'').trim()||null;
@@ -4691,7 +4917,10 @@ function mergeLocalGeoOntoRemoteRow(remoteRow, localRow){
   }
   const hasRemotePhoto = !!(out.photo_url || out.photoUrl || out.photo);
   const localPhoto = localRow.photo_url || localRow.photoUrl || localRow.photo;
-  if (!hasRemotePhoto && localPhoto) out = { ...out, photo_url: localPhoto };
+  if (!hasRemotePhoto && localPhoto) {
+    const s = String(localPhoto);
+    if (s.indexOf('http') === 0 || (s.indexOf('data:') === 0 && s.length < 80000)) out = { ...out, photo_url: localPhoto };
+  }
   return out;
 }
 
@@ -4716,7 +4945,8 @@ async function attachExpeditionPhotos(rows){
       try {
         const { data, error } = await SB.from('expeditions').select('photo_url').eq('id', row.id).maybeSingle();
         if (error || !data || !data.photo_url) return;
-        row.photo_url = data.photo_url;
+        const u = String(data.photo_url);
+        if (u.indexOf('http') === 0) row.photo_url = u;
       } catch (e) {}
     }));
   }
