@@ -31,7 +31,7 @@
 html,body{width:100%;height:100%;overflow:hidden;background:var(--night)}
 body{font-family:var(--fb);color:#fff;-webkit-font-smoothing:antialiased;overscroll-behavior:none;user-select:none;-webkit-tap-highlight-color:transparent}
 input,textarea,button{font-family:var(--fb);border:none;outline:none}
-button{cursor:pointer}
+button{cursor:pointer;touch-action:manipulation}
 .hidden{display:none!important}
 .bsp{height:56px}
 
@@ -350,7 +350,7 @@ button{cursor:pointer}
 .fl{display:flex;flex-direction:column;gap:8px}
 .ef{display:flex;flex-direction:column;align-items:center;gap:12px;padding:38px 20px;background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:var(--r-lg);text-align:center}
 .ef p{font-size:.86rem;color:rgba(255,255,255,.6);line-height:1.65;font-weight:600}
-.fc{display:flex;align-items:center;gap:12px;background:rgba(10,22,40,.7);border:1.5px solid rgba(255,255,255,.12);border-radius:var(--r-md);padding:13px 15px;cursor:pointer;transition:background .2s}
+.fc{display:flex;align-items:center;gap:12px;background:rgba(10,22,40,.7);border:1.5px solid rgba(255,255,255,.12);border-radius:var(--r-md);padding:13px 15px;cursor:pointer;transition:background .2s;touch-action:manipulation}
 .fc:active{background:rgba(42,111,168,.2)}
 .fc-av{font-size:1.9rem;width:42px;text-align:center}
 .fc-av.fc-av-click{cursor:pointer;border-radius:50%;transition:transform .2s,box-shadow .2s}
@@ -1419,6 +1419,12 @@ let P = null, SB = null, MODE = 'date', SEL_AV = '🐧';
 let SEL_LEAGUE_EMOJI = '🐧';
 let LEAGUE_CREATE_TYPE = null;
 let CONV_FID = null, CONV_FNM = null, CONV_POLL = null;
+let CONV_MSG_SIG = '';
+let CONV_RENDERED_FID = null;
+let CONV_RENDERED_IDS = [];
+let explLoadSeq = 0;
+let friendExplSeq = 0;
+let friendExplFid = null;
 let BEST_SCORES = {fishing:0, maze:0, memory:0, glide:0};
 let selectedPhotoFile = null, selectedPhotoB64 = null;
 let editingExpeditionId = null;
@@ -2580,9 +2586,8 @@ window.addEventListener('DOMContentLoaded', () => {
   initSB();
   updateScoreDisplay();
   registerServiceWorker();
-  // Avant : délai fixe de 2 s avant le démarrage (splash purement décoratif).
-  // On démarre dès que possible ; le splash reste affiché un court instant.
-  setTimeout(boot, 450);
+  // Splash très court : supabase-js (defer) est déjà exécuté à DOMContentLoaded.
+  setTimeout(boot, 80);
 });
 
 function registerServiceWorker() {
@@ -2666,6 +2671,9 @@ function enterApp() {
   initOfflineSync();
   /** Scores : sans cet appel, seul le localStorage (mlp_scores) compte ; le serveur n’est lu qu’après login MDP. */
   void pullScoresFromServer();
+  const prefetchFriends = () => { try { if (SB && myId()) loadF(); } catch (e) {} };
+  if (typeof requestIdleCallback === 'function') requestIdleCallback(prefetchFriends, { timeout: 1800 });
+  else setTimeout(prefetchFriends, 700);
 }
 
 function goPage(name) {
@@ -3709,7 +3717,8 @@ async function loadF(){
     await renderLeaguesBar();
     return;
   }
-  listEl.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:20px;font-size:.85rem">Chargement…</div>';
+  const keepList=!!(listEl&&listEl.querySelector('.fc'));
+  if(!keepList) listEl.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:20px;font-size:.85rem">Chargement…</div>';
   try{
     let fs=null, error=null;
     {
@@ -3760,7 +3769,10 @@ async function loadF(){
         </div>
       </div>`;
     }).join('');
-  }catch(e){listEl.innerHTML=`<div class="ef"><p style="color:#f87171">Erreur : ${e.message}</p></div>`;}
+  }catch(e){
+    if(listEl&&listEl.querySelector('.fc')) toast('Amis : réseau capricieux 🐧');
+    else if(listEl) listEl.innerHTML=`<div class="ef"><p style="color:#f87171">Erreur : ${e.message}</p></div>`;
+  }
   await renderLeaguesBar();
 }
 
@@ -4145,31 +4157,26 @@ async function loadFriendExpeditions(fid, isPublic){
   const sec=document.getElementById('friend-exp-section');
   const nodes=document.getElementById('friend-expl-nodes');
   if(!sec||!nodes)return;
-  if(!isPublic){ sec.classList.add('hidden'); nodes.innerHTML=''; return; }
+  if(!isPublic){ sec.classList.add('hidden'); nodes.innerHTML=''; friendExplFid=null; return; }
   sec.classList.remove('hidden');
-  nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem">Chargement…</div>';
+  const seq=++friendExplSeq;
+  const keep=friendExplFid===fid && !!nodes.querySelector('.exp-node');
+  friendExplFid=fid;
+  if(!keep) nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem">Chargement…</div>';
   if(!SB){ nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem">Indisponible hors-ligne.</div>'; return; }
   try{
     let remote = await fetchExpeditionMeta(fid);
-    remote = await attachExpeditionPhotos(remote);
     const exps=remote||[];
     if(!exps.length){ nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem;font-weight:600">Aucune expédition partagée pour l\'instant 🗺️</div>'; return; }
-    nodes.innerHTML=exps.map((exp,i)=>{
-      const side=i%2===0?'left':'right'; const isFirst=i===0;
-      const imgUrl=expeditionImageUrl(exp);
-      const photoHtml=imgUrl?`<img class="exp-photo" src="${String(imgUrl).replace(/"/g,'&quot;')}" alt="" loading="lazy" decoding="async"/>`:`<div class="exp-photo-placeholder">🏔️</div>`;
-      const dateStr=new Date(exp.exp_date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
-      return '<div class="exp-node '+side+'">'
-        + '<div class="exp-dot'+(isFirst?' first':'')+'"></div>'
-        + '<div class="exp-bubble"><div class="exp-bubble-inner">'
-        + photoHtml
-        + '<div class="exp-title">'+escHTML(exp.title)+'</div>'
-        + '<div class="exp-date">📅 '+dateStr+'</div>'
-        + (exp.note?'<div class="exp-note">'+escHTML(exp.note)+'</div>':'')
-        + '</div></div></div>';
-    }).join('');
+    paintExplTimeline(nodes, exps, { animate: !keep });
+    void attachExpeditionPhotos(exps).then(rows=>{
+      if(seq!==friendExplSeq) return;
+      (rows||[]).forEach(e=>paintExpPhoto(nodes, e));
+    });
   }catch(e){
-    nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem">Impossible de charger les expéditions.</div>';
+    if(!nodes.querySelector('.exp-node')){
+      nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem">Impossible de charger les expéditions.</div>';
+    }
   }
 }
 window.loadFriendExpeditions=loadFriendExpeditions;
@@ -4189,7 +4196,44 @@ function msgMetaRow(cls,time,isMine,m){
   return`<div class="msg-meta ${cls}"><span class="msg-time-text">${time}</span>${msgReceiptTicks(isMine,m)}</div>`;
 }
 
+function convMsgSig(msgs){
+  return (msgs||[]).map(m=>String(m.id)+':'+(m.read===true||m.read==='t'||m.read===1?'1':'0')).join('|');
+}
+function convMsgHtml(m){
+  const isMine=m.from_id===myId(); const cls=isMine?'sent':'recv'; const time=tAgo(new Date(m.created_at));
+  const animalEmoji={mouette:'🐦',pingouin:'🐧',orque:'🐋',requin:'🦈',iceberg:'🧊'};
+  let inner;
+  if(m.animal){
+    const emoji=animalEmoji[m.animal]||'🎁'; const label=m.animal.charAt(0).toUpperCase()+m.animal.slice(1);
+    inner=`<div class="msg-bubble animal">${emoji} ${label} offert${isMine?' !':' par '+CONV_FNM+' !'}</div>`;
+  } else {
+    inner=`<div class="msg-bubble ${cls}">${escHTML(m.text||'')}</div>`;
+  }
+  return`<div class="msg-bubble-wrap ${cls}" data-msg-id="${escHTML(String(m.id))}">${inner}${msgMetaRow(cls,time,isMine,m)}</div>`;
+}
+function convPaintAll(body, msgs){
+  body.innerHTML=(msgs||[]).map(convMsgHtml).join('');
+}
+function convAppend(body, msgs){
+  if(!msgs||!msgs.length)return;
+  const wrap=document.createElement('div');
+  wrap.innerHTML=msgs.map(convMsgHtml).join('');
+  while(wrap.firstChild) body.appendChild(wrap.firstChild);
+}
+function convUpdateTicks(body, msgs){
+  (msgs||[]).forEach(m=>{
+    if(m.from_id!==myId())return;
+    const el=body.querySelector('[data-msg-id="'+String(m.id).replace(/"/g,'')+'"] .msg-ticks');
+    if(!el)return;
+    const lu=m.read===true||m.read==='t'||m.read===1;
+    el.className=lu?'msg-ticks read':'msg-ticks delivered';
+    el.title=lu?'Lu':'Délivré';
+    el.setAttribute('aria-label', lu?'Lu':'Délivré');
+  });
+}
+
 async function openConv(fid,fnm,fav,favUrl){
+  if(CONV_FID!==fid){ CONV_MSG_SIG=''; CONV_RENDERED_IDS=[]; CONV_RENDERED_FID=null; }
   CONV_FID=fid; CONV_FNM=fnm;
   document.getElementById('conv-title').textContent=fnm; document.getElementById('conv-subtitle').innerHTML=avatarHTML(fav,favUrl||null,18)+' <span style="vertical-align:middle">En ligne</span>';
   if(CONV_POLL){ clearInterval(CONV_POLL); CONV_POLL=null; }
@@ -4210,23 +4254,33 @@ async function loadConvMessages(fid, opts){
   if(!SB||!myId()){ if(!silent) body.innerHTML=''; return; }
   const nearBottom=silent && body.scrollHeight-body.scrollTop-body.clientHeight<120;
   try{
-    if(!silent) body.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.3);padding:20px;font-size:.85rem">Chargement…</div>';
+    const hasBubbles=!!body.querySelector('.msg-bubble-wrap');
+    if(!silent && (CONV_RENDERED_FID!==fid || !hasBubbles)){
+      body.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.3);padding:20px;font-size:.85rem">Chargement…</div>';
+    }
     const{data:msgs}=await SB.from('messages').select('*').or(`and(from_id.eq.${myId()},to_id.eq.${fid}),and(from_id.eq.${fid},to_id.eq.${myId()})`).order('created_at',{ascending:true}).limit(50);
+    if(CONV_FID!==fid) return;
     if(!msgs||!msgs.length){
+      CONV_MSG_SIG=''; CONV_RENDERED_IDS=[]; CONV_RENDERED_FID=fid;
       if(!silent) body.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.25);padding:40px 20px;font-size:.85rem;font-weight:600">Aucun message encore 🐧<br/>Dis bonjour !</div>';
       return;
     }
-    const animalEmoji={mouette:'🐦',pingouin:'🐧',orque:'🐋',requin:'🦈',iceberg:'🧊'};
-    body.innerHTML=msgs.map(m=>{
-      const isMine=m.from_id===myId(); const cls=isMine?'sent':'recv'; const time=tAgo(new Date(m.created_at));
-      if(m.animal){
-        const emoji=animalEmoji[m.animal]||'🎁'; const label=m.animal.charAt(0).toUpperCase()+m.animal.slice(1);
-        return`<div class="msg-bubble-wrap ${cls}"><div class="msg-bubble animal">${emoji} ${label} offert${isMine?' !':' par '+CONV_FNM+' !'}</div>${msgMetaRow(cls,time,isMine,m)}</div>`;
-      }
-      return`<div class="msg-bubble-wrap ${cls}"><div class="msg-bubble ${cls}">${escHTML(m.text||'')}</div>${msgMetaRow(cls,time,isMine,m)}</div>`;
-    }).join('');
-    setTimeout(()=>{ if(!silent||nearBottom) body.scrollTop=body.scrollHeight; }, silent?50:100);
-    // Lire une conversation marque ses messages comme "lus" dans la boîte aux lettres (compteur + badge).
+    const sig=convMsgSig(msgs);
+    const ids=msgs.map(m=>m.id);
+    if(silent && sig===CONV_MSG_SIG && CONV_RENDERED_FID===fid) return;
+    const canAppend=silent && CONV_RENDERED_FID===fid && CONV_RENDERED_IDS.length && ids.length>CONV_RENDERED_IDS.length
+      && CONV_RENDERED_IDS.every((id,i)=>id===ids[i]) && hasBubbles;
+    if(canAppend){
+      convAppend(body, msgs.slice(CONV_RENDERED_IDS.length));
+      convUpdateTicks(body, msgs);
+      if(nearBottom) setTimeout(()=>{ body.scrollTop=body.scrollHeight; }, 40);
+    } else {
+      convPaintAll(body, msgs);
+      setTimeout(()=>{ if(!silent||nearBottom) body.scrollTop=body.scrollHeight; }, silent?40:80);
+    }
+    CONV_MSG_SIG=sig;
+    CONV_RENDERED_IDS=ids;
+    CONV_RENDERED_FID=fid;
     try{ markNotifsSeen(msgs.filter(m=>m.from_id===fid).map(m=>'msg_'+m.id)); }catch(e){}
   }catch(e){ if(!silent) body.innerHTML=`<div style="color:#f87171;padding:20px">Erreur : ${e.message}</div>`; }
 }
@@ -4551,6 +4605,49 @@ function expeditionImageUrl(exp){
   return String(u).trim();
 }
 
+function expNodeHtml(exp, i, opts){
+  const side=i%2===0?'left':'right';
+  const isFirst=i===0;
+  const imgUrl=expeditionImageUrl(exp);
+  const photoHtml=imgUrl
+    ? `<img class="exp-photo" src="${String(imgUrl).replace(/"/g,'&quot;')}" alt="" loading="lazy" decoding="async"/>`
+    : `<div class="exp-photo-placeholder">🏔️</div>`;
+  const dateStr=new Date(exp.exp_date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
+  const anim=(opts&&opts.animate)?` style="animation:slideIn .4s ease ${Math.min(i,5)*0.07}s both"`:'';
+  return '<div class="exp-node '+side+'" data-exp-id="'+escHTML(String(exp.id))+'"'+anim+'>'
+    + '<div class="exp-dot'+(isFirst?' first':'')+'"></div>'
+    + '<div class="exp-bubble"><div class="exp-bubble-inner">'
+    + photoHtml
+    + '<div class="exp-title">'+escHTML(exp.title)+'</div>'
+    + '<div class="exp-date">📅 '+dateStr+'</div>'
+    + (exp.note?'<div class="exp-note">'+escHTML(exp.note)+'</div>':'')
+    + '</div></div></div>';
+}
+
+function paintExpPhoto(root, exp){
+  const url=expeditionImageUrl(exp);
+  if(!url||!exp||exp.id==null||!root)return;
+  const node=root.querySelector('.exp-node[data-exp-id="'+String(exp.id).replace(/"/g,'')+'"]');
+  if(!node)return;
+  const inner=node.querySelector('.exp-bubble-inner');
+  if(!inner)return;
+  const existing=inner.querySelector('.exp-photo, .exp-photo-placeholder');
+  if(existing && existing.tagName==='IMG' && existing.getAttribute('src')===url)return;
+  const img=document.createElement('img');
+  img.className='exp-photo';
+  img.alt='';
+  img.loading='lazy';
+  img.decoding='async';
+  img.src=url;
+  if(existing) existing.replaceWith(img);
+  else inner.insertBefore(img, inner.firstChild);
+}
+
+function paintExplTimeline(nodesEl, exps, opts){
+  if(!nodesEl)return;
+  nodesEl.innerHTML=(exps||[]).map((exp,i)=>expNodeHtml(exp,i,opts)).join('');
+}
+
 function hideAllExpPickers(){
   const e=document.getElementById('exp-edit-picker');
   const d=document.getElementById('exp-delete-picker');
@@ -4856,15 +4953,26 @@ window.retryLoadExploration=retryLoadExploration;
 
 async function loadExploration(){
   const nodesEl=document.getElementById('expl-nodes');
+  const seq=++explLoadSeq;
   let remote=[]; let remoteFailed=false;
   const local=JSON.parse(localStorage.getItem('mlp_exps')||'[]');
   const localById=new Map();
   local.forEach(e=>{ if(e&&e.id!=null)localById.set(String(e.id),e); });
+  const hadNodes=!!(nodesEl&&nodesEl.querySelector('.exp-node'));
+  if(local.length && !hadNodes){
+    const quick=local.slice().sort((a,b)=>new Date(a.exp_date)-new Date(b.exp_date));
+    mergeExpGeoInto(quick);
+    explorationExps=quick;
+    paintExplTimeline(nodesEl, quick, { animate:false });
+    populateExpeditionSelectors();
+    const lastQ=quick[quick.length-1];
+    explLastDaysWaiting=calcDF(lastQ.exp_date,null);
+    renderExplorationEndPenguin(explLastDaysWaiting);
+  }
   if(SB){
     try{
       remote = await fetchExpeditionMeta(myId());
       remote=remote.map(e=>mergeLocalGeoOntoRemoteRow(e, localById.get(String(e.id))));
-      remote = await attachExpeditionPhotos(remote);
     }catch(e){ remoteFailed=true; }
   }
   const byId=new Map();
@@ -4918,25 +5026,22 @@ async function loadExploration(){
   renderExplorationEndPenguin(daysWaiting);
   document.getElementById('expl-wait-label').textContent=daysWaiting===0?'Expédition du jour ! 🎉':daysWaiting===1?'Hier… les empreintes sont encore fraîches 🐾':`Depuis ${daysWaiting} jours… le pingouin attend patiemment 🎒`;
 
-  nodesEl.innerHTML=exps.map((exp,i)=>{
-    const side=i%2===0?'left':'right'; const isFirst=i===0;
-    const imgUrl=expeditionImageUrl(exp);
-    const photoHtml=imgUrl?`<img class="exp-photo" src="${String(imgUrl).replace(/"/g,'&quot;')}" alt="" loading="lazy" decoding="async"/>`:`<div class="exp-photo-placeholder">🏔️</div>`;
-    const dateStr=new Date(exp.exp_date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
-    return`
-      <div class="exp-node ${side}" style="animation:slideIn .4s ease ${i*0.1}s both">
-        <div class="exp-dot${isFirst?' first':''}"></div>
-        <div class="exp-bubble">
-          <div class="exp-bubble-inner">
-          ${photoHtml}
-          <div class="exp-title">${escHTML(exp.title)}</div>
-          <div class="exp-date">📅 ${dateStr}</div>
-          ${exp.note?`<div class="exp-note">${escHTML(exp.note)}</div>`:''}
-          </div>
-        </div>
-      </div>`;
-  }).join('');
+  paintExplTimeline(nodesEl, exps, { animate: false });
   populateExpeditionSelectors();
+  if(SB && !remoteFailed){
+    void attachExpeditionPhotos(exps).then(rows=>{
+      if(seq!==explLoadSeq) return;
+      (rows||[]).forEach(e=>{
+        const i=explorationExps.findIndex(x=>String(x.id)===String(e.id));
+        if(i>=0 && e.photo_url) explorationExps[i]={...explorationExps[i], photo_url:e.photo_url};
+        paintExpPhoto(nodesEl, e);
+      });
+      try{
+        const slim=explorationExps.map(e=>{ const o={...e}; delete o._lat; delete o._lng; delete o._placeLabel; if(typeof o.photo_url==='string'&&o.photo_url.startsWith('data:')) o.photo_url=null; return o; });
+        localStorage.setItem('mlp_exps',JSON.stringify(slim));
+      }catch(e){}
+    });
+  }
   // En vue carte, setExplorationView() (appelé plus haut) a déjà programmé le
   // rafraîchissement des marqueurs ; sinon on met juste à jour si la carte existe.
   if (getExplorationView() === 'map') refreshExplorationMap();

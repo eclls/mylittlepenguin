@@ -3,7 +3,8 @@
  * quand le réseau est capricieux, typiquement en raccourci écran d'accueil iOS).
  *
  * Stratégies :
- *  - Navigation (HTML)            : réseau d'abord, repli sur le cache (puis index.html).
+ *  - Navigation (HTML)            : cache d'abord, mise à jour réseau en fond
+ *                                   (repli réseau si le cache est vide).
  *  - Assets statiques même origine: stale-while-revalidate.
  *  - CDN (jsDelivr, Google Fonts) : stale-while-revalidate.
  *  - Supabase (API/Storage)       : réseau uniquement (jamais en cache).
@@ -59,17 +60,24 @@ self.addEventListener('fetch', (event) => {
     return; // laisse le navigateur faire (réseau direct)
   }
 
-  // Navigation (chargement de page) : réseau d'abord, repli cache.
+  // Navigation : cache d'abord (ouverture iOS instantanée), réseau en fond.
   if (req.mode === 'navigate') {
-    event.respondWith(
-      fetch(req)
+    event.respondWith((async () => {
+      const cached = (await caches.match(req)) || (await caches.match('./index.html'));
+      const network = fetch(req)
         .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE_VERSION).then((c) => c.put('./index.html', copy)).catch(() => {});
+          if (res && res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE_VERSION).then((c) => {
+              c.put('./index.html', copy.clone()).catch(() => {});
+              c.put(req, copy).catch(() => {});
+            }).catch(() => {});
+          }
           return res;
         })
-        .catch(() => caches.match(req).then((r) => r || caches.match('./index.html')))
-    );
+        .catch(() => cached);
+      return cached || network;
+    })());
     return;
   }
 
