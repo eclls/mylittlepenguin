@@ -290,25 +290,6 @@ button{cursor:pointer}
 .expl-pingu-rank { font-size: .72rem; font-weight: 800; color: #1a4a8a; letter-spacing: .04em; text-align: center; opacity: .92; max-width: 320px; }
 .expl-pingu-label { font-size: .8rem; color: #1a4a8a; font-weight: 700; text-align: center; line-height: 1.35; max-width: 320px; }
 
-.nid-box { background: rgba(255,255,255,.88); border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-lg); padding: 14px; margin: 0 0 16px; box-shadow: 0 2px 10px rgba(0,0,0,.06); }
-.nid-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
-.nid-title { font-weight: 800; font-size: .92rem; color: #0a1628; }
-.nid-sub { font-size: .72rem; font-weight: 600; color: rgba(10,22,40,.58); line-height: 1.4; margin-top: 3px; max-width: 240px; }
-.nid-form { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-.nid-form.hidden { display: none; }
-.nid-form .ob-inp { background: rgba(10,22,40,.05); border-color: rgba(10,22,40,.1); }
-.nid-form .ob-inp input { color: #0a1628; }
-.nid-form .ob-inp input::placeholder { color: rgba(10,22,40,.4); }
-.nid-form .ob-inp input[type=date] { color-scheme: light; }
-.nid-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
-.nid-card { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: #fff; border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-md); }
-.nid-card .nid-nm { font-weight: 800; color: #0a1628; font-size: .88rem; }
-.nid-card .nid-days { font-family: var(--fd); font-weight: 800; font-size: 1.15rem; color: #1a4a8a; line-height: 1; }
-.nid-card .nid-meta { font-size: .7rem; font-weight: 600; color: rgba(10,22,40,.55); margin-top: 2px; }
-.nid-card .nid-bd { flex: 1; min-width: 0; }
-.nid-card.ended { opacity: .62; }
-.nid-mini { font-size: .72rem; font-weight: 800; padding: 6px 8px; border-radius: 10px; border: 1.5px solid rgba(26,74,138,.25); background: #fff; color: #1a4a8a; }
-.nid-mini.danger { color: #b91c1c; border-color: rgba(185,28,28,.3); }
 .share-opt { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; font-size: .8rem; font-weight: 700; color: #b8e0f7; margin: 2px 0 6px; }
 .share-opt input { width: 18px; height: 18px; accent-color: var(--teal); flex-shrink: 0; }
 .add-exp-form { background: #fff; border: 1.5px solid rgba(10,22,40,.1); border-radius: var(--r-lg); padding: 20px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,.1); color: #0a1628; }
@@ -841,22 +822,6 @@ button{cursor:pointer}
           <button type="button" class="expl-edit-flow-btn" id="show-exp-edit-picker">Modifier</button>
           <button type="button" class="expl-delete-flow-btn" id="show-exp-delete-picker">Supprimer</button>
         </div>
-      </div>
-      <div class="nid-box">
-        <div class="nid-head">
-          <div>
-            <div class="nid-title">Nids 🐧💕</div>
-            <div class="nid-sub">Couple, plan régulier… le compteur tourne tout seul, sans une expédition à chaque fois.</div>
-          </div>
-          <button type="button" class="add-exp-btn" onclick="toggleNidForm()">+ Nid</button>
-        </div>
-        <div class="nid-form hidden" id="nid-form">
-          <div class="ob-inp"><span class="ob-inp-ic">💌</span><input type="text" id="nid-name-in" placeholder="Prénom / surnom" maxlength="28"/></div>
-          <div class="ob-inp"><span class="ob-inp-ic">📅</span><input type="date" id="nid-since-in"/></div>
-          <button type="button" class="ob-btn" onclick="saveNid()">Enregistrer le nid</button>
-          <button type="button" class="cn-btn" onclick="toggleNidForm()" style="color:#1a4a8a;border-color:rgba(26,74,138,.3)">Annuler</button>
-        </div>
-        <div class="nid-list" id="nid-list"></div>
       </div>
       <div class="expl-view-seg" role="tablist" aria-label="Affichage des expéditions">
         <button type="button" class="expl-view-btn on" id="expl-view-btn-timeline" data-expl-view="timeline">Frise</button>
@@ -2479,10 +2444,7 @@ function rowToP(row) {
     banquise_public: row.banquise_public !== false,
     expedition_public: row.expedition_public === true,
     alert_friends: row.alert_friends !== false,
-    glacons: typeof row.glacons === 'number' && !isNaN(row.glacons) ? row.glacons : 0,
-    streak_best: typeof row.streak_best === 'number' && !isNaN(row.streak_best) ? row.streak_best : 0,
-    streak_worst: (typeof row.streak_worst === 'number' && !isNaN(row.streak_worst)) ? row.streak_worst : null,
-    nids: Array.isArray(row.nids) ? row.nids : []
+    glacons: typeof row.glacons === 'number' && !isNaN(row.glacons) ? row.glacons : 0
   };
 }
 async function pullScoresFromServer() {
@@ -2675,14 +2637,7 @@ async function syncProfile() {
       alert_friends: P.alert_friends !== false
     };
     if (P._passwordHashPending) row.password_hash = P._passwordHashPending;
-    if (typeof P.streak_best === 'number') row.streak_best = P.streak_best;
-    if (P.streak_worst == null || typeof P.streak_worst === 'number') row.streak_worst = P.streak_worst;
-    if (Array.isArray(P.nids)) row.nids = P.nids;
-    const { error } = await SB.from('profiles').upsert(row, { onConflict: 'id' });
-    if (error) {
-      delete row.streak_best; delete row.streak_worst; delete row.nids;
-      await SB.from('profiles').upsert(row, { onConflict: 'id' });
-    }
+    await SB.from('profiles').upsert(row, { onConflict: 'id' });
     if (P._passwordHashPending) delete P._passwordHashPending;
   } catch (e) {}
 }
@@ -2703,7 +2658,6 @@ function enterApp() {
   document.getElementById('splash').classList.remove('active'); document.getElementById('onboarding').classList.remove('active');
   document.getElementById('app').classList.add('active');
   updateScoreDisplay(); updateB(); updateP(); checkBadges();
-  renderNids();
   updateNotifPermissionUI();
   initNotifPolling();
   refreshPasswordBanner();
@@ -2718,7 +2672,7 @@ function goPage(name) {
   document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nb').forEach(b => b.classList.toggle('on', b.dataset.page===name));
-  if (name==='profil') updateP(); if (name==='amis') loadF(); if (name==='exploration') { loadExploration(); renderNids(); } if (name==='banquise') refreshNotifHist();
+  if (name==='profil') updateP(); if (name==='amis') loadF(); if (name==='exploration') loadExploration(); if (name==='banquise') refreshNotifHist();
 }
 window.goPage = goPage;
 
@@ -2909,7 +2863,7 @@ function onPN() {
 async function finishOnboardingNoSupabase(sd) {
   const uid = genUUID();
   localStorage.setItem('mlp_id', uid);
-  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0, streak_best: 0, streak_worst: null, nids: [] };
+  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
   localStorage.setItem('mlp_v2', JSON.stringify(P));
   await syncProfile();
   if (P.notif_enabled) askNotificationPermission();
@@ -2958,7 +2912,7 @@ async function onPassDone() {
   e.textContent = 'Création…';
   const uid = genUUID();
   localStorage.setItem('mlp_id', uid);
-  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0, streak_best: 0, streak_worst: null, nids: [] };
+  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
   localStorage.setItem('mlp_v2', JSON.stringify(P));
   try {
     P._passwordHashPending = await pbkdf2HashPassword(pw);
@@ -3300,106 +3254,6 @@ async function doRepeuple(){
   toast(d>0?`🐧 Banquise repeuplée ! Compteur à ${d} jour${d>1?'s':''}.`:'🐧 Banquise repeuplée ! Compteur remis à aujourd\'hui.');
 }
 window.doRepeuple=doRepeuple;
-
-function getNids(){
-  if(!P) return [];
-  if(!Array.isArray(P.nids)) P.nids=[];
-  return P.nids;
-}
-function saveNidsLocal(){
-  if(!P) return;
-  try { localStorage.setItem('mlp_v2', JSON.stringify(P)); } catch(e) {}
-}
-function nidDays(n){
-  const end = n.until || new Date().toISOString().slice(0,10);
-  return daysBetween(n.since, end);
-}
-function toggleNidForm(){
-  const f=document.getElementById('nid-form');
-  if(!f) return;
-  const open=f.classList.contains('hidden');
-  f.classList.toggle('hidden', !open);
-  if(open){
-    const name=document.getElementById('nid-name-in');
-    const dt=document.getElementById('nid-since-in');
-    if(name) name.value='';
-    if(dt){ const t=new Date().toISOString().slice(0,10); dt.max=t; dt.value=t; }
-  }
-}
-window.toggleNidForm=toggleNidForm;
-
-async function saveNid(){
-  if(!P) return;
-  const name=((document.getElementById('nid-name-in')||{}).value||'').trim();
-  const since=((document.getElementById('nid-since-in')||{}).value||'').trim();
-  if(name.length<1){ toast('Il faut un prénom ou un surnom 🐧'); return; }
-  if(!since){ toast('Choisis depuis quand'); return; }
-  const today=new Date().toISOString().slice(0,10);
-  if(since>today){ toast('Pas dans le futur 🐧'); return; }
-  getNids().unshift({ id: genUUID(), name, since, until: null });
-  saveNidsLocal();
-  await syncProfile();
-  toggleNidForm();
-  renderNids();
-  toast('Nid installé 🐧💕');
-}
-window.saveNid=saveNid;
-
-async function endNid(id){
-  const n=getNids().find(x=>x.id===id);
-  if(!n) return;
-  n.until=new Date().toISOString().slice(0,10);
-  saveNidsLocal();
-  await syncProfile();
-  renderNids();
-}
-window.endNid=endNid;
-
-async function reopenNid(id){
-  const n=getNids().find(x=>x.id===id);
-  if(!n) return;
-  n.until=null;
-  saveNidsLocal();
-  await syncProfile();
-  renderNids();
-}
-window.reopenNid=reopenNid;
-
-async function deleteNid(id){
-  if(!confirm('Retirer ce nid ?')) return;
-  P.nids=getNids().filter(x=>x.id!==id);
-  saveNidsLocal();
-  await syncProfile();
-  renderNids();
-}
-window.deleteNid=deleteNid;
-
-function renderNids(){
-  const el=document.getElementById('nid-list');
-  if(!el) return;
-  const list=getNids();
-  if(!list.length){
-    el.innerHTML='<div style="font-size:.78rem;font-weight:600;color:rgba(10,22,40,.45);padding:4px 2px">Aucun nid pour l’instant. Pour un couple ou une habitude, ça évite de logger chaque fois.</div>';
-    return;
-  }
-  el.innerHTML=list.map(n=>{
-    const ended=!!n.until;
-    const d=nidDays(n);
-    const since=n.since?new Date(n.since).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'}):'';
-    const sub=ended
-      ? ('Terminé · '+d+' jour'+(d>1?'s':'')+' ensemble')
-      : ('Depuis '+since);
-    const act=ended
-      ? '<button type="button" class="nid-mini" onclick="reopenNid(\''+n.id+'\')">Reprendre</button>'
-      : '<button type="button" class="nid-mini" onclick="endNid(\''+n.id+'\')">Clore</button>';
-    return '<div class="nid-card'+(ended?' ended':'')+'">'
-      + '<div class="nid-bd"><div class="nid-nm">'+escHTML(n.name)+'</div><div class="nid-meta">'+escHTML(sub)+'</div></div>'
-      + '<div class="nid-days">'+d+'<span style="font-size:.62rem;font-weight:800;color:rgba(26,74,138,.7);margin-left:3px">j</span></div>'
-      + act
-      + '<button type="button" class="nid-mini danger" onclick="deleteNid(\''+n.id+'\')">✕</button>'
-      + '</div>';
-  }).join('');
-}
 
 // ════════════════════════════════════════════════
 //  QUESTIONS (boîte à questions publique, modérée)
