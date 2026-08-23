@@ -55,6 +55,8 @@ button{cursor:pointer}
 .friend-bq-private-msg{font-size:.95rem;font-weight:700;color:rgba(255,255,255,.88);line-height:1.55;max-width:300px}
 .friend-bq-public.hidden{display:none!important}
 #friend-bq-panel .scene{margin-bottom:0}
+.friend-exp-section{padding:0 12px 20px}
+.friend-expl-path{padding:8px 0 16px}
 
 /* ══ SPLASH ══ */
 #splash{background:var(--night);justify-content:center;z-index:100}
@@ -278,8 +280,8 @@ button{cursor:pointer}
 .exp-node.right .exp-bubble { text-align: right; }
 .exp-dot { width: 20px; height: 20px; border-radius: 50%; background: #1a4a8a; border: 3px solid #fff; box-shadow: 0 0 8px rgba(26,74,138,.3); flex-shrink: 0; margin: 0 16px; z-index: 1; }
 .exp-dot.first { background: var(--gold); }
-.exp-photo { width: 100%; min-height: 48px; height: auto; max-height: 96px; object-fit: cover; border-radius: var(--r-sm); margin-bottom: 6px; display: block; background: rgba(10,22,40,.06); }
-.exp-photo-placeholder { width: 100%; height: 50px; background: rgba(10,22,40,.05); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 6px; color: #1a4a8a; }
+.exp-photo { width: 100%; min-height: 88px; height: auto; max-height: 200px; object-fit: cover; border-radius: var(--r-sm); margin-bottom: 6px; display: block; background: rgba(10,22,40,.06); }
+.exp-photo-placeholder { width: 100%; height: 72px; background: rgba(10,22,40,.05); border-radius: var(--r-sm); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin-bottom: 6px; color: #1a4a8a; }
 .exp-title { font-weight: 800; font-size: .88rem; color: #0a1628; margin-bottom: 2px; }
 .exp-date { font-size: .7rem; color: #1a4a8a; font-weight: 700; }
 .exp-note { font-size: .75rem; color: rgba(10,22,40,.7); margin-top: 4px; line-height: 1.4; }
@@ -979,8 +981,8 @@ button{cursor:pointer}
         <div class="stc stc-hint" data-prof-hint="requins" tabindex="0" role="button" aria-label="Aide : requins"><div class="stc-i">🦈</div><div class="stc-v" id="st-r">0</div><div class="stc-l">Requins</div></div>
         <div class="stc stc-wide stc-hint" data-prof-hint="records" tabindex="0" role="button" aria-label="Aide : record et plus courte série">
           <div class="stc-split">
-            <div><div class="stc-i">🏆</div><div class="stc-v" id="st-best">0</div><div class="stc-l">Record</div></div>
-            <div><div class="stc-i">🧊</div><div class="stc-v" id="st-worst">—</div><div class="stc-l">Plus courte</div></div>
+            <div><div class="stc-i">🏆</div><div class="stc-v" id="st-best">—</div><div class="stc-l">Écart max</div></div>
+            <div><div class="stc-i">🧊</div><div class="stc-v" id="st-worst">—</div><div class="stc-l">Écart min</div></div>
           </div>
         </div>
       </div>
@@ -1213,9 +1215,11 @@ button{cursor:pointer}
         </div>
       </div>
     </div>
-    <div id="friend-exp-section" class="hidden" style="padding:0 4px">
-      <div class="sl" style="margin:16px 0 10px">Ses expéditions 🗺️</div>
-      <div id="friend-expl-nodes"></div>
+    <div id="friend-exp-section" class="friend-exp-section hidden">
+      <div class="sl" style="margin:16px 16px 6px">Ses expéditions 🗺️</div>
+      <div class="expl-path friend-expl-path">
+        <div id="friend-expl-nodes"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1364,7 +1368,7 @@ button{cursor:pointer}
   <div class="mc-card share-preview-card" onclick="event.stopPropagation()">
     <h3>Ta story banquise</h3>
     <p style="margin:0;font-size:.82rem;color:#b8e0f7;font-weight:600">À poster avant la prochaine fonte ❄️</p>
-    <label class="share-opt"><input type="checkbox" id="share-include-records" onchange="onShareRecordsToggle()"/>Afficher mon record et ma plus courte série</label>
+    <label class="share-opt"><input type="checkbox" id="share-include-records" onchange="onShareRecordsToggle()"/>Afficher l’écart max / min entre mes expéditions</label>
     <div class="share-preview-frame"><img class="share-preview-img" id="share-preview-img" alt="Aperçu de ta carte banquise"/></div>
     <div class="mb" style="flex-direction:column;width:100%">
       <button type="button" class="mca" onclick="confirmShareCard()">📤 Partager</button>
@@ -1438,7 +1442,7 @@ const PROF_HINT = {
   pingouins: { title: '🐧 Pingouins', body: '<p>Les blocs de <strong>30 jours complets</strong> dans la partie « milieu » de ta série.</p><p class="prof-hint-foot">1 pingouin = 30 mouettes · 6 pingouins = 1 orque</p>' },
   orques: { title: '🐋 Orques', body: '<p>Un palier de <strong>180 jours</strong> dans le reliquat ; l’affichage peut être <strong>0 ou 1</strong> selon où tu en es.</p><p class="prof-hint-foot">1 orque = 6 pingouins = 180 mouettes</p>' },
   requins: { title: '🦈 Requins', body: '<p>Une unité tous les <strong>360 jours</strong> de série sur la banquise.</p><p class="prof-hint-foot">1 requin = 2 orques = 12 pingouins = 360 mouettes</p>' },
-  records: { title: '🏆 Record & plus courte', body: '<p>Le <strong>record</strong>, c’est ta plus longue série (jours sans chasse), y compris celle en cours.</p><p>La <strong>plus courte</strong>, c’est le plus petit écart entre deux dates : du départ (ou d’un kill) jusqu’au kill suivant. Elle ne se calcule que quand une série se termine.</p>' },
+  records: { title: '🏆 Écarts entre expéditions', body: '<p>Calculé à partir de ta frise <strong>Explor.</strong> : le nombre de jours <strong>entre deux dates</strong> d’expédition (et depuis la dernière jusqu’à aujourd’hui).</p><p>L’<strong>écart max</strong> est le plus long intervalle, l’<strong>écart min</strong> le plus court. Il faut au moins une expédition.</p>' },
 };
 const AVS = ['🐧','🐦','🐋','🦈','🦭','🐟','❄️','🌊','🏔️','⭐','🔥','🎯'];
 let avUsePhoto = false;   // true = l'avatar confirmé sera la photo
@@ -2249,13 +2253,17 @@ function buildStreakImageBlob(d, opts){
 
     if (showRecords) {
       const rec = liveStreakStats();
-      let recLine = 'Record  ' + rec.best + ' j';
-      if (rec.worst != null) recLine += '   ·   Plus courte  ' + rec.worst + ' j';
-      const recSize = fitSize(recLine, '600', 26, 18, innerW, false);
-      setFont('600', recSize, false);
-      x.fillStyle = 'rgba(251,191,36,.95)';
-      x.fillText(recLine, CX, y);
-      y += recSize + 28;
+      if (rec.best != null) {
+        let recLine = 'Écart max  ' + rec.best + ' j';
+        if (rec.worst != null) recLine += '   ·   min  ' + rec.worst + ' j';
+        const recSize = fitSize(recLine, '600', 26, 18, innerW, false);
+        setFont('600', recSize, false);
+        x.fillStyle = 'rgba(251,191,36,.95)';
+        x.fillText(recLine, CX, y);
+        y += recSize + 28;
+      } else {
+        y += 16;
+      }
     } else {
       y += 16;
     }
@@ -2982,25 +2990,36 @@ function daysBetween(a,b){
   return Math.max(0,Math.floor((d2-d1)/86400000));
 }
 function liveStreakStats(){
-  const cur=calcD();
-  const best=Math.max(cur, (P && typeof P.streak_best==='number') ? P.streak_best : 0);
-  const worst=(P && typeof P.streak_worst==='number') ? P.streak_worst : null;
-  return { cur, best, worst };
-}
-function persistLiveStreakBest(){
-  if(!P) return;
-  const s=liveStreakStats();
-  if((P.streak_best||0) < s.best){
-    P.streak_best=s.best;
-    try { localStorage.setItem('mlp_v2',JSON.stringify(P)); } catch(e) {}
+  let rows = (Array.isArray(explorationExps) && explorationExps.length) ? explorationExps : [];
+  if (!rows.length) {
+    try { rows = JSON.parse(localStorage.getItem('mlp_exps') || '[]'); } catch (e) { rows = []; }
   }
-}
-function recordEndedStreak(endedDays){
-  if(!P || endedDays==null || endedDays<0) return;
-  P.streak_best=Math.max(P.streak_best||0, endedDays);
-  if(endedDays>0){
-    P.streak_worst=(typeof P.streak_worst==='number') ? Math.min(P.streak_worst, endedDays) : endedDays;
+  const seen = new Set();
+  const dates = [];
+  rows.forEach(e => {
+    const raw = e && (e.exp_date || e.date);
+    if (!raw) return;
+    const dt = new Date(raw);
+    if (isNaN(dt.getTime())) return;
+    dt.setHours(0,0,0,0);
+    const key = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
+    if (seen.has(key)) return;
+    seen.add(key);
+    dates.push(key);
+  });
+  dates.sort();
+  if (!dates.length) return { best: null, worst: null };
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayKey = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+  const gaps = [];
+  for (let i = 1; i < dates.length; i++) {
+    const g = daysBetween(dates[i-1], dates[i]);
+    if (g > 0) gaps.push(g);
   }
+  const wait = daysBetween(dates[dates.length - 1], todayKey);
+  if (wait > 0) gaps.push(wait);
+  if (!gaps.length) return { best: 0, worst: 0 };
+  return { best: Math.max.apply(null, gaps), worst: Math.min.apply(null, gaps) };
 }
 function bd(days){ let r=days; const rq=Math.floor(r/360);r%=360; const oq=Math.floor(r/180);r%=180; const pq=Math.floor(r/30);r%=30; return{r:rq,o:oq,p:pq,m:r}; }
 function banquiseAnimalTotal(days){ const x=bd(days); return (x.r||0)+(x.o||0)+(x.p||0)+(x.m||0); }
@@ -3111,7 +3130,6 @@ function refreshExplWaitPenguinVisual(){
 function updateB(){
   const d=calcD(); renderAL(d); renderACD(d);
   document.getElementById('days-num').textContent=d; document.getElementById('streak-num').textContent=d;
-  persistLiveStreakBest();
   refreshExplWaitPenguinVisual();
   try{ checkMilestone(d); }catch(e){}
 }
@@ -3191,8 +3209,6 @@ window.doKillAntidate=doKillAntidate;
 
 async function doKill(killDate){
   closeKill(); const today=(typeof killDate==='string'&&killDate)?killDate:new Date().toISOString().slice(0,10);
-  const prevRef=P.last_kill_date||P.start_date;
-  recordEndedStreak(daysBetween(prevRef, today));
   P.last_kill_date=today; P.kills=(P.kills||0)+1; localStorage.setItem('mlp_v2',JSON.stringify(P));
   resetMilestones();
   if(SB&&P.alert_friends){
@@ -3634,10 +3650,18 @@ function updateP(){
   document.getElementById('st-ice').textContent=P.glacons||0;
   document.getElementById('st-d').textContent=d; document.getElementById('st-m').textContent=m;
   document.getElementById('st-p').textContent=p; document.getElementById('st-o').textContent=o; document.getElementById('st-r').textContent=r;
-  persistLiveStreakBest();
   const rec=liveStreakStats();
-  const bestEl=document.getElementById('st-best'); if(bestEl) bestEl.textContent=rec.best;
+  const bestEl=document.getElementById('st-best'); if(bestEl) bestEl.textContent=(rec.best==null?'—':rec.best);
   const worstEl=document.getElementById('st-worst'); if(worstEl) worstEl.textContent=(rec.worst==null?'—':rec.worst);
+  if (rec.best == null && SB && myId()) {
+    fetchExpeditionMeta(myId()).then(rows => {
+      if (!rows || !rows.length) return;
+      if (!explorationExps.length) explorationExps = rows;
+      const s = liveStreakStats();
+      const b=document.getElementById('st-best'); if(b) b.textContent=(s.best==null?'—':s.best);
+      const w=document.getElementById('st-worst'); if(w) w.textContent=(s.worst==null?'—':s.worst);
+    }).catch(()=>{});
+  }
   
   document.getElementById('notif-tog').classList.toggle('on',!!P.notif_enabled);
   document.getElementById('notif-sub').style.display=P.notif_enabled!==false?'flex':'none';
@@ -4276,11 +4300,19 @@ async function loadFriendExpeditions(fid, isPublic){
     remote = await attachExpeditionPhotos(remote);
     const exps=remote||[];
     if(!exps.length){ nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem;font-weight:600">Aucune expédition partagée pour l\'instant 🗺️</div>'; return; }
-    nodes.innerHTML=exps.map(exp=>{
+    nodes.innerHTML=exps.map((exp,i)=>{
+      const side=i%2===0?'left':'right'; const isFirst=i===0;
       const imgUrl=expeditionImageUrl(exp);
       const photoHtml=imgUrl?`<img class="exp-photo" src="${String(imgUrl).replace(/"/g,'&quot;')}" alt="" loading="lazy" decoding="async"/>`:`<div class="exp-photo-placeholder">🏔️</div>`;
       const dateStr=new Date(exp.exp_date).toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});
-      return`<div class="exp-bubble" style="width:100%;margin-bottom:12px">${photoHtml}<div class="exp-title">${escHTML(exp.title)}</div><div class="exp-date">📅 ${dateStr}</div>${exp.note?`<div class="exp-note">${escHTML(exp.note)}</div>`:''}</div>`;
+      return '<div class="exp-node '+side+'">'
+        + '<div class="exp-dot'+(isFirst?' first':'')+'"></div>'
+        + '<div class="exp-bubble"><div class="exp-bubble-inner">'
+        + photoHtml
+        + '<div class="exp-title">'+escHTML(exp.title)+'</div>'
+        + '<div class="exp-date">📅 '+dateStr+'</div>'
+        + (exp.note?'<div class="exp-note">'+escHTML(exp.note)+'</div>':'')
+        + '</div></div></div>';
     }).join('');
   }catch(e){
     nodes.innerHTML='<div style="text-align:center;color:rgba(255,255,255,.4);padding:16px;font-size:.85rem">Impossible de charger les expéditions.</div>';
@@ -4919,7 +4951,7 @@ function mergeLocalGeoOntoRemoteRow(remoteRow, localRow){
   const localPhoto = localRow.photo_url || localRow.photoUrl || localRow.photo;
   if (!hasRemotePhoto && localPhoto) {
     const s = String(localPhoto);
-    if (s.indexOf('http') === 0 || (s.indexOf('data:') === 0 && s.length < 80000)) out = { ...out, photo_url: localPhoto };
+    if (s.indexOf('http') === 0 || (s.indexOf('data:') === 0 && s.length < 700000)) out = { ...out, photo_url: localPhoto };
   }
   return out;
 }
@@ -4947,6 +4979,7 @@ async function attachExpeditionPhotos(rows){
         if (error || !data || !data.photo_url) return;
         const u = String(data.photo_url);
         if (u.indexOf('http') === 0) row.photo_url = u;
+        else if (u.indexOf('data:') === 0 && u.length < 700000) row.photo_url = u;
       } catch (e) {}
     }));
   }
@@ -5002,6 +5035,7 @@ async function loadExploration(){
   }
 
   explorationExps=exps;
+  try { updateP(); } catch (e) {}
   // Cache local « chaud » pour pouvoir réafficher hors-ligne au prochain coup.
   if(!remoteFailed){
     showExplError(false);
