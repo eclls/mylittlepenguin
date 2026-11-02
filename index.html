@@ -57,7 +57,13 @@ body.bg-quiet .aur,
 body.bg-quiet .atk,
 body.bg-quiet .star,
 body.bg-quiet .wave,
-body.bg-quiet .peng-svg{animation:none!important}
+body.bg-quiet .peng-svg,
+body.bg-quiet .pg-eye,
+body.bg-quiet .pg-shine,
+#page-banquise:not(.active) .pg-eye,
+#page-banquise:not(.active) .pg-shine,
+#friend-bq-panel:not(.open) .pg-eye,
+#friend-bq-panel:not(.open) .pg-shine{animation:none!important}
 
 /* Slide-over panel */
 .panel{position:fixed;inset:0;background:var(--night);z-index:80;transform:translateX(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);overflow-y:auto}
@@ -89,10 +95,15 @@ body.bg-quiet .peng-svg{animation:none!important}
 /* ══ PENGUIN SVG ══ */
 .peng-svg{display:inline-block;animation:bob 3s ease-in-out infinite;line-height:0}
 .peng-svg svg{display:block;width:var(--peng-w,110px);height:auto;max-width:100%}
+#peng-ice svg,#peng-sign svg,#friend-peng-ice svg,#friend-peng-sign svg,#splash-peng svg,#ob-peng svg,#gear-preview svg{filter:drop-shadow(0 7px 5px rgba(0,0,0,.28))}
+.pg-eye{transform-box:fill-box;transform-origin:center;animation:pg-blink 5.4s ease-in-out infinite}
+.pg-shine{animation:pg-glint 3.4s ease-in-out infinite}
+@keyframes pg-blink{0%,40%,46%,100%{transform:scaleY(1)}43%{transform:scaleY(.12)}}
+@keyframes pg-glint{0%,100%{opacity:.28}50%{opacity:.72}}
 .peng-svg.hold{animation:bob-hold 3s ease-in-out infinite}
 #splash .peng-svg{--peng-w:min(46vw,168px)}
 #onboarding .peng-svg{--peng-w:min(54vw,152px)}
-.mp-wrap .peng-svg{--peng-w:min(38vw,84px)}
+.mp-wrap .peng-svg{--peng-w:min(46vw,102px)}
 .dp .peng-svg.hold{--peng-w:min(32vw,108px)}
 .expl-pingu-end .peng-svg{--peng-w:min(44vw,128px)}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-9px) rotate(1.5deg)}}
@@ -465,8 +476,9 @@ body.bg-quiet .peng-svg{animation:none!important}
 .apg{background:rgba(10,22,40,.7);border:1.5px solid rgba(255,255,255,.12);border-radius:var(--r-lg);padding:18px;display:flex;flex-direction:column;gap:12px}
 .apg h3{font-family:var(--fd);font-size:1.15rem;color:#fff}
 .av-gr{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.gear-hint{font-size:.75rem;font-weight:600;color:rgba(255,255,255,.55);line-height:1.4;margin:-2px 0 4px}
-.gear-preview{display:flex;justify-content:center;min-height:118px}
+.gear-hint{font-size:.8rem;font-weight:700;color:#ffd0e8;line-height:1.45;margin:0}
+.gear-preview{display:flex;justify-content:center;min-height:168px}
+.gear-preview .peng-svg{--peng-w:132px}
 .gear-count{text-align:center;font-size:.72rem;font-weight:800;color:#7ff0dd;letter-spacing:.04em;margin:2px 0 8px}
 .gear-grid{display:flex;flex-wrap:wrap;gap:8px}
 .gear-chip{flex:1 1 calc(50% - 8px);min-width:128px;text-align:left;padding:8px 10px;border-radius:12px;border:1.5px solid rgba(255,255,255,.14);background:rgba(10,22,40,.55);color:#e8f4ff;font-size:.78rem;font-weight:800;touch-action:manipulation}
@@ -607,27 +619,7 @@ body.bg-quiet .peng-svg{animation:none!important}
 <div id="splash" class="screen active">
   <div class="sp-aurora"></div><div class="sp-stars"></div>
   <div class="sp-scene">
-    <div class="peng-svg">
-      <svg width="110" height="145" viewBox="0 0 110 145" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="38" cy="138" rx="15" ry="6" fill="#c25a00"/><ellipse cx="72" cy="138" rx="15" ry="6" fill="#c25a00"/>
-        <ellipse cx="55" cy="105" rx="37" ry="38" fill="#2a2a3a"/>
-        <ellipse cx="55" cy="100" rx="36" ry="42" fill="url(#bodyGrad)"/>
-        <ellipse cx="55" cy="106" rx="22" ry="28" fill="#f8f6f2"/>
-        <path d="M19 80 Q8 95 12 115 Q18 120 24 112 Q26 95 30 82 Z" fill="#2a2a3a"/>
-        <path d="M91 80 Q102 95 98 115 Q92 120 86 112 Q84 95 80 82 Z" fill="#2a2a3a"/>
-        <ellipse cx="55" cy="72" rx="30" ry="14" fill="#3a3a4a"/>
-        <ellipse cx="55" cy="46" rx="30" ry="30" fill="#1a1a28"/>
-        <ellipse cx="55" cy="54" rx="20" ry="17" fill="#f8f6f2"/>
-        <ellipse cx="43" cy="40" rx="11" ry="11" fill="white"/><ellipse cx="67" cy="40" rx="11" ry="11" fill="white"/>
-        <ellipse cx="45" cy="42" rx="6.5" ry="6.5" fill="#0a0a18"/><ellipse cx="69" cy="42" rx="6.5" ry="6.5" fill="#0a0a18"/>
-        <ellipse cx="47" cy="39" rx="2.5" ry="2.5" fill="white"/><ellipse cx="71" cy="39" rx="2.5" ry="2.5" fill="white"/>
-        <path d="M48 55 L55 66 L62 55 Q58 52 52 52 Z" fill="#e07800"/><path d="M48 55 L55 61 L62 55 Z" fill="#c25a00"/>
-        <rect x="28" y="67" width="54" height="11" rx="5.5" fill="#dc2626"/>
-        <rect x="28" y="67" width="13" height="11" rx="4" fill="#fbbf24"/>
-        <rect x="55" y="67" width="13" height="11" rx="4" fill="#fbbf24"/>
-        <defs><radialGradient id="bodyGrad" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#8a8a9a"/><stop offset="60%" stop-color="#4a4a5a"/><stop offset="100%" stop-color="#2a2a3a"/></radialGradient></defs>
-      </svg>
-    </div>
+    <div class="peng-svg" id="splash-peng"></div>
     <h1 class="sp-title">MyLittle<span>Penguin</span></h1>
     <p class="sp-sub">Ton compagnon de l'Antarctique 🧊</p>
     <div class="ld-track"><div class="ld-fill"></div></div>
@@ -639,27 +631,7 @@ body.bg-quiet .peng-svg{animation:none!important}
   <div class="ob-w">
     <div style="display:flex;flex-direction:column;align-items:center;gap:0">
       <div class="speech" id="ob-speech">Salut ! Je suis Pingu 🐧<br/>Créons ton expédition !</div>
-      <div class="peng-svg">
-        <svg width="110" height="145" viewBox="0 0 110 145" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <ellipse cx="38" cy="138" rx="15" ry="6" fill="#c25a00"/><ellipse cx="72" cy="138" rx="15" ry="6" fill="#c25a00"/>
-          <ellipse cx="55" cy="105" rx="37" ry="38" fill="#2a2a3a"/>
-          <ellipse cx="55" cy="100" rx="36" ry="42" fill="url(#bodyGradOb)"/>
-          <ellipse cx="55" cy="106" rx="22" ry="28" fill="#f8f6f2"/>
-          <path d="M19 80 Q8 95 12 115 Q18 120 24 112 Q26 95 30 82 Z" fill="#2a2a3a"/>
-          <path d="M91 80 Q102 95 98 115 Q92 120 86 112 Q84 95 80 82 Z" fill="#2a2a3a"/>
-          <ellipse cx="55" cy="72" rx="30" ry="14" fill="#3a3a4a"/>
-          <ellipse cx="55" cy="46" rx="30" ry="30" fill="#1a1a28"/>
-          <ellipse cx="55" cy="54" rx="20" ry="17" fill="#f8f6f2"/>
-          <ellipse cx="43" cy="40" rx="11" ry="11" fill="white"/><ellipse cx="67" cy="40" rx="11" ry="11" fill="white"/>
-          <ellipse cx="45" cy="42" rx="6.5" ry="6.5" fill="#0a0a18"/><ellipse cx="69" cy="42" rx="6.5" ry="6.5" fill="#0a0a18"/>
-          <ellipse cx="47" cy="39" rx="2.5" ry="2.5" fill="white"/><ellipse cx="71" cy="39" rx="2.5" ry="2.5" fill="white"/>
-          <path d="M48 55 L55 66 L62 55 Q58 52 52 52 Z" fill="#e07800"/><path d="M48 55 L55 61 L62 55 Z" fill="#c25a00"/>
-          <rect x="28" y="67" width="54" height="11" rx="5.5" fill="#dc2626"/>
-          <rect x="28" y="67" width="13" height="11" rx="4" fill="#fbbf24"/>
-          <rect x="55" y="67" width="13" height="11" rx="4" fill="#fbbf24"/>
-          <defs><radialGradient id="bodyGradOb" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#8a8a9a"/><stop offset="60%" stop-color="#4a4a5a"/><stop offset="100%" stop-color="#2a2a3a"/></radialGradient></defs>
-        </svg>
-      </div>
+      <div class="peng-svg" id="ob-peng"></div>
     </div>
     <div class="ob-card" id="ob-choice">
       <h2>Bienvenue</h2>
@@ -724,22 +696,7 @@ body.bg-quiet .peng-svg{animation:none!important}
         <div class="icbg">
           <div class="ic-top"></div><div class="ic-sub"></div><div class="ic-sh"></div>
           <div class="mp-wrap">
-            <div class="peng-svg" id="peng-ice">
-              <svg width="46" height="60" viewBox="0 0 46 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="15" cy="57" rx="8" ry="3.5" fill="#c25a00"/><ellipse cx="31" cy="57" rx="8" ry="3.5" fill="#c25a00"/>
-                <ellipse cx="23" cy="39" rx="17" ry="21" fill="url(#bgi)"/>
-                <ellipse cx="23" cy="43" rx="10" ry="14" fill="#f8f6f2"/>
-                <path d="M6 30 Q1 38 3 48 Q7 51 10 46 Q11 37 13 31 Z" fill="#2a2a2a"/>
-                <path d="M40 30 Q45 38 43 48 Q39 51 36 46 Q35 37 33 31 Z" fill="#2a2a2a"/>
-                <ellipse cx="23" cy="20" rx="14" ry="14" fill="#1a1a28"/>
-                <ellipse cx="23" cy="23" rx="9" ry="8" fill="#f8f6f2"/>
-                <ellipse cx="17" cy="15" rx="5.5" ry="5.5" fill="white"/><ellipse cx="29" cy="15" rx="5.5" ry="5.5" fill="white"/>
-                <ellipse cx="18.5" cy="16.5" rx="3.2" ry="3.2" fill="#0a0a18"/><ellipse cx="30.5" cy="16.5" rx="3.2" ry="3.2" fill="#0a0a18"/>
-                <ellipse cx="19.5" cy="15" rx="1.2" ry="1.2" fill="white"/><ellipse cx="31.5" cy="15" rx="1.2" ry="1.2" fill="white"/>
-                <path d="M19 25 L23 30 L27 25 Q25 23 21 23 Z" fill="#e07800"/><path d="M19 25 L23 27.5 L27 25 Z" fill="#c25a00"/>
-                <defs><radialGradient id="bgi" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#909099"/><stop offset="60%" stop-color="#4a4a5a"/><stop offset="100%" stop-color="#2a2a3a"/></radialGradient></defs>
-              </svg>
-            </div>
+            <div class="peng-svg" id="peng-ice"></div>
           </div>
         </div>
         <div class="ic-ck ck1"></div><div class="ic-ck ck2"></div><div class="ic-ck ck3"></div>
@@ -750,21 +707,7 @@ body.bg-quiet .peng-svg{animation:none!important}
       <div class="ss"><div class="sl">Ton troupeau 🐾</div><div class="acd" id="acd"></div></div>
       <div class="ss">
           <div class="dp">
-          <div class="peng-svg hold" id="peng-sign" style="margin-right:-6px">
-            <svg width="64" height="82" viewBox="0 0 64 82" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <ellipse cx="21" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/><ellipse cx="43" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/>
-              <ellipse cx="32" cy="52" rx="22" ry="27" fill="#1a1a2e"/>
-              <ellipse cx="32" cy="57" rx="14" ry="18" fill="#F5F0E8"/>
-              <ellipse cx="8" cy="38" rx="6" ry="18" fill="#1a1a2e" transform="rotate(-50 8 38)"/>
-              <ellipse cx="56" cy="38" rx="6" ry="18" fill="#1a1a2e" transform="rotate(50 56 38)"/>
-              <ellipse cx="32" cy="26" rx="18" ry="18" fill="#1a1a28"/>
-              <ellipse cx="32" cy="30" rx="11" ry="10" fill="#f8f6f2"/>
-              <ellipse cx="23" cy="21" rx="6.5" ry="6.5" fill="white"/><ellipse cx="41" cy="21" rx="6.5" ry="6.5" fill="white"/>
-              <ellipse cx="25" cy="23" rx="3.8" ry="3.8" fill="#0a0a18"/><ellipse cx="43" cy="23" rx="3.8" ry="3.8" fill="#0a0a18"/>
-              <ellipse cx="26" cy="21" rx="1.5" ry="1.5" fill="white"/><ellipse cx="44" cy="21" rx="1.5" ry="1.5" fill="white"/>
-              <path d="M28 33 L32 39 L36 33 Q34 31 30 31 Z" fill="#e07800"/><path d="M28 33 L32 36 L36 33 Z" fill="#c25a00"/>
-            </svg>
-          </div>
+          <div class="peng-svg hold" id="peng-sign" style="margin-right:-6px"></div>
           <div class="sp-wr">
             <div class="sp-bd">
               <div class="sbl">EN ROUTE DEPUIS</div>
@@ -960,12 +903,14 @@ body.bg-quiet .peng-svg{animation:none!important}
         <button class="ob-btn" id="av-ok">Confirmer</button>
       </div>
       <input type="file" id="av-photo-input" accept="image/*" style="display:none"/>
-      <div class="psec">
-        <div class="sl">Habiller mon pingouin</div>
-        <p class="gear-hint">Jusqu’à 3 accessoires, un par zone. Tes amis le voient sur ta banquise, et il est aussi sur ta story.</p>
+      <div class="psec"><button type="button" class="logout-btn" id="gear-open" style="color:#ffd0e8;border-color:rgba(244,114,182,.45);background:rgba(244,114,182,.1)"><span>✨</span> Habiller mon pingouin</button></div>
+      <div class="apg hidden" id="gear-picker">
+        <h3>Le dressing</h3>
+        <p class="gear-hint">Trois accessoires, pas un de plus. Toute la colonie va te mater — banquise et story, rien à cacher.</p>
         <div id="gear-preview" class="gear-preview"></div>
         <div id="gear-count" class="gear-count">0 / 3</div>
         <div id="gear-grid" class="gear-grid"></div>
+        <button type="button" class="ob-btn" id="gear-ok">C’est porté</button>
       </div>
       <div class="p-st">
         <div class="stc stc-hint" data-prof-hint="glacons" tabindex="0" role="button" aria-label="Aide : glaçons"><div class="stc-i">🧊</div><div class="stc-v" id="st-ice">0</div><div class="stc-l">Glaçons</div></div>
@@ -1156,22 +1101,7 @@ body.bg-quiet .peng-svg{animation:none!important}
           <div class="icbg">
             <div class="ic-top"></div><div class="ic-sub"></div><div class="ic-sh"></div>
             <div class="mp-wrap">
-              <div class="peng-svg" id="friend-peng-ice">
-                <svg width="46" height="60" viewBox="0 0 46 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <ellipse cx="15" cy="57" rx="8" ry="3.5" fill="#c25a00"/><ellipse cx="31" cy="57" rx="8" ry="3.5" fill="#c25a00"/>
-                  <ellipse cx="23" cy="39" rx="17" ry="21" fill="url(#bgi-fr)"/>
-                  <ellipse cx="23" cy="43" rx="10" ry="14" fill="#f8f6f2"/>
-                  <path d="M6 30 Q1 38 3 48 Q7 51 10 46 Q11 37 13 31 Z" fill="#2a2a2a"/>
-                  <path d="M40 30 Q45 38 43 48 Q39 51 36 46 Q35 37 33 31 Z" fill="#2a2a2a"/>
-                  <ellipse cx="23" cy="20" rx="14" ry="14" fill="#1a1a28"/>
-                  <ellipse cx="23" cy="23" rx="9" ry="8" fill="#f8f6f2"/>
-                  <ellipse cx="17" cy="15" rx="5.5" ry="5.5" fill="white"/><ellipse cx="29" cy="15" rx="5.5" ry="5.5" fill="white"/>
-                  <ellipse cx="18.5" cy="16.5" rx="3.2" ry="3.2" fill="#0a0a18"/><ellipse cx="30.5" cy="16.5" rx="3.2" ry="3.2" fill="#0a0a18"/>
-                  <ellipse cx="19.5" cy="15" rx="1.2" ry="1.2" fill="white"/><ellipse cx="31.5" cy="15" rx="1.2" ry="1.2" fill="white"/>
-                  <path d="M19 25 L23 30 L27 25 Q25 23 21 23 Z" fill="#e07800"/><path d="M19 25 L23 27.5 L27 25 Z" fill="#c25a00"/>
-                  <defs><radialGradient id="bgi-fr" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#909099"/><stop offset="60%" stop-color="#4a4a5a"/><stop offset="100%" stop-color="#2a2a3a"/></radialGradient></defs>
-                </svg>
-              </div>
+              <div class="peng-svg" id="friend-peng-ice"></div>
             </div>
           </div>
           <div class="ic-ck ck1"></div><div class="ic-ck ck2"></div><div class="ic-ck ck3"></div>
@@ -1182,21 +1112,7 @@ body.bg-quiet .peng-svg{animation:none!important}
         <div class="ss"><div class="sl">Son troupeau 🐾</div><div class="acd" id="friend-acd"></div></div>
         <div class="ss">
           <div class="dp">
-            <div class="peng-svg hold" id="friend-peng-sign" style="margin-right:-6px">
-              <svg width="64" height="82" viewBox="0 0 64 82" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <ellipse cx="21" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/><ellipse cx="43" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/>
-                <ellipse cx="32" cy="52" rx="22" ry="27" fill="#1a1a2e"/>
-                <ellipse cx="32" cy="57" rx="14" ry="18" fill="#F5F0E8"/>
-                <ellipse cx="8" cy="38" rx="6" ry="18" fill="#1a1a2e" transform="rotate(-50 8 38)"/>
-                <ellipse cx="56" cy="38" rx="6" ry="18" fill="#1a1a2e" transform="rotate(50 56 38)"/>
-                <ellipse cx="32" cy="26" rx="18" ry="18" fill="#1a1a28"/>
-                <ellipse cx="32" cy="30" rx="11" ry="10" fill="#f8f6f2"/>
-                <ellipse cx="23" cy="21" rx="6.5" ry="6.5" fill="white"/><ellipse cx="41" cy="21" rx="6.5" ry="6.5" fill="white"/>
-                <ellipse cx="25" cy="23" rx="3.8" ry="3.8" fill="#0a0a18"/><ellipse cx="43" cy="23" rx="3.8" ry="3.8" fill="#0a0a18"/>
-                <ellipse cx="26" cy="21" rx="1.5" ry="1.5" fill="white"/><ellipse cx="44" cy="21" rx="1.5" ry="1.5" fill="white"/>
-                <path d="M28 33 L32 39 L36 33 Q34 31 30 31 Z" fill="#e07800"/><path d="M28 33 L32 36 L36 33 Z" fill="#c25a00"/>
-              </svg>
-            </div>
+            <div class="peng-svg hold" id="friend-peng-sign" style="margin-right:-6px"></div>
             <div class="sp-wr">
               <div class="sp-bd">
                 <div class="sbl">EN ROUTE DEPUIS</div>
@@ -2045,6 +1961,7 @@ function initA11y(){
       if (modals.length) { const top = modals[modals.length - 1]; top.classList.add('hidden'); if (top.id === 'kill-modal') showKillChoiceStep(); return; }
       const panel = document.querySelector('.panel.open'); if (panel) { closePanel(panel.id); return; }
       const avp = document.getElementById('av-picker'); if (avp && !avp.classList.contains('hidden')) { avp.classList.add('hidden'); return; }
+      const gearP = document.getElementById('gear-picker'); if (gearP && !gearP.classList.contains('hidden')) { gearP.classList.add('hidden'); return; }
     } else if (e.key === 'Tab') {
       const modals = [...document.querySelectorAll('.mo:not(.hidden)')];
       if (!modals.length) return;
@@ -2187,31 +2104,45 @@ function normalizeGear(raw){
   return out;
 }
 
+const PG_ASPECT = 158 / 140;
+const PG_INK = ' stroke="#1a1020" stroke-width="2.15" stroke-linejoin="round"';
+
 function gearLayers(has){
   let back = '';
-  if (has('cape')) back += '<path d="M12 30 Q4 44 9 54 Q23 47 37 54 Q42 44 34 30 Q23 36 12 30Z" fill="#6d28d9"/><path d="M16 32 Q23 37 30 32" fill="none" stroke="#ddd6fe" stroke-width="1.1"/>';
-  if (has('mullet')) back += '<path d="M8 20 Q5 32 11 42 Q16 32 16 24Z" fill="#5c3317"/><path d="M38 20 Q41 32 35 42 Q30 32 30 24Z" fill="#5c3317"/><path d="M11 16 Q23 7 35 16 Q31 21 23 19 Q15 21 11 16Z" fill="#8a4e2b"/>';
+  if (has('cape')) back += '<path d="M24 72 Q2 98 14 128 Q50 114 86 128 Q98 98 76 72 Q50 84 24 72Z" fill="#7c3aed"' + PG_INK + '/><path d="M34 80 Q50 90 66 80" fill="none" stroke="#ddd6fe" stroke-width="1.8"/>';
+  if (has('mullet')) back += '<path d="M26 44 C14 62 16 100 30 106 C24 82 28 60 34 48Z" fill="#a16207"' + PG_INK + '/><path d="M74 44 C86 62 84 100 70 106 C76 82 72 60 66 48Z" fill="#a16207"' + PG_INK + '/><path d="M30 44 C20 64 22 96 32 100" fill="none" stroke="#f6d7a8" stroke-width="1.6" stroke-linecap="round"/><path d="M70 44 C80 64 78 96 68 100" fill="none" stroke="#f6d7a8" stroke-width="1.6" stroke-linecap="round"/><path d="M34 32 Q50 18 66 32 Q56 26 50 28 Q44 26 34 32Z" fill="#d4a574"' + PG_INK + '/>';
   let front = '';
-  if (has('boots')) front += '<path d="M7 49 L7 57 Q7 60 11 60 L21 60 L21 53 L15 49Z" fill="#6b3f22"/><path d="M25 49 L31 49 L39 53 L39 60 L29 60 Q25 60 25 57Z" fill="#6b3f22"/><path d="M8 55 H20 M27 55 H38" stroke="#3b2412" stroke-width="0.8"/>';
-  if (has('skates')) front += '<path d="M8 49 H19 V57 H8Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.7"/><path d="M27 49 H38 V57 H27Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.7"/><path d="M7 58.4 H21 M26 58.4 H40" stroke="#e2e8f0" stroke-width="1.35" stroke-linecap="round"/>';
-  if (has('tutu')) front += '<ellipse cx="23" cy="45" rx="18" ry="5.6" fill="#f9a8d4"/><ellipse cx="23" cy="43.2" rx="14" ry="4" fill="#f472b6"/><ellipse cx="23" cy="44.2" rx="10" ry="2.6" fill="#fce7f3"/>';
-  if (has('swim')) front += '<path d="M14 33 Q23 29 32 33 L33 48 Q23 52 13 48Z" fill="#e11d48"/>' + [[18,36],[24,34],[29,37],[17,42],[23,41],[29,43],[21,46],[27,47]].map(p => '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.15" fill="#fff"/>').join('');
-  if (has('shades')) front += '<rect x="10.5" y="13" width="9.2" height="5.6" rx="1.6" fill="#0b0b10"/><rect x="26.3" y="13" width="9.2" height="5.6" rx="1.6" fill="#0b0b10"/><path d="M19.6 15.6 H26.4" stroke="#0b0b10" stroke-width="1.3"/><path d="M10.5 15.2 H7.5 M35.5 15.2 H38.5" stroke="#0b0b10" stroke-width="1.1"/><rect x="11.4" y="13.8" width="3.2" height="1.15" rx="0.4" fill="#ffffff" opacity=".4"/>';
-  if (has('bindi')) front += '<circle cx="23" cy="11" r="1.75" fill="#e11d48"/>';
-  if (has('stache')) front += '<path d="M14.5 27 Q19 23.6 23 26.4 Q27 23.6 31.5 27 Q27 30 23 28.2 Q19 30 14.5 27Z" fill="#4a2c17"/>';
-  if (has('cowboy')) front += '<ellipse cx="23" cy="13.2" rx="15" ry="3.1" fill="#5c3a1e"/><path d="M14.5 12 Q23 1.2 31.5 12 Q27 7 23 6.6 Q19 7 14.5 12Z" fill="#8d5a2b"/><path d="M16.5 8.6 Q23 6.8 29.5 8.6 Q23 10.4 16.5 8.6Z" fill="#3b2414"/>';
-  if (has('cap')) front += '<path d="M13 14.2 Q23 2.6 33 14.2 Q28 9 23 8.6 Q18 9 13 14.2Z" fill="#1e4d8c"/><path d="M14 13.4 Q23 19.2 32 13.4 Q23 16.2 14 13.4Z" fill="#163a6b"/><circle cx="23" cy="7.2" r="1.25" fill="#f8fafc"/>';
-  if (has('beanie')) front += '<path d="M13 15.2 Q23 1.4 33 15.2 Q29 10.5 23 9.8 Q17 10.5 13 15.2Z" fill="#be123c"/><circle cx="23" cy="2.8" r="2.7" fill="#fecdd3"/><path d="M14.5 13.2 Q23 11.2 31.5 13.2" stroke="#9f1239" stroke-width="1.2" fill="none"/>';
-  if (has('crown')) front += '<path d="M12 15 L15.2 6 L19 12 L23 2.6 L27 12 L30.8 6 L34 15Z" fill="#f5c542" stroke="#a16207" stroke-width="0.6" stroke-linejoin="round"/><circle cx="23" cy="4.4" r="1.15" fill="#ef4444"/>';
-  if (has('beret')) front += '<ellipse cx="25" cy="9.5" rx="13" ry="5.2" fill="#1e3a5f" transform="rotate(-16 25 9.5)"/><circle cx="33.2" cy="6.6" r="1.55" fill="#be123c"/>';
+  if (has('boots')) front += '<path d="M18 96 L18 122 Q18 128 30 128 L46 128 L46 108 L36 96Z" fill="#8a5a32"' + PG_INK + '/><path d="M54 96 L64 96 L82 108 L82 128 L70 128 Q54 128 54 122Z" fill="#8a5a32"' + PG_INK + '/><path d="M22 116 H42 M58 116 H78" stroke="#3b2412" stroke-width="1.3" stroke-linecap="round"/>';
+  if (has('skates')) front += '<path d="M20 104 H44 V122 H20Z" fill="#f8fafc"' + PG_INK + '/><path d="M56 104 H80 V122 H56Z" fill="#f8fafc"' + PG_INK + '/><path d="M16 126 H48 M52 126 H84" stroke="#e2e8f0" stroke-width="2.4" stroke-linecap="round"/><path d="M18 126 H14 M82 126 H86" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round"/>';
+  if (has('tutu')) front += '<path d="M18 102 Q28 118 38 102 Q50 120 62 102 Q72 118 82 102 L80 110 Q50 122 20 110Z" fill="#f472b6"' + PG_INK + '/><path d="M24 100 H76" stroke="#fbcfe8" stroke-width="3" stroke-linecap="round"/><ellipse cx="50" cy="100" rx="16" ry="4" fill="#fce7f3"/>';
+  if (has('swim')) {
+    const dots = [[40,72],[46,70],[54,72],[60,70],[38,96],[46,94],[54,96],[62,98],[50,102]].map(p => '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.35" fill="#fff"/>').join('');
+    front += '<path d="M36 70 Q32 58 44 56" fill="none" stroke="#e11d48" stroke-width="1.7" stroke-linecap="round"/>'
+      + '<path d="M64 70 Q68 58 56 56" fill="none" stroke="#e11d48" stroke-width="1.7" stroke-linecap="round"/>'
+      + '<path d="M34 68 Q44 62 50 74 Q44 78 34 74Z" fill="#e11d48"' + PG_INK + '/>'
+      + '<path d="M66 68 Q56 62 50 74 Q56 78 66 74Z" fill="#e11d48"' + PG_INK + '/>'
+      + '<path d="M46 72 l4 -3 4 3 -4 3Z" fill="#fb7185"/>'
+      + '<path d="M36 94 Q50 86 64 94 Q68 108 50 110 Q32 108 36 94Z" fill="#e11d48"' + PG_INK + '/>'
+      + '<path d="M34 98 q-6 -3 -4 3 q4 1 4 -3Z" fill="#fb7185"/>'
+      + '<path d="M66 98 q6 -3 4 3 q-4 1 -4 -3Z" fill="#fb7185"/>'
+      + dots;
+  }
+  if (has('shades')) front += '<rect x="31" y="36" width="15" height="11" rx="3.2" fill="#0c2348" stroke="#f5c542" stroke-width="1.7"/><rect x="54" y="36" width="15" height="11" rx="3.2" fill="#0c2348" stroke="#f5c542" stroke-width="1.7"/><path d="M46 41 H54" stroke="#f5c542" stroke-width="1.8" stroke-linecap="round"/><path d="M31 40 H24 M69 40 H76" stroke="#f5c542" stroke-width="1.5" stroke-linecap="round"/><path d="M34 39 H42" stroke="#7dd3fc" stroke-width="1.3" stroke-linecap="round" opacity=".85"/><path d="M57 39 H65" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round" opacity=".7"/>';
+  if (has('bindi')) front += '<circle cx="50" cy="28" r="2.5" fill="#e11d48"' + PG_INK + '/><circle cx="49.2" cy="27.2" r=".7" fill="#fecaca"/>';
+  if (has('stache')) front += '<path d="M34 58 Q42 52 50 58 Q58 52 66 58 Q58 64 50 60 Q42 64 34 58Z" fill="#5c3317"' + PG_INK + '/>';
+  if (has('cowboy')) front += '<ellipse cx="50" cy="20" rx="40" ry="8" fill="#6b3f24"' + PG_INK + '/><path d="M28 18 Q34 -2 50 -4 Q66 -2 72 18 Q62 10 50 11 Q38 10 28 18Z" fill="#c4843c"' + PG_INK + '/><path d="M32 16 Q50 10 68 16 Q50 22 32 16Z" fill="#4a2c17"/><polygon points="66,4 68.2,9 74,9 69.4,12.2 71,17.4 66,14.4 61,17.4 62.6,12.2 58,9 63.8,9" fill="#fde047" stroke="#a16207" stroke-width="0.7"/>';
+  if (has('cap')) front += '<path d="M24 44 Q50 8 76 44 Q64 24 50 22 Q36 24 24 44Z" fill="#3b82f6"' + PG_INK + '/><path d="M12 46 Q50 68 88 46 Q50 56 12 46Z" fill="#1d4ed8"' + PG_INK + '/><path d="M18 46 Q50 60 82 46" fill="none" stroke="#bfdbfe" stroke-width="1.4"/><circle cx="50" cy="18" r="2.6" fill="#fff"/>';
+  if (has('beanie')) front += '<path d="M24 46 Q50 10 76 46 Q64 28 50 28 Q36 28 24 46Z" fill="#e11d48"' + PG_INK + '/><circle cx="50" cy="12" r="6" fill="#fecdd3"' + PG_INK + '/><path d="M30 40 Q50 34 70 40" stroke="#fb7185" stroke-width="1.8" fill="none"/>';
+  if (has('crown')) front += '<path d="M28 24 L34 4 L42 18 L50 -2 L58 18 L66 4 L72 24Z" fill="#facc15"' + PG_INK + '/><circle cx="50" cy="2" r="1.8" fill="#ef4444"/><circle cx="38" cy="12" r="1.3" fill="#38bdf8"/><circle cx="62" cy="12" r="1.3" fill="#38bdf8"/>';
+  if (has('beret')) front += '<ellipse cx="58" cy="12" rx="30" ry="10" fill="#1e3a8a"' + PG_INK + ' transform="rotate(-18 58 12)"/><circle cx="82" cy="4" r="3.2" fill="#e11d48"' + PG_INK + '/>';
   let handIce = '', handSign = '';
   if (has('wand')) {
-    handIce = '<line x1="33" y1="38" x2="44" y2="23" stroke="#e7c89a" stroke-width="1.7" stroke-linecap="round"/><polygon points="44,18.5 47.4,25.2 40.6,25.2" fill="#fde68a" stroke="#f59e0b" stroke-width="0.45"/>';
-    handSign = '<line x1="16" y1="36" x2="5" y2="18" stroke="#e7c89a" stroke-width="2.1" stroke-linecap="round"/><polygon points="5,12 9.4,20.5 0.6,20.5" fill="#fde68a" stroke="#f59e0b" stroke-width="0.5"/>';
+    handIce = '<line x1="78" y1="78" x2="108" y2="36" stroke="#f6d7a8" stroke-width="2.6" stroke-linecap="round"/><polygon points="108,22 118,40 98,40" fill="#fde68a" stroke="#f59e0b" stroke-width="1.2"/>';
+    handSign = '<line x1="22" y1="70" x2="-2" y2="28" stroke="#f6d7a8" stroke-width="2.6" stroke-linecap="round"/><polygon points="-2,14 8,32 -12,32" fill="#fde68a" stroke="#f59e0b" stroke-width="1.2"/>';
   }
   if (has('umbrella')) {
-    handIce = '<path d="M30 26 Q37.5 13 45 26Z" fill="#dc2626"/><path d="M30 26 L37.5 16 L45 26" fill="none" stroke="#7f1d1d" stroke-width="0.7"/><line x1="37.5" y1="26" x2="37.5" y2="41" stroke="#44403c" stroke-width="1.45" stroke-linecap="round"/><path d="M37.5 41 Q41 43.2 37.5 40.2" fill="none" stroke="#44403c" stroke-width="1.2"/>';
-    handSign = '<path d="M1 26 Q10 11 19 26Z" fill="#dc2626"/><path d="M1 26 L10 15 L19 26" fill="none" stroke="#7f1d1d" stroke-width="0.8"/><line x1="10" y1="26" x2="10" y2="42" stroke="#44403c" stroke-width="1.7" stroke-linecap="round"/><path d="M10 42 Q14 44.5 10 41" fill="none" stroke="#44403c" stroke-width="1.3"/>';
+    handIce = '<path d="M70 64 Q98 28 122 58Z" fill="#ef4444"' + PG_INK + '/><path d="M70 64 L98 44 L122 58" fill="none" stroke="#7f1d1d" stroke-width="1.2"/><line x1="98" y1="58" x2="92" y2="108" stroke="#44403c" stroke-width="2.4" stroke-linecap="round"/><path d="M92 108 Q104 116 92 104" fill="none" stroke="#44403c" stroke-width="2"/>';
+    handSign = '<path d="M-8 58 Q20 22 46 56Z" fill="#ef4444"' + PG_INK + '/><path d="M-8 58 L20 38 L46 56" fill="none" stroke="#7f1d1d" stroke-width="1.2"/><line x1="20" y1="56" x2="26" y2="100" stroke="#44403c" stroke-width="2.4" stroke-linecap="round"/><path d="M26 100 Q38 108 26 96" fill="none" stroke="#44403c" stroke-width="2"/>';
   }
   return { back, front, handIce, handSign };
 }
@@ -2220,48 +2151,50 @@ function penguinSVG(pose, gear, gid){
   const ids = normalizeGear(gear);
   const has = (id) => ids.indexOf(id) !== -1;
   const layers = gearLayers(has);
-  const sx = 64 / 46, sy = 82 / 60;
-  const wrap = (inner) => {
-    if (!inner) return '';
-    if (pose === 'sign') return '<g transform="scale(' + sx + ' ' + sy + ')">' + inner + '</g>';
-    return inner;
-  };
-  const hand = pose === 'sign' ? layers.handSign : layers.handIce;
-  const decor = wrap(layers.back);
-  const front = wrap(layers.front) + hand;
-  if (pose === 'sign') {
-    return '<svg width="64" height="82" viewBox="-2 -2 68 86" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
-      + decor
-      + '<ellipse cx="21" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/><ellipse cx="43" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/>'
-      + '<ellipse cx="32" cy="52" rx="22" ry="27" fill="#1a1a2e"/>'
-      + '<ellipse cx="32" cy="57" rx="14" ry="18" fill="#F5F0E8"/>'
-      + '<ellipse cx="8" cy="38" rx="6" ry="18" fill="#1a1a2e" transform="rotate(-50 8 38)"/>'
-      + '<ellipse cx="56" cy="38" rx="6" ry="18" fill="#1a1a2e" transform="rotate(50 56 38)"/>'
-      + '<ellipse cx="32" cy="26" rx="18" ry="18" fill="#1a1a28"/>'
-      + '<ellipse cx="32" cy="30" rx="11" ry="10" fill="#f8f6f2"/>'
-      + '<ellipse cx="23" cy="21" rx="6.5" ry="6.5" fill="white"/><ellipse cx="41" cy="21" rx="6.5" ry="6.5" fill="white"/>'
-      + '<ellipse cx="25" cy="23" rx="3.8" ry="3.8" fill="#0a0a18"/><ellipse cx="43" cy="23" rx="3.8" ry="3.8" fill="#0a0a18"/>'
-      + '<ellipse cx="26" cy="21" rx="1.5" ry="1.5" fill="white"/><ellipse cx="44" cy="21" rx="1.5" ry="1.5" fill="white"/>'
-      + '<path d="M28 33 L32 39 L36 33 Q34 31 30 31 Z" fill="#e07800"/><path d="M28 33 L32 36 L36 33 Z" fill="#c25a00"/>'
-      + front
-      + '</svg>';
-  }
   const g = gid || 'bgi';
-  return '<svg width="46" height="60" viewBox="-2 -4 50 66" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
-    + decor
-    + '<ellipse cx="15" cy="57" rx="8" ry="3.5" fill="#c25a00"/><ellipse cx="31" cy="57" rx="8" ry="3.5" fill="#c25a00"/>'
-    + '<ellipse cx="23" cy="39" rx="17" ry="21" fill="url(#' + g + ')"/>'
-    + '<ellipse cx="23" cy="43" rx="10" ry="14" fill="#f8f6f2"/>'
-    + '<path d="M6 30 Q1 38 3 48 Q7 51 10 46 Q11 37 13 31 Z" fill="#2a2a2a"/>'
-    + '<path d="M40 30 Q45 38 43 48 Q39 51 36 46 Q35 37 33 31 Z" fill="#2a2a2a"/>'
-    + '<ellipse cx="23" cy="20" rx="14" ry="14" fill="#1a1a28"/>'
-    + '<ellipse cx="23" cy="23" rx="9" ry="8" fill="#f8f6f2"/>'
-    + '<ellipse cx="17" cy="15" rx="5.5" ry="5.5" fill="white"/><ellipse cx="29" cy="15" rx="5.5" ry="5.5" fill="white"/>'
-    + '<ellipse cx="18.5" cy="16.5" rx="3.2" ry="3.2" fill="#0a0a18"/><ellipse cx="30.5" cy="16.5" rx="3.2" ry="3.2" fill="#0a0a18"/>'
-    + '<ellipse cx="19.5" cy="15" rx="1.2" ry="1.2" fill="white"/><ellipse cx="31.5" cy="15" rx="1.2" ry="1.2" fill="white"/>'
-    + '<path d="M19 25 L23 30 L27 25 Q25 23 21 23 Z" fill="#e07800"/><path d="M19 25 L23 27.5 L27 25 Z" fill="#c25a00"/>'
-    + '<defs><radialGradient id="' + g + '" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#909099"/><stop offset="60%" stop-color="#4a4a5a"/><stop offset="100%" stop-color="#2a2a3a"/></radialGradient></defs>'
-    + front
+  const sign = pose === 'sign';
+  const flipL = sign
+    ? 'M36 72 C10 78 -2 58 14 46 C26 38 40 54 42 70 C42 76 38 74 36 72Z'
+    : 'M32 66 C10 76 6 104 20 116 C32 122 42 108 40 86 C38 74 36 68 32 66Z';
+  const flipR = sign
+    ? 'M64 72 C90 78 102 58 86 46 C74 38 60 54 58 70 C58 76 62 74 64 72Z'
+    : 'M68 66 C90 76 94 104 80 116 C68 122 58 108 60 86 C62 74 64 68 68 66Z';
+  const hand = sign ? layers.handSign : layers.handIce;
+  return '<svg width="140" height="158" viewBox="-16 -22 140 158" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+    + '<defs>'
+    + '<filter id="' + g + 'ink" x="-30%" y="-30%" width="160%" height="160%"><feMorphology in="SourceAlpha" operator="dilate" radius="2.15" result="d"/><feFlood flood-color="#140e18" result="f"/><feComposite in="f" in2="d" operator="in" result="o"/><feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
+    + '<radialGradient id="' + g + 'body" cx="32%" cy="28%" r="75%"><stop offset="0%" stop-color="#4c5c86"/><stop offset="42%" stop-color="#243049"/><stop offset="100%" stop-color="#121722"/></radialGradient>'
+    + '<radialGradient id="' + g + 'head" cx="35%" cy="30%" r="70%"><stop offset="0%" stop-color="#9aafd4"/><stop offset="46%" stop-color="#243049"/><stop offset="100%" stop-color="#10141f"/></radialGradient>'
+    + '<linearGradient id="' + g + 'belly" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#efe8dc"/></linearGradient>'
+    + '<linearGradient id="' + g + 'foot" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdba74"/><stop offset="100%" stop-color="#ea580c"/></linearGradient>'
+    + '<linearGradient id="' + g + 'beak" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fb923c"/><stop offset="100%" stop-color="#c2410c"/></linearGradient>'
+    + '</defs>'
+    + '<ellipse cx="50" cy="124" rx="28" ry="6" fill="rgba(0,0,0,.22)"/>'
+    + layers.back
+    + '<g filter="url(#' + g + 'ink)">'
+    + '<path d="' + flipL + '" fill="url(#' + g + 'body)"/>'
+    + '<path d="' + flipR + '" fill="url(#' + g + 'body)"/>'
+    + '<ellipse cx="50" cy="82" rx="26" ry="32" fill="url(#' + g + 'body)"/>'
+    + '<circle cx="50" cy="42" r="24" fill="url(#' + g + 'head)"/>'
+    + '<ellipse cx="36" cy="116" rx="13" ry="6.5" fill="url(#' + g + 'foot)"/>'
+    + '<ellipse cx="64" cy="116" rx="13" ry="6.5" fill="url(#' + g + 'foot)"/>'
+    + '</g>'
+    + '<ellipse cx="32" cy="78" rx="7" ry="14" fill="#93c5fd" opacity=".22"/>'
+    + '<ellipse cx="50" cy="88" rx="16" ry="22" fill="url(#' + g + 'belly)"/>'
+    + '<ellipse cx="50" cy="50" rx="15" ry="13" fill="url(#' + g + 'belly)"/>'
+    + '<path d="M28 114 Q24 106 30 110" stroke="#9a3412" stroke-width="1.5" fill="none" stroke-linecap="round"/>'
+    + '<path d="M36 112 L36 104" stroke="#9a3412" stroke-width="1.5" stroke-linecap="round"/>'
+    + '<path d="M44 114 Q48 106 42 110" stroke="#9a3412" stroke-width="1.5" fill="none" stroke-linecap="round"/>'
+    + '<path d="M56 114 Q52 106 58 110" stroke="#9a3412" stroke-width="1.5" fill="none" stroke-linecap="round"/>'
+    + '<path d="M64 112 L64 104" stroke="#9a3412" stroke-width="1.5" stroke-linecap="round"/>'
+    + '<path d="M72 114 Q76 106 70 110" stroke="#9a3412" stroke-width="1.5" fill="none" stroke-linecap="round"/>'
+    + '<g class="pg-eye"><ellipse cx="42" cy="48" rx="3.5" ry="4.1" fill="#140e18"/><circle cx="43.3" cy="46.6" r="1.25" fill="#fff"/></g>'
+    + '<g class="pg-eye"><ellipse cx="58" cy="48" rx="3.5" ry="4.1" fill="#140e18"/><circle cx="59.3" cy="46.6" r="1.25" fill="#fff"/></g>'
+    + '<path d="M44 54 Q50 50 56 54 L50 62 Z" fill="url(#' + g + 'beak)" stroke="#c2410c" stroke-width="1.1" stroke-linejoin="round"/>'
+    + '<path d="M46 54.5 Q50 52.4 54 54.5" stroke="#fed7aa" stroke-width="1.1" fill="none" stroke-linecap="round"/>'
+    + '<ellipse class="pg-shine" cx="38" cy="30" rx="8" ry="5" fill="#fff"/>'
+    + layers.front
+    + hand
     + '</svg>';
 }
 
@@ -2269,6 +2202,10 @@ function paintPenguin(el, pose, gear){
   if (!el) return;
   const gid = 'pg' + String(el.id || pose).replace(/[^a-zA-Z0-9]/g, '');
   el.innerHTML = penguinSVG(pose, gear, gid);
+}
+function paintBrandPenguins(){
+  paintPenguin(document.getElementById('splash-peng'), 'ice', []);
+  paintPenguin(document.getElementById('ob-peng'), 'ice', []);
 }
 function paintOwnPenguins(){
   const g = normalizeGear(P && P.gear);
@@ -2305,6 +2242,12 @@ function toggleGear(id){
   void syncProfile();
 }
 window.toggleGear = toggleGear;
+function toggleGearPanel(){
+  const el = document.getElementById('gear-picker');
+  if (!el) return;
+  el.classList.toggle('hidden');
+  if (!el.classList.contains('hidden')) renderGearUI();
+}
 
 function svgToImage(svg){
   return new Promise((resolve) => {
@@ -2418,8 +2361,8 @@ function buildStreakImageBlob(d, opts){
     let pengImg = null;
     try { pengImg = await svgToImage(penguinSVG('ice', P && P.gear, 'sharePeng')); } catch (e) { pengImg = null; }
     if (pengImg) {
-      const pw = 168;
-      const ph = Math.round(pw * (60 / 46));
+      const pw = 210;
+      const ph = Math.round(pw * PG_ASPECT);
       x.drawImage(pengImg, CX - pw / 2, y - 6, pw, ph);
       y += ph + 4;
     } else {
@@ -2801,6 +2744,7 @@ async function savePassFromProfile() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  try { paintBrandPenguins(); } catch (e) {}
   genStars();
   document.getElementById('date-in').max   = new Date().toISOString().slice(0,10);
   document.getElementById('date-in').value = new Date().toISOString().slice(0,10);
@@ -2978,6 +2922,10 @@ function bindAll() {
   document.getElementById('rep-days-in').oninput  = repUpPrev;
   document.getElementById('logout-btn').onclick  = doLogout;
   document.getElementById('av-edit').onclick     = toggleAP;
+  const gearOpen = document.getElementById('gear-open');
+  if (gearOpen) gearOpen.onclick = toggleGearPanel;
+  const gearOk = document.getElementById('gear-ok');
+  if (gearOk) gearOk.onclick = () => { const el = document.getElementById('gear-picker'); if (el) el.classList.add('hidden'); };
   document.getElementById('av-ok').onclick       = confirmAV;
   document.getElementById('av-photo-btn').onclick   = () => document.getElementById('av-photo-input').click();
   document.getElementById('av-photo-clear').onclick = clearAvatarPhoto;
