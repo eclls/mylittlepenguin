@@ -465,6 +465,13 @@ body.bg-quiet .peng-svg{animation:none!important}
 .apg{background:rgba(10,22,40,.7);border:1.5px solid rgba(255,255,255,.12);border-radius:var(--r-lg);padding:18px;display:flex;flex-direction:column;gap:12px}
 .apg h3{font-family:var(--fd);font-size:1.15rem;color:#fff}
 .av-gr{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.gear-hint{font-size:.75rem;font-weight:600;color:rgba(255,255,255,.55);line-height:1.4;margin:-2px 0 4px}
+.gear-preview{display:flex;justify-content:center;min-height:118px}
+.gear-count{text-align:center;font-size:.72rem;font-weight:800;color:#7ff0dd;letter-spacing:.04em;margin:2px 0 8px}
+.gear-grid{display:flex;flex-wrap:wrap;gap:8px}
+.gear-chip{flex:1 1 calc(50% - 8px);min-width:128px;text-align:left;padding:8px 10px;border-radius:12px;border:1.5px solid rgba(255,255,255,.14);background:rgba(10,22,40,.55);color:#e8f4ff;font-size:.78rem;font-weight:800;touch-action:manipulation}
+.gear-chip small{display:block;font-size:.62rem;font-weight:700;color:rgba(184,224,247,.72);margin-top:2px}
+.gear-chip.on{border-color:rgba(78,205,196,.75);background:rgba(78,205,196,.16);color:#fff}
 .av-op{aspect-ratio:1;border-radius:var(--r-md);background:rgba(255,255,255,.06);border:2px solid transparent;display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer;transition:all .2s}
 .av-op.sel{border-color:var(--teal);background:rgba(78,205,196,.15)}
 .p-st{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -717,7 +724,7 @@ body.bg-quiet .peng-svg{animation:none!important}
         <div class="icbg">
           <div class="ic-top"></div><div class="ic-sub"></div><div class="ic-sh"></div>
           <div class="mp-wrap">
-            <div class="peng-svg">
+            <div class="peng-svg" id="peng-ice">
               <svg width="46" height="60" viewBox="0 0 46 60" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <ellipse cx="15" cy="57" rx="8" ry="3.5" fill="#c25a00"/><ellipse cx="31" cy="57" rx="8" ry="3.5" fill="#c25a00"/>
                 <ellipse cx="23" cy="39" rx="17" ry="21" fill="url(#bgi)"/>
@@ -742,8 +749,8 @@ body.bg-quiet .peng-svg{animation:none!important}
     <div class="sc">
       <div class="ss"><div class="sl">Ton troupeau 🐾</div><div class="acd" id="acd"></div></div>
       <div class="ss">
-        <div class="dp">
-          <div class="peng-svg hold" style="margin-right:-6px">
+          <div class="dp">
+          <div class="peng-svg hold" id="peng-sign" style="margin-right:-6px">
             <svg width="64" height="82" viewBox="0 0 64 82" fill="none" xmlns="http://www.w3.org/2000/svg">
               <ellipse cx="21" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/><ellipse cx="43" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/>
               <ellipse cx="32" cy="52" rx="22" ry="27" fill="#1a1a2e"/>
@@ -953,6 +960,13 @@ body.bg-quiet .peng-svg{animation:none!important}
         <button class="ob-btn" id="av-ok">Confirmer</button>
       </div>
       <input type="file" id="av-photo-input" accept="image/*" style="display:none"/>
+      <div class="psec">
+        <div class="sl">Habiller mon pingouin</div>
+        <p class="gear-hint">Jusqu’à 3 accessoires, un par zone. Tes amis le voient sur ta banquise, et il est aussi sur ta story.</p>
+        <div id="gear-preview" class="gear-preview"></div>
+        <div id="gear-count" class="gear-count">0 / 3</div>
+        <div id="gear-grid" class="gear-grid"></div>
+      </div>
       <div class="p-st">
         <div class="stc stc-hint" data-prof-hint="glacons" tabindex="0" role="button" aria-label="Aide : glaçons"><div class="stc-i">🧊</div><div class="stc-v" id="st-ice">0</div><div class="stc-l">Glaçons</div></div>
         <div class="stc stc-hint" data-prof-hint="jours" tabindex="0" role="button" aria-label="Aide : jours"><div class="stc-i">📅</div><div class="stc-v" id="st-d">0</div><div class="stc-l">Jours</div></div>
@@ -1142,7 +1156,7 @@ body.bg-quiet .peng-svg{animation:none!important}
           <div class="icbg">
             <div class="ic-top"></div><div class="ic-sub"></div><div class="ic-sh"></div>
             <div class="mp-wrap">
-              <div class="peng-svg">
+              <div class="peng-svg" id="friend-peng-ice">
                 <svg width="46" height="60" viewBox="0 0 46 60" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <ellipse cx="15" cy="57" rx="8" ry="3.5" fill="#c25a00"/><ellipse cx="31" cy="57" rx="8" ry="3.5" fill="#c25a00"/>
                   <ellipse cx="23" cy="39" rx="17" ry="21" fill="url(#bgi-fr)"/>
@@ -1168,7 +1182,7 @@ body.bg-quiet .peng-svg{animation:none!important}
         <div class="ss"><div class="sl">Son troupeau 🐾</div><div class="acd" id="friend-acd"></div></div>
         <div class="ss">
           <div class="dp">
-            <div class="peng-svg hold" style="margin-right:-6px">
+            <div class="peng-svg hold" id="friend-peng-sign" style="margin-right:-6px">
               <svg width="64" height="82" viewBox="0 0 64 82" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <ellipse cx="21" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/><ellipse cx="43" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/>
                 <ellipse cx="32" cy="52" rx="22" ry="27" fill="#1a1a2e"/>
@@ -2137,11 +2151,179 @@ function downloadDataUrl(dataUrl, filename){
   try { const a = document.createElement('a'); a.href = dataUrl; a.download = filename || 'image.png'; document.body.appendChild(a); a.click(); a.remove(); } catch (e) {}
 }
 
+const GEAR_ITEMS = [
+  { id:'mullet', zone:'hair', label:'Mulet' },
+  { id:'cowboy', zone:'head', label:'Chapeau cowboy' },
+  { id:'cap', zone:'head', label:'Casquette' },
+  { id:'beanie', zone:'head', label:'Bonnet' },
+  { id:'crown', zone:'head', label:'Couronne' },
+  { id:'beret', zone:'head', label:'Béret' },
+  { id:'shades', zone:'face', label:'Lunettes' },
+  { id:'bindi', zone:'face', label:'Point rouge' },
+  { id:'stache', zone:'face', label:'Moustache' },
+  { id:'tutu', zone:'body', label:'Tutu' },
+  { id:'cape', zone:'body', label:'Cape' },
+  { id:'swim', zone:'body', label:'Maillot à pois' },
+  { id:'boots', zone:'feet', label:'Bottes cowboy' },
+  { id:'skates', zone:'feet', label:'Patins' },
+  { id:'wand', zone:'hand', label:'Baguette' },
+  { id:'umbrella', zone:'hand', label:'Parapluie' }
+];
+const GEAR_ZONE_LABEL = { hair:'Cheveux', head:'Tête', face:'Visage', body:'Corps', feet:'Pieds', hand:'Main' };
+
+function gearById(id){ return GEAR_ITEMS.find(g => g.id === id) || null; }
+function normalizeGear(raw){
+  let arr = raw;
+  if (typeof arr === 'string') { try { arr = JSON.parse(arr); } catch (e) { arr = []; } }
+  if (!Array.isArray(arr)) return [];
+  const out = [];
+  const zones = {};
+  arr.forEach(id => {
+    const it = gearById(id);
+    if (!it || zones[it.zone] || out.length >= 3) return;
+    zones[it.zone] = true;
+    out.push(it.id);
+  });
+  return out;
+}
+
+function gearLayers(has){
+  let back = '';
+  if (has('cape')) back += '<path d="M12 30 Q4 44 9 54 Q23 47 37 54 Q42 44 34 30 Q23 36 12 30Z" fill="#6d28d9"/><path d="M16 32 Q23 37 30 32" fill="none" stroke="#ddd6fe" stroke-width="1.1"/>';
+  if (has('mullet')) back += '<path d="M8 20 Q5 32 11 42 Q16 32 16 24Z" fill="#5c3317"/><path d="M38 20 Q41 32 35 42 Q30 32 30 24Z" fill="#5c3317"/><path d="M11 16 Q23 7 35 16 Q31 21 23 19 Q15 21 11 16Z" fill="#8a4e2b"/>';
+  let front = '';
+  if (has('boots')) front += '<path d="M7 49 L7 57 Q7 60 11 60 L21 60 L21 53 L15 49Z" fill="#6b3f22"/><path d="M25 49 L31 49 L39 53 L39 60 L29 60 Q25 60 25 57Z" fill="#6b3f22"/><path d="M8 55 H20 M27 55 H38" stroke="#3b2412" stroke-width="0.8"/>';
+  if (has('skates')) front += '<path d="M8 49 H19 V57 H8Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.7"/><path d="M27 49 H38 V57 H27Z" fill="#f8fafc" stroke="#94a3b8" stroke-width="0.7"/><path d="M7 58.4 H21 M26 58.4 H40" stroke="#e2e8f0" stroke-width="1.35" stroke-linecap="round"/>';
+  if (has('tutu')) front += '<ellipse cx="23" cy="45" rx="18" ry="5.6" fill="#f9a8d4"/><ellipse cx="23" cy="43.2" rx="14" ry="4" fill="#f472b6"/><ellipse cx="23" cy="44.2" rx="10" ry="2.6" fill="#fce7f3"/>';
+  if (has('swim')) front += '<path d="M14 33 Q23 29 32 33 L33 48 Q23 52 13 48Z" fill="#e11d48"/>' + [[18,36],[24,34],[29,37],[17,42],[23,41],[29,43],[21,46],[27,47]].map(p => '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.15" fill="#fff"/>').join('');
+  if (has('shades')) front += '<rect x="10.5" y="13" width="9.2" height="5.6" rx="1.6" fill="#0b0b10"/><rect x="26.3" y="13" width="9.2" height="5.6" rx="1.6" fill="#0b0b10"/><path d="M19.6 15.6 H26.4" stroke="#0b0b10" stroke-width="1.3"/><path d="M10.5 15.2 H7.5 M35.5 15.2 H38.5" stroke="#0b0b10" stroke-width="1.1"/><rect x="11.4" y="13.8" width="3.2" height="1.15" rx="0.4" fill="#ffffff" opacity=".4"/>';
+  if (has('bindi')) front += '<circle cx="23" cy="11" r="1.75" fill="#e11d48"/>';
+  if (has('stache')) front += '<path d="M14.5 27 Q19 23.6 23 26.4 Q27 23.6 31.5 27 Q27 30 23 28.2 Q19 30 14.5 27Z" fill="#4a2c17"/>';
+  if (has('cowboy')) front += '<ellipse cx="23" cy="13.2" rx="15" ry="3.1" fill="#5c3a1e"/><path d="M14.5 12 Q23 1.2 31.5 12 Q27 7 23 6.6 Q19 7 14.5 12Z" fill="#8d5a2b"/><path d="M16.5 8.6 Q23 6.8 29.5 8.6 Q23 10.4 16.5 8.6Z" fill="#3b2414"/>';
+  if (has('cap')) front += '<path d="M13 14.2 Q23 2.6 33 14.2 Q28 9 23 8.6 Q18 9 13 14.2Z" fill="#1e4d8c"/><path d="M14 13.4 Q23 19.2 32 13.4 Q23 16.2 14 13.4Z" fill="#163a6b"/><circle cx="23" cy="7.2" r="1.25" fill="#f8fafc"/>';
+  if (has('beanie')) front += '<path d="M13 15.2 Q23 1.4 33 15.2 Q29 10.5 23 9.8 Q17 10.5 13 15.2Z" fill="#be123c"/><circle cx="23" cy="2.8" r="2.7" fill="#fecdd3"/><path d="M14.5 13.2 Q23 11.2 31.5 13.2" stroke="#9f1239" stroke-width="1.2" fill="none"/>';
+  if (has('crown')) front += '<path d="M12 15 L15.2 6 L19 12 L23 2.6 L27 12 L30.8 6 L34 15Z" fill="#f5c542" stroke="#a16207" stroke-width="0.6" stroke-linejoin="round"/><circle cx="23" cy="4.4" r="1.15" fill="#ef4444"/>';
+  if (has('beret')) front += '<ellipse cx="25" cy="9.5" rx="13" ry="5.2" fill="#1e3a5f" transform="rotate(-16 25 9.5)"/><circle cx="33.2" cy="6.6" r="1.55" fill="#be123c"/>';
+  let handIce = '', handSign = '';
+  if (has('wand')) {
+    handIce = '<line x1="33" y1="38" x2="44" y2="23" stroke="#e7c89a" stroke-width="1.7" stroke-linecap="round"/><polygon points="44,18.5 47.4,25.2 40.6,25.2" fill="#fde68a" stroke="#f59e0b" stroke-width="0.45"/>';
+    handSign = '<line x1="16" y1="36" x2="5" y2="18" stroke="#e7c89a" stroke-width="2.1" stroke-linecap="round"/><polygon points="5,12 9.4,20.5 0.6,20.5" fill="#fde68a" stroke="#f59e0b" stroke-width="0.5"/>';
+  }
+  if (has('umbrella')) {
+    handIce = '<path d="M30 26 Q37.5 13 45 26Z" fill="#dc2626"/><path d="M30 26 L37.5 16 L45 26" fill="none" stroke="#7f1d1d" stroke-width="0.7"/><line x1="37.5" y1="26" x2="37.5" y2="41" stroke="#44403c" stroke-width="1.45" stroke-linecap="round"/><path d="M37.5 41 Q41 43.2 37.5 40.2" fill="none" stroke="#44403c" stroke-width="1.2"/>';
+    handSign = '<path d="M1 26 Q10 11 19 26Z" fill="#dc2626"/><path d="M1 26 L10 15 L19 26" fill="none" stroke="#7f1d1d" stroke-width="0.8"/><line x1="10" y1="26" x2="10" y2="42" stroke="#44403c" stroke-width="1.7" stroke-linecap="round"/><path d="M10 42 Q14 44.5 10 41" fill="none" stroke="#44403c" stroke-width="1.3"/>';
+  }
+  return { back, front, handIce, handSign };
+}
+
+function penguinSVG(pose, gear, gid){
+  const ids = normalizeGear(gear);
+  const has = (id) => ids.indexOf(id) !== -1;
+  const layers = gearLayers(has);
+  const sx = 64 / 46, sy = 82 / 60;
+  const wrap = (inner) => {
+    if (!inner) return '';
+    if (pose === 'sign') return '<g transform="scale(' + sx + ' ' + sy + ')">' + inner + '</g>';
+    return inner;
+  };
+  const hand = pose === 'sign' ? layers.handSign : layers.handIce;
+  const decor = wrap(layers.back);
+  const front = wrap(layers.front) + hand;
+  if (pose === 'sign') {
+    return '<svg width="64" height="82" viewBox="-2 -2 68 86" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+      + decor
+      + '<ellipse cx="21" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/><ellipse cx="43" cy="78" rx="9" ry="4.5" fill="#FF7A1A"/>'
+      + '<ellipse cx="32" cy="52" rx="22" ry="27" fill="#1a1a2e"/>'
+      + '<ellipse cx="32" cy="57" rx="14" ry="18" fill="#F5F0E8"/>'
+      + '<ellipse cx="8" cy="38" rx="6" ry="18" fill="#1a1a2e" transform="rotate(-50 8 38)"/>'
+      + '<ellipse cx="56" cy="38" rx="6" ry="18" fill="#1a1a2e" transform="rotate(50 56 38)"/>'
+      + '<ellipse cx="32" cy="26" rx="18" ry="18" fill="#1a1a28"/>'
+      + '<ellipse cx="32" cy="30" rx="11" ry="10" fill="#f8f6f2"/>'
+      + '<ellipse cx="23" cy="21" rx="6.5" ry="6.5" fill="white"/><ellipse cx="41" cy="21" rx="6.5" ry="6.5" fill="white"/>'
+      + '<ellipse cx="25" cy="23" rx="3.8" ry="3.8" fill="#0a0a18"/><ellipse cx="43" cy="23" rx="3.8" ry="3.8" fill="#0a0a18"/>'
+      + '<ellipse cx="26" cy="21" rx="1.5" ry="1.5" fill="white"/><ellipse cx="44" cy="21" rx="1.5" ry="1.5" fill="white"/>'
+      + '<path d="M28 33 L32 39 L36 33 Q34 31 30 31 Z" fill="#e07800"/><path d="M28 33 L32 36 L36 33 Z" fill="#c25a00"/>'
+      + front
+      + '</svg>';
+  }
+  const g = gid || 'bgi';
+  return '<svg width="46" height="60" viewBox="-2 -4 50 66" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+    + decor
+    + '<ellipse cx="15" cy="57" rx="8" ry="3.5" fill="#c25a00"/><ellipse cx="31" cy="57" rx="8" ry="3.5" fill="#c25a00"/>'
+    + '<ellipse cx="23" cy="39" rx="17" ry="21" fill="url(#' + g + ')"/>'
+    + '<ellipse cx="23" cy="43" rx="10" ry="14" fill="#f8f6f2"/>'
+    + '<path d="M6 30 Q1 38 3 48 Q7 51 10 46 Q11 37 13 31 Z" fill="#2a2a2a"/>'
+    + '<path d="M40 30 Q45 38 43 48 Q39 51 36 46 Q35 37 33 31 Z" fill="#2a2a2a"/>'
+    + '<ellipse cx="23" cy="20" rx="14" ry="14" fill="#1a1a28"/>'
+    + '<ellipse cx="23" cy="23" rx="9" ry="8" fill="#f8f6f2"/>'
+    + '<ellipse cx="17" cy="15" rx="5.5" ry="5.5" fill="white"/><ellipse cx="29" cy="15" rx="5.5" ry="5.5" fill="white"/>'
+    + '<ellipse cx="18.5" cy="16.5" rx="3.2" ry="3.2" fill="#0a0a18"/><ellipse cx="30.5" cy="16.5" rx="3.2" ry="3.2" fill="#0a0a18"/>'
+    + '<ellipse cx="19.5" cy="15" rx="1.2" ry="1.2" fill="white"/><ellipse cx="31.5" cy="15" rx="1.2" ry="1.2" fill="white"/>'
+    + '<path d="M19 25 L23 30 L27 25 Q25 23 21 23 Z" fill="#e07800"/><path d="M19 25 L23 27.5 L27 25 Z" fill="#c25a00"/>'
+    + '<defs><radialGradient id="' + g + '" cx="40%" cy="35%" r="65%"><stop offset="0%" stop-color="#909099"/><stop offset="60%" stop-color="#4a4a5a"/><stop offset="100%" stop-color="#2a2a3a"/></radialGradient></defs>'
+    + front
+    + '</svg>';
+}
+
+function paintPenguin(el, pose, gear){
+  if (!el) return;
+  const gid = 'pg' + String(el.id || pose).replace(/[^a-zA-Z0-9]/g, '');
+  el.innerHTML = penguinSVG(pose, gear, gid);
+}
+function paintOwnPenguins(){
+  const g = normalizeGear(P && P.gear);
+  paintPenguin(document.getElementById('peng-ice'), 'ice', g);
+  paintPenguin(document.getElementById('peng-sign'), 'sign', g);
+}
+function renderGearUI(){
+  const prev = document.getElementById('gear-preview');
+  const grid = document.getElementById('gear-grid');
+  const count = document.getElementById('gear-count');
+  if (!grid) return;
+  const g = normalizeGear(P && P.gear);
+  if (count) count.textContent = g.length + ' / 3';
+  if (prev) prev.innerHTML = '<div class="peng-svg" style="--peng-w:108px">' + penguinSVG('ice', g, 'gearPrev') + '</div>';
+  grid.innerHTML = GEAR_ITEMS.map(it => {
+    const on = g.indexOf(it.id) !== -1;
+    return '<button type="button" class="gear-chip' + (on ? ' on' : '') + '" onclick="toggleGear(\'' + it.id + '\')">' + escHTML(it.label) + '<small>' + GEAR_ZONE_LABEL[it.zone] + '</small></button>';
+  }).join('');
+}
+function toggleGear(id){
+  const item = gearById(id);
+  if (!item || !P) return;
+  let cur = normalizeGear(P.gear);
+  if (cur.indexOf(id) !== -1) cur = cur.filter(x => x !== id);
+  else {
+    cur = cur.filter(x => { const it = gearById(x); return !it || it.zone !== item.zone; });
+    if (cur.length >= 3) { toast('3 accessoires maximum 🐧'); return; }
+    cur.push(id);
+  }
+  P.gear = normalizeGear(cur);
+  try { localStorage.setItem('mlp_v2', JSON.stringify(P)); } catch (e) {}
+  paintOwnPenguins();
+  renderGearUI();
+  void syncProfile();
+}
+window.toggleGear = toggleGear;
+
+function svgToImage(svg){
+  return new Promise((resolve) => {
+    try {
+      const img = new Image();
+      const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+      img.src = url;
+    } catch (e) { resolve(null); }
+  });
+}
+
 let SHARE_CARD = { blob: null, dataUrl: null };
 
 function buildStreakImageBlob(d, opts){
   const showRecords = !!(opts && opts.showRecords);
-  return new Promise((resolve) => {
+  return (async () => {
     const W = 1080, H = 1920, CX = W / 2;
     const FONT = 'system-ui,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif';
     const EMOJI = '"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",' + FONT;
@@ -2233,10 +2415,19 @@ function buildStreakImageBlob(d, opts){
     x.beginPath(); x.moveTo(CX - 40, y); x.lineTo(CX + 40, y); x.stroke();
     y += 36;
 
-    setFont('400', 72, true);
-    x.fillStyle = '#fff';
-    x.fillText('🐧', CX, y);
-    y += 96;
+    let pengImg = null;
+    try { pengImg = await svgToImage(penguinSVG('ice', P && P.gear, 'sharePeng')); } catch (e) { pengImg = null; }
+    if (pengImg) {
+      const pw = 168;
+      const ph = Math.round(pw * (60 / 46));
+      x.drawImage(pengImg, CX - pw / 2, y - 6, pw, ph);
+      y += ph + 4;
+    } else {
+      setFont('400', 72, true);
+      x.fillStyle = '#fff';
+      x.fillText('🐧', CX, y);
+      y += 96;
+    }
 
     const num = String(d);
     const numSize = fitSize(num, '800', 200, 96, innerW, false);
@@ -2331,9 +2522,11 @@ function buildStreakImageBlob(d, opts){
     x.fillText('My Little Penguin  🐧', CX, H - 120);
 
     const dataUrl = c.toDataURL('image/png');
-    try { c.toBlob((b) => resolve({ blob: b || null, dataUrl }), 'image/png'); }
-    catch (e) { resolve({ blob: null, dataUrl }); }
-  });
+    let blob = null;
+    try { blob = await new Promise((res) => c.toBlob((b) => res(b || null), 'image/png')); }
+    catch (e) {}
+    return { blob, dataUrl };
+  })();
 }
 
 async function refreshSharePreview(){
@@ -2480,7 +2673,8 @@ function rowToP(row) {
     banquise_public: row.banquise_public !== false,
     expedition_public: row.expedition_public === true,
     alert_friends: row.alert_friends !== false,
-    glacons: typeof row.glacons === 'number' && !isNaN(row.glacons) ? row.glacons : 0
+    glacons: typeof row.glacons === 'number' && !isNaN(row.glacons) ? row.glacons : 0,
+    gear: normalizeGear(row.gear)
   };
 }
 async function pullScoresFromServer() {
@@ -2673,8 +2867,13 @@ async function syncProfile() {
       expedition_public: P.expedition_public === true,
       alert_friends: P.alert_friends !== false
     };
+    if (Array.isArray(P.gear)) row.gear = normalizeGear(P.gear);
     if (P._passwordHashPending) row.password_hash = P._passwordHashPending;
-    await SB.from('profiles').upsert(row, { onConflict: 'id' });
+    const res = await SB.from('profiles').upsert(row, { onConflict: 'id' });
+    if (res && res.error && Object.prototype.hasOwnProperty.call(row, 'gear')) {
+      delete row.gear;
+      await SB.from('profiles').upsert(row, { onConflict: 'id' });
+    }
     if (P._passwordHashPending) delete P._passwordHashPending;
   } catch (e) {}
 }
@@ -2908,7 +3107,7 @@ function onPN() {
 async function finishOnboardingNoSupabase(sd) {
   const uid = genUUID();
   localStorage.setItem('mlp_id', uid);
-  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
+  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0, gear: [] };
   localStorage.setItem('mlp_v2', JSON.stringify(P));
   await syncProfile();
   if (P.notif_enabled) askNotificationPermission();
@@ -2957,7 +3156,7 @@ async function onPassDone() {
   e.textContent = 'Création…';
   const uid = genUUID();
   localStorage.setItem('mlp_id', uid);
-  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0 };
+  P = { id: uid, pseudo: window._pseudo, start_date: sd, avatar: '🐧', avatar_url: null, notif_enabled: true, notif_friends: true, notif_messages: true, notif_kill: true, banquise_public: true, expedition_public: false, alert_friends: true, last_kill_date: null, kills: 0, glacons: 0, gear: [] };
   localStorage.setItem('mlp_v2', JSON.stringify(P));
   try {
     P._passwordHashPending = await pbkdf2HashPassword(pw);
@@ -3130,6 +3329,7 @@ function updateB(){
   const d=calcD(); renderAL(d); renderACD(d);
   document.getElementById('days-num').textContent=d; document.getElementById('streak-num').textContent=d;
   refreshExplWaitPenguinVisual();
+  try { paintOwnPenguins(); } catch (e) {}
   try{ checkMilestone(d); }catch(e){}
 }
 function renderAnimalsInto(layerEl, days){
@@ -3572,6 +3772,7 @@ function updateP(){
   document.getElementById('alert-tog').classList.toggle('on',!!P.alert_friends);
   updateNotifPermissionUI();
   refreshQuestionBadge();
+  try { renderGearUI(); } catch (e) {}
 }
 
 function renderAvatarPreview(url, emoji){
@@ -4157,7 +4358,10 @@ async function openFriendBanquise(fid){
   if(!SB||!fid){toast('Connexion requise');return;}
   const sec = document.getElementById('friend-scores-section');
   if (sec) sec.classList.add('hidden');
-  const{data,error}=await SB.from('profiles').select('id,pseudo,avatar,avatar_url,start_date,last_kill_date,banquise_public,expedition_public').eq('id',fid).maybeSingle();
+  const cols = 'id,pseudo,avatar,avatar_url,start_date,last_kill_date,banquise_public,expedition_public';
+  let q = await SB.from('profiles').select(cols + ',gear').eq('id', fid).maybeSingle();
+  if (q.error) q = await SB.from('profiles').select(cols).eq('id', fid).maybeSingle();
+  const data = q.data, error = q.error;
   if(error||!data){toast('Profil introuvable');return;}
   loadFriendExpeditions(fid, data.expedition_public===true);
   document.getElementById('friend-bq-title').textContent=(data.pseudo||'Explorateur')+' 🏔️';
@@ -4179,6 +4383,8 @@ async function openFriendBanquise(fid){
   }
   document.getElementById('friend-bq-private').classList.add('hidden');
   document.getElementById('friend-bq-public').classList.remove('hidden');
+  paintPenguin(document.getElementById('friend-peng-ice'), 'ice', data.gear);
+  paintPenguin(document.getElementById('friend-peng-sign'), 'sign', data.gear);
   const d=calcDF(data.start_date,data.last_kill_date);
   renderAnimalsInto(document.getElementById('friend-al'),d);
   renderStatsInto(document.getElementById('friend-acd'),d,'Commence son aventure aujourd\'hui ! 🐧');
