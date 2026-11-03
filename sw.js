@@ -15,7 +15,7 @@
  * ce qui force le rafraîchissement du cache sur iOS/Android sans intervention.
  * La valeur ci-dessous ne sert que de repli en dev / déploiement manuel.
  */
-const CACHE_VERSION = 'mlp-v5';
+const CACHE_VERSION = 'mlp-v6';
 const PRECACHE = [
   './',
   './index.html',
@@ -63,7 +63,8 @@ self.addEventListener('fetch', (event) => {
   // Navigation : cache d'abord (ouverture iOS instantanée), réseau en fond.
   if (req.mode === 'navigate') {
     event.respondWith((async () => {
-      const cached = (await caches.match(req)) || (await caches.match('./index.html'));
+      const box = await caches.open(CACHE_VERSION);
+      const cached = (await box.match(req)) || (await box.match('./index.html'));
       const network = fetch(req)
         .then((res) => {
           if (res && res.ok) {
@@ -85,7 +86,7 @@ self.addEventListener('fetch', (event) => {
   const sameOrigin = url.startsWith(self.location.origin);
   if (sameOrigin || isCDN(url)) {
     event.respondWith(
-      caches.match(req).then((cached) => {
+      caches.open(CACHE_VERSION).then((box) => box.match(req)).then((cached) => {
         const network = fetch(req)
           .then((res) => {
             if (res && (res.status === 200 || res.type === 'opaque')) {
