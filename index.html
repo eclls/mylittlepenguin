@@ -103,7 +103,7 @@ body.bg-quiet .pg-shine,
 .peng-svg.hold{animation:bob-hold 3s ease-in-out infinite}
 #splash .peng-svg{--peng-w:min(46vw,168px)}
 #onboarding .peng-svg{--peng-w:min(54vw,152px)}
-.mp-wrap .peng-svg{--peng-w:min(46vw,102px)}
+.mp-wrap .peng-svg{--peng-w:min(52vw,118px)}
 .dp .peng-svg.hold{--peng-w:min(32vw,108px)}
 .expl-pingu-end .peng-svg{--peng-w:min(44vw,128px)}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-9px) rotate(1.5deg)}}
@@ -477,13 +477,18 @@ body.bg-quiet .pg-shine,
 .apg h3{font-family:var(--fd);font-size:1.15rem;color:#fff}
 .av-gr{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .gear-hint{font-size:.8rem;font-weight:700;color:#ffd0e8;line-height:1.45;margin:0}
-.gear-preview{display:flex;justify-content:center;min-height:168px}
-.gear-preview .peng-svg{--peng-w:132px}
+.gear-preview{display:flex;justify-content:center;min-height:190px}
+.gear-preview .peng-svg{--peng-w:150px}
 .gear-count{text-align:center;font-size:.72rem;font-weight:800;color:#7ff0dd;letter-spacing:.04em;margin:2px 0 8px}
-.gear-grid{display:flex;flex-wrap:wrap;gap:8px}
-.gear-chip{flex:1 1 calc(50% - 8px);min-width:128px;text-align:left;padding:8px 10px;border-radius:12px;border:1.5px solid rgba(255,255,255,.14);background:rgba(10,22,40,.55);color:#e8f4ff;font-size:.78rem;font-weight:800;touch-action:manipulation}
-.gear-chip small{display:block;font-size:.62rem;font-weight:700;color:rgba(184,224,247,.72);margin-top:2px}
-.gear-chip.on{border-color:rgba(78,205,196,.75);background:rgba(78,205,196,.16);color:#fff}
+.gear-zones{display:flex;gap:8px}
+.gear-zone-btn{flex:1;min-width:0;padding:10px 6px;border-radius:12px;border:1.5px solid rgba(255,255,255,.16);background:rgba(10,22,40,.55);color:#fff;font-weight:800;font-size:.82rem;line-height:1.15;touch-action:manipulation}
+.gear-zone-btn.on{border-color:rgba(78,205,196,.8);background:rgba(78,205,196,.16)}
+.gear-zone-btn small{display:block;margin-top:3px;font-size:.62rem;font-weight:700;color:#7ff0dd;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gear-drop{display:flex;flex-direction:column;gap:6px;max-height:220px;overflow:auto}
+.gear-drop.hidden{display:none}
+.gear-opt{text-align:left;padding:10px 12px;border-radius:12px;border:1.5px solid rgba(255,255,255,.12);background:rgba(10,22,40,.45);color:#e8f4ff;font-weight:800;font-size:.84rem;touch-action:manipulation}
+.gear-opt.on{border-color:rgba(78,205,196,.75);background:rgba(78,205,196,.16)}
+.gear-opt small{margin-left:8px;font-size:.68rem;font-weight:700;color:rgba(184,224,247,.72)}
 .av-op{aspect-ratio:1;border-radius:var(--r-md);background:rgba(255,255,255,.06);border:2px solid transparent;display:flex;align-items:center;justify-content:center;font-size:1.8rem;cursor:pointer;transition:all .2s}
 .av-op.sel{border-color:var(--teal);background:rgba(78,205,196,.15)}
 .p-st{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -909,7 +914,8 @@ body.bg-quiet .pg-shine,
         <p class="gear-hint">Trois accessoires, pas un de plus. Toute la colonie va te mater — banquise et story, rien à cacher.</p>
         <div id="gear-preview" class="gear-preview"></div>
         <div id="gear-count" class="gear-count">0 / 3</div>
-        <div id="gear-grid" class="gear-grid"></div>
+        <div id="gear-zones" class="gear-zones"></div>
+        <div id="gear-drop" class="gear-drop hidden"></div>
         <button type="button" class="ob-btn" id="gear-ok">C’est porté</button>
       </div>
       <div class="p-st">
@@ -2071,6 +2077,7 @@ function downloadDataUrl(dataUrl, filename){
 const GEAR_ITEMS = [
   { id:'mullet', zone:'hair', label:'Mulet' },
   { id:'cowboy', zone:'head', label:'Chapeau cowboy' },
+  { id:'straw', zone:'head', label:'Chapeau de paille' },
   { id:'cap', zone:'head', label:'Casquette' },
   { id:'beanie', zone:'head', label:'Bonnet' },
   { id:'crown', zone:'head', label:'Couronne' },
@@ -2087,6 +2094,12 @@ const GEAR_ITEMS = [
   { id:'umbrella', zone:'hand', label:'Parapluie' }
 ];
 const GEAR_ZONE_LABEL = { hair:'Cheveux', head:'Tête', face:'Visage', body:'Corps', feet:'Pieds', hand:'Main' };
+const GEAR_MENUS = [
+  { id:'tete', label:'Tête', zones:['hair','head','face'] },
+  { id:'corps', label:'Corps', zones:['body','hand'] },
+  { id:'pieds', label:'Pieds', zones:['feet'] }
+];
+let GEAR_OPEN_MENU = null;
 
 function gearById(id){ return GEAR_ITEMS.find(g => g.id === id) || null; }
 function normalizeGear(raw){
@@ -2104,45 +2117,44 @@ function normalizeGear(raw){
   return out;
 }
 
-const PG_ASPECT = 158 / 140;
-const PG_INK = ' stroke="#1a1020" stroke-width="2.15" stroke-linejoin="round"';
+const PG_ASPECT = 730 / 650;
 
-function gearLayers(has){
+function gearLayers(has, g){
+  const ink = ' stroke="#080b10" stroke-linejoin="round" stroke-linecap="round"';
   let back = '';
-  if (has('cape')) back += '<path d="M24 72 Q2 98 14 128 Q50 114 86 128 Q98 98 76 72 Q50 84 24 72Z" fill="#7c3aed"' + PG_INK + '/><path d="M34 80 Q50 90 66 80" fill="none" stroke="#ddd6fe" stroke-width="1.8"/>';
-  if (has('mullet')) back += '<path d="M26 44 C14 62 16 100 30 106 C24 82 28 60 34 48Z" fill="#a16207"' + PG_INK + '/><path d="M74 44 C86 62 84 100 70 106 C76 82 72 60 66 48Z" fill="#a16207"' + PG_INK + '/><path d="M30 44 C20 64 22 96 32 100" fill="none" stroke="#f6d7a8" stroke-width="1.6" stroke-linecap="round"/><path d="M70 44 C80 64 78 96 68 100" fill="none" stroke="#f6d7a8" stroke-width="1.6" stroke-linecap="round"/><path d="M34 32 Q50 18 66 32 Q56 26 50 28 Q44 26 34 32Z" fill="#d4a574"' + PG_INK + '/>';
+  if (has('cape')) back += '<path d="M160 360 Q40 450 90 640 Q300 560 510 640 Q560 450 440 360 Q300 410 160 360Z" fill="#7c3aed"' + ink + ' stroke-width="8"/>';
+  if (has('mullet')) back += '<path d="M145 210 C70 280 60 460 145 540 C100 400 115 290 175 230Z" fill="#a16207"' + ink + ' stroke-width="7"/><path d="M455 210 C530 280 540 460 455 540 C500 400 485 290 425 230Z" fill="#a16207"' + ink + ' stroke-width="7"/>';
   let front = '';
-  if (has('boots')) front += '<path d="M18 96 L18 122 Q18 128 30 128 L46 128 L46 108 L36 96Z" fill="#8a5a32"' + PG_INK + '/><path d="M54 96 L64 96 L82 108 L82 128 L70 128 Q54 128 54 122Z" fill="#8a5a32"' + PG_INK + '/><path d="M22 116 H42 M58 116 H78" stroke="#3b2412" stroke-width="1.3" stroke-linecap="round"/>';
-  if (has('skates')) front += '<path d="M20 104 H44 V122 H20Z" fill="#f8fafc"' + PG_INK + '/><path d="M56 104 H80 V122 H56Z" fill="#f8fafc"' + PG_INK + '/><path d="M16 126 H48 M52 126 H84" stroke="#e2e8f0" stroke-width="2.4" stroke-linecap="round"/><path d="M18 126 H14 M82 126 H86" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round"/>';
-  if (has('tutu')) front += '<path d="M18 102 Q28 118 38 102 Q50 120 62 102 Q72 118 82 102 L80 110 Q50 122 20 110Z" fill="#f472b6"' + PG_INK + '/><path d="M24 100 H76" stroke="#fbcfe8" stroke-width="3" stroke-linecap="round"/><ellipse cx="50" cy="100" rx="16" ry="4" fill="#fce7f3"/>';
-  if (has('swim')) {
-    const dots = [[40,72],[46,70],[54,72],[60,70],[38,96],[46,94],[54,96],[62,98],[50,102]].map(p => '<circle cx="'+p[0]+'" cy="'+p[1]+'" r="1.35" fill="#fff"/>').join('');
-    front += '<path d="M36 70 Q32 58 44 56" fill="none" stroke="#e11d48" stroke-width="1.7" stroke-linecap="round"/>'
-      + '<path d="M64 70 Q68 58 56 56" fill="none" stroke="#e11d48" stroke-width="1.7" stroke-linecap="round"/>'
-      + '<path d="M34 68 Q44 62 50 74 Q44 78 34 74Z" fill="#e11d48"' + PG_INK + '/>'
-      + '<path d="M66 68 Q56 62 50 74 Q56 78 66 74Z" fill="#e11d48"' + PG_INK + '/>'
-      + '<path d="M46 72 l4 -3 4 3 -4 3Z" fill="#fb7185"/>'
-      + '<path d="M36 94 Q50 86 64 94 Q68 108 50 110 Q32 108 36 94Z" fill="#e11d48"' + PG_INK + '/>'
-      + '<path d="M34 98 q-6 -3 -4 3 q4 1 4 -3Z" fill="#fb7185"/>'
-      + '<path d="M66 98 q6 -3 4 3 q-4 1 -4 -3Z" fill="#fb7185"/>'
-      + dots;
-  }
-  if (has('shades')) front += '<rect x="31" y="36" width="15" height="11" rx="3.2" fill="#0c2348" stroke="#f5c542" stroke-width="1.7"/><rect x="54" y="36" width="15" height="11" rx="3.2" fill="#0c2348" stroke="#f5c542" stroke-width="1.7"/><path d="M46 41 H54" stroke="#f5c542" stroke-width="1.8" stroke-linecap="round"/><path d="M31 40 H24 M69 40 H76" stroke="#f5c542" stroke-width="1.5" stroke-linecap="round"/><path d="M34 39 H42" stroke="#7dd3fc" stroke-width="1.3" stroke-linecap="round" opacity=".85"/><path d="M57 39 H65" stroke="#38bdf8" stroke-width="1.3" stroke-linecap="round" opacity=".7"/>';
-  if (has('bindi')) front += '<circle cx="50" cy="28" r="2.5" fill="#e11d48"' + PG_INK + '/><circle cx="49.2" cy="27.2" r=".7" fill="#fecaca"/>';
-  if (has('stache')) front += '<path d="M34 58 Q42 52 50 58 Q58 52 66 58 Q58 64 50 60 Q42 64 34 58Z" fill="#5c3317"' + PG_INK + '/>';
-  if (has('cowboy')) front += '<ellipse cx="50" cy="20" rx="40" ry="8" fill="#6b3f24"' + PG_INK + '/><path d="M28 18 Q34 -2 50 -4 Q66 -2 72 18 Q62 10 50 11 Q38 10 28 18Z" fill="#c4843c"' + PG_INK + '/><path d="M32 16 Q50 10 68 16 Q50 22 32 16Z" fill="#4a2c17"/><polygon points="66,4 68.2,9 74,9 69.4,12.2 71,17.4 66,14.4 61,17.4 62.6,12.2 58,9 63.8,9" fill="#fde047" stroke="#a16207" stroke-width="0.7"/>';
-  if (has('cap')) front += '<path d="M24 44 Q50 8 76 44 Q64 24 50 22 Q36 24 24 44Z" fill="#3b82f6"' + PG_INK + '/><path d="M12 46 Q50 68 88 46 Q50 56 12 46Z" fill="#1d4ed8"' + PG_INK + '/><path d="M18 46 Q50 60 82 46" fill="none" stroke="#bfdbfe" stroke-width="1.4"/><circle cx="50" cy="18" r="2.6" fill="#fff"/>';
-  if (has('beanie')) front += '<path d="M24 46 Q50 10 76 46 Q64 28 50 28 Q36 28 24 46Z" fill="#e11d48"' + PG_INK + '/><circle cx="50" cy="12" r="6" fill="#fecdd3"' + PG_INK + '/><path d="M30 40 Q50 34 70 40" stroke="#fb7185" stroke-width="1.8" fill="none"/>';
-  if (has('crown')) front += '<path d="M28 24 L34 4 L42 18 L50 -2 L58 18 L66 4 L72 24Z" fill="#facc15"' + PG_INK + '/><circle cx="50" cy="2" r="1.8" fill="#ef4444"/><circle cx="38" cy="12" r="1.3" fill="#38bdf8"/><circle cx="62" cy="12" r="1.3" fill="#38bdf8"/>';
-  if (has('beret')) front += '<ellipse cx="58" cy="12" rx="30" ry="10" fill="#1e3a8a"' + PG_INK + ' transform="rotate(-18 58 12)"/><circle cx="82" cy="4" r="3.2" fill="#e11d48"' + PG_INK + '/>';
+  if (has('boots')) front += '<path d="M145 590 L125 665 Q165 695 235 680 L275 655 L255 590Z" fill="#8a5a32"' + ink + ' stroke-width="8"/><path d="M455 590 L475 665 Q435 695 365 680 L325 655 L345 590Z" fill="#8a5a32"' + ink + ' stroke-width="8"/>';
+  if (has('skates')) front += '<path d="M145 595 H275 V665 H145Z" fill="#f8fafc"' + ink + ' stroke-width="8"/><path d="M325 595 H455 V665 H325Z" fill="#f8fafc"' + ink + ' stroke-width="8"/><path d="M130 672 H290 M310 672 H470" stroke="#e2e8f0" stroke-width="8" stroke-linecap="round"/>';
+  if (has('tutu')) front += '<path d="M130 500 Q180 590 230 500 Q265 600 300 500 Q335 600 370 500 Q420 590 470 500 L450 530 Q300 610 150 530Z" fill="#f472b6"' + ink + ' stroke-width="7"/>';
+  if (has('swim')) front += '<g stroke="#080b10" stroke-width="6" stroke-linejoin="round"><path d="M186 440 Q215 412 251 439 L278 488 Q231 503 190 483Z" fill="url(#' + g + 'red)"/><path d="M322 488 L349 439 Q385 412 414 440 L410 483 Q367 503 322 488Z" fill="url(#' + g + 'red)"/></g>'
+    + '<g fill="url(#' + g + 'dots)"><path d="M186 440 Q215 412 251 439 L278 488 Q231 503 190 483Z"/><path d="M322 488 L349 439 Q385 412 414 440 L410 483 Q367 503 322 488Z"/></g>'
+    + '<g fill="none" stroke="#d90019" stroke-width="8"><path d="M213 443 Q205 408 195 385"/><path d="M387 443 Q395 408 405 385"/></g>'
+    + '<path d="M155 514 Q224 537 300 535 Q376 537 445 514 L419 579 Q361 607 300 611 Q239 607 181 579Z" fill="url(#' + g + 'red)" stroke="#080b10" stroke-width="7"/>'
+    + '<path d="M155 514 Q224 537 300 535 Q376 537 445 514 L419 579 Q361 607 300 611 Q239 607 181 579Z" fill="url(#' + g + 'dots)"/>';
+  if (has('shades')) front += '<g stroke="#080b10" stroke-width="7" stroke-linejoin="round"><path d="M153 258 Q211 230 268 253 Q282 266 275 310 Q264 349 211 348 Q164 345 153 310Z" fill="url(#' + g + 'lens)"/><path d="M332 253 Q389 230 447 258 L447 310 Q436 345 389 348 Q336 349 325 310 Q318 266 332 253Z" fill="url(#' + g + 'lens)"/></g>'
+    + '<path d="M275 270 Q300 258 325 270" fill="none" stroke="#e5a51a" stroke-width="9"/>'
+    + '<g fill="none" stroke="#bfe7ff" stroke-width="7" stroke-linecap="round"><path d="M168 270 Q185 251 204 253"/><path d="M345 270 Q362 251 381 253"/></g>';
+  if (has('bindi')) front += '<circle cx="300" cy="210" r="12" fill="#e11d48" stroke="#080b10" stroke-width="4"/>';
+  if (has('stache')) front += '<path d="M220 335 Q260 300 300 335 Q340 300 380 335 Q340 370 300 348 Q260 370 220 335Z" fill="#5c3317"' + ink + ' stroke-width="6"/>';
+  if (has('cowboy')) front += '<ellipse cx="300" cy="168" rx="210" ry="40" fill="#6b3f24"' + ink + ' stroke-width="8"/><path d="M175 160 Q205 35 300 22 Q395 35 425 160 Q365 115 300 112 Q235 115 175 160Z" fill="#c4843c"' + ink + ' stroke-width="8"/><path d="M190 155 Q300 185 410 155" fill="none" stroke="#3b2412" stroke-width="16" stroke-linecap="round"/><polygon points="390,70 402,100 436,100 410,120 420,152 390,132 360,152 370,120 344,100 378,100" fill="#fde047" stroke="#080b10" stroke-width="4"/>';
+  if (has('straw')) front += '<path d="M181 157 Q184 77 232 52 Q300 18 368 52 Q416 77 419 157 Q367 183 300 181 Q233 183 181 157Z" fill="url(#' + g + 'straw)" stroke="#080b10" stroke-width="9"/>'
+    + '<path d="M72 179 Q90 115 180 112 Q280 75 394 113 Q503 118 535 177 Q478 221 300 217 Q124 222 72 179Z" fill="url(#' + g + 'straw)" stroke="#080b10" stroke-width="9"/>'
+    + '<path d="M180 157 Q300 187 420 157" fill="none" stroke="#d92332" stroke-width="22" stroke-linecap="round"/>'
+    + '<g transform="translate(190 133)" fill="#f3293c" stroke="#080b10" stroke-width="4"><ellipse cy="-24" rx="15" ry="27"/><ellipse cx="23" cy="-8" rx="15" ry="27" transform="rotate(72 23 -8)"/><ellipse cx="14" cy="19" rx="15" ry="27" transform="rotate(144 14 19)"/><ellipse cx="-14" cy="19" rx="15" ry="27" transform="rotate(216 -14 19)"/><ellipse cx="-23" cy="-8" rx="15" ry="27" transform="rotate(288 -23 -8)"/><circle r="8" fill="#ffc52e" stroke="#080b10"/></g>';
+  if (has('cap')) front += '<path d="M165 175 Q300 45 435 175 Q370 120 300 115 Q230 120 165 175Z" fill="#3b82f6"' + ink + ' stroke-width="8"/><path d="M80 185 Q300 270 520 185 Q300 220 80 185Z" fill="#1d4ed8"' + ink + ' stroke-width="8"/><circle cx="300" cy="70" r="12" fill="#fff" stroke="#080b10" stroke-width="4"/>';
+  if (has('beanie')) front += '<path d="M160 180 Q300 30 440 180 Q370 115 300 110 Q230 115 160 180Z" fill="#e11d48"' + ink + ' stroke-width="8"/><circle cx="300" cy="40" r="28" fill="#fecdd3"' + ink + ' stroke-width="7"/>';
+  if (has('crown')) front += '<path d="M155 185 L190 45 L240 130 L300 15 L360 130 L410 45 L445 185Z" fill="#facc15"' + ink + ' stroke-width="8"/><circle cx="300" cy="55" r="10" fill="#ef4444"/><circle cx="230" cy="115" r="8" fill="#38bdf8"/><circle cx="370" cy="115" r="8" fill="#38bdf8"/>';
+  if (has('beret')) front += '<ellipse cx="340" cy="115" rx="155" ry="52" fill="#1e3a8a"' + ink + ' stroke-width="8" transform="rotate(-14 340 115)"/><circle cx="470" cy="70" r="16" fill="#e11d48"' + ink + ' stroke-width="6"/>';
   let handIce = '', handSign = '';
   if (has('wand')) {
-    handIce = '<line x1="78" y1="78" x2="108" y2="36" stroke="#f6d7a8" stroke-width="2.6" stroke-linecap="round"/><polygon points="108,22 118,40 98,40" fill="#fde68a" stroke="#f59e0b" stroke-width="1.2"/>';
-    handSign = '<line x1="22" y1="70" x2="-2" y2="28" stroke="#f6d7a8" stroke-width="2.6" stroke-linecap="round"/><polygon points="-2,14 8,32 -12,32" fill="#fde68a" stroke="#f59e0b" stroke-width="1.2"/>';
+    handIce = '<line x1="500" y1="430" x2="575" y2="250" stroke="#f6d7a8" stroke-width="12" stroke-linecap="round"/><polygon points="575,205 610,275 540,275" fill="#fde68a" stroke="#080b10" stroke-width="5"/>';
+    handSign = '<line x1="100" y1="430" x2="25" y2="250" stroke="#f6d7a8" stroke-width="12" stroke-linecap="round"/><polygon points="25,205 60,275 -10,275" fill="#fde68a" stroke="#080b10" stroke-width="5"/>';
   }
   if (has('umbrella')) {
-    handIce = '<path d="M70 64 Q98 28 122 58Z" fill="#ef4444"' + PG_INK + '/><path d="M70 64 L98 44 L122 58" fill="none" stroke="#7f1d1d" stroke-width="1.2"/><line x1="98" y1="58" x2="92" y2="108" stroke="#44403c" stroke-width="2.4" stroke-linecap="round"/><path d="M92 108 Q104 116 92 104" fill="none" stroke="#44403c" stroke-width="2"/>';
-    handSign = '<path d="M-8 58 Q20 22 46 56Z" fill="#ef4444"' + PG_INK + '/><path d="M-8 58 L20 38 L46 56" fill="none" stroke="#7f1d1d" stroke-width="1.2"/><line x1="20" y1="56" x2="26" y2="100" stroke="#44403c" stroke-width="2.4" stroke-linecap="round"/><path d="M26 100 Q38 108 26 96" fill="none" stroke="#44403c" stroke-width="2"/>';
+    handIce = '<path d="M470 310 Q545 180 600 310Z" fill="#ef4444"' + ink + ' stroke-width="8"/><line x1="545" y1="310" x2="525" y2="490" stroke="#44403c" stroke-width="10" stroke-linecap="round"/>';
+    handSign = '<path d="M0 310 Q75 180 150 310Z" fill="#ef4444"' + ink + ' stroke-width="8"/><line x1="75" y1="310" x2="95" y2="490" stroke="#44403c" stroke-width="10" stroke-linecap="round"/>';
   }
   return { back, front, handIce, handSign };
 }
@@ -2150,49 +2162,27 @@ function gearLayers(has){
 function penguinSVG(pose, gear, gid){
   const ids = normalizeGear(gear);
   const has = (id) => ids.indexOf(id) !== -1;
-  const layers = gearLayers(has);
-  const g = gid || 'bgi';
-  const sign = pose === 'sign';
-  const flipL = sign
-    ? 'M36 72 C10 78 -2 58 14 46 C26 38 40 54 42 70 C42 76 38 74 36 72Z'
-    : 'M32 66 C10 76 6 104 20 116 C32 122 42 108 40 86 C38 74 36 68 32 66Z';
-  const flipR = sign
-    ? 'M64 72 C90 78 102 58 86 46 C74 38 60 54 58 70 C58 76 62 74 64 72Z'
-    : 'M68 66 C90 76 94 104 80 116 C68 122 58 108 60 86 C62 74 64 68 68 66Z';
-  const hand = sign ? layers.handSign : layers.handIce;
-  return '<svg width="140" height="158" viewBox="-16 -22 140 158" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+  const g = gid || 'pg';
+  const layers = gearLayers(has, g);
+  const hand = pose === 'sign' ? layers.handSign : layers.handIce;
+  return '<svg width="600" height="700" viewBox="-20 -10 650 730" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
     + '<defs>'
-    + '<filter id="' + g + 'ink" x="-30%" y="-30%" width="160%" height="160%"><feMorphology in="SourceAlpha" operator="dilate" radius="2.15" result="d"/><feFlood flood-color="#140e18" result="f"/><feComposite in="f" in2="d" operator="in" result="o"/><feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge></filter>'
-    + '<radialGradient id="' + g + 'body" cx="32%" cy="28%" r="75%"><stop offset="0%" stop-color="#4c5c86"/><stop offset="42%" stop-color="#243049"/><stop offset="100%" stop-color="#121722"/></radialGradient>'
-    + '<radialGradient id="' + g + 'head" cx="35%" cy="30%" r="70%"><stop offset="0%" stop-color="#9aafd4"/><stop offset="46%" stop-color="#243049"/><stop offset="100%" stop-color="#10141f"/></radialGradient>'
-    + '<linearGradient id="' + g + 'belly" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#efe8dc"/></linearGradient>'
-    + '<linearGradient id="' + g + 'foot" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fdba74"/><stop offset="100%" stop-color="#ea580c"/></linearGradient>'
-    + '<linearGradient id="' + g + 'beak" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fb923c"/><stop offset="100%" stop-color="#c2410c"/></linearGradient>'
+    + '<linearGradient id="' + g + 'body" x2="1" y2="1"><stop offset="0" stop-color="#243653"/><stop offset="1" stop-color="#050b16"/></linearGradient>'
+    + '<linearGradient id="' + g + 'straw" x2="0.8" y2="1"><stop offset="0" stop-color="#ffe69a"/><stop offset="1" stop-color="#b9782e"/></linearGradient>'
+    + '<linearGradient id="' + g + 'red" x2="0" y2="1"><stop offset="0" stop-color="#ff4b4b"/><stop offset="1" stop-color="#d90019"/></linearGradient>'
+    + '<linearGradient id="' + g + 'lens" x2="0" y2="1"><stop offset="0" stop-color="#294c70"/><stop offset="1" stop-color="#081322"/></linearGradient>'
+    + '<pattern id="' + g + 'dots" width="30" height="30" patternUnits="userSpaceOnUse"><circle cx="8" cy="8" r="4.2" fill="white"/></pattern>'
     + '</defs>'
-    + '<ellipse cx="50" cy="124" rx="28" ry="6" fill="rgba(0,0,0,.22)"/>'
     + layers.back
-    + '<g filter="url(#' + g + 'ink)">'
-    + '<path d="' + flipL + '" fill="url(#' + g + 'body)"/>'
-    + '<path d="' + flipR + '" fill="url(#' + g + 'body)"/>'
-    + '<ellipse cx="50" cy="82" rx="26" ry="32" fill="url(#' + g + 'body)"/>'
-    + '<circle cx="50" cy="42" r="24" fill="url(#' + g + 'head)"/>'
-    + '<ellipse cx="36" cy="116" rx="13" ry="6.5" fill="url(#' + g + 'foot)"/>'
-    + '<ellipse cx="64" cy="116" rx="13" ry="6.5" fill="url(#' + g + 'foot)"/>'
-    + '</g>'
-    + '<ellipse cx="32" cy="78" rx="7" ry="14" fill="#93c5fd" opacity=".22"/>'
-    + '<ellipse cx="50" cy="88" rx="16" ry="22" fill="url(#' + g + 'belly)"/>'
-    + '<ellipse cx="50" cy="50" rx="15" ry="13" fill="url(#' + g + 'belly)"/>'
-    + '<path d="M28 114 Q24 106 30 110" stroke="#9a3412" stroke-width="1.5" fill="none" stroke-linecap="round"/>'
-    + '<path d="M36 112 L36 104" stroke="#9a3412" stroke-width="1.5" stroke-linecap="round"/>'
-    + '<path d="M44 114 Q48 106 42 110" stroke="#9a3412" stroke-width="1.5" fill="none" stroke-linecap="round"/>'
-    + '<path d="M56 114 Q52 106 58 110" stroke="#9a3412" stroke-width="1.5" fill="none" stroke-linecap="round"/>'
-    + '<path d="M64 112 L64 104" stroke="#9a3412" stroke-width="1.5" stroke-linecap="round"/>'
-    + '<path d="M72 114 Q76 106 70 110" stroke="#9a3412" stroke-width="1.5" fill="none" stroke-linecap="round"/>'
-    + '<g class="pg-eye"><ellipse cx="42" cy="48" rx="3.5" ry="4.1" fill="#140e18"/><circle cx="43.3" cy="46.6" r="1.25" fill="#fff"/></g>'
-    + '<g class="pg-eye"><ellipse cx="58" cy="48" rx="3.5" ry="4.1" fill="#140e18"/><circle cx="59.3" cy="46.6" r="1.25" fill="#fff"/></g>'
-    + '<path d="M44 54 Q50 50 56 54 L50 62 Z" fill="url(#' + g + 'beak)" stroke="#c2410c" stroke-width="1.1" stroke-linejoin="round"/>'
-    + '<path d="M46 54.5 Q50 52.4 54 54.5" stroke="#fed7aa" stroke-width="1.1" fill="none" stroke-linecap="round"/>'
-    + '<ellipse class="pg-shine" cx="38" cy="30" rx="8" ry="5" fill="#fff"/>'
+    + '<g fill="#ff9d00" stroke="#080b10" stroke-width="7" stroke-linejoin="round"><path d="M207 604 Q184 601 157 620 Q132 643 160 650 L192 641 Q181 664 205 663 L235 645 Q251 659 265 641 L273 616Z"/><path d="M327 616 Q345 659 365 642 Q389 665 406 648 L437 653 Q461 647 441 626 Q421 606 390 603Z"/></g>'
+    + '<g fill="url(#' + g + 'body)" stroke="#050910" stroke-width="9" stroke-linejoin="round"><path d="M208 331 Q150 363 58 432 Q19 466 37 483 Q73 510 191 452 L244 398Z"/><path d="M393 331 Q450 363 542 432 Q581 466 563 483 Q527 510 409 452 L356 398Z"/></g>'
+    + '<path d="M300 185 C190 177 133 247 132 369 C129 505 194 610 300 615 C406 610 471 505 468 369 C467 247 410 177 300 185Z" fill="url(#' + g + 'body)" stroke="#050910" stroke-width="10"/>'
+    + '<path d="M300 258 C238 247 194 315 177 405 C158 505 211 581 300 585 C389 581 442 505 423 405 C406 315 362 247 300 258Z" fill="#fffaf0" stroke="#080b10" stroke-width="7"/>'
+    + '<ellipse cx="228" cy="270" rx="61" ry="78" fill="#fffdf2"/>'
+    + '<ellipse cx="372" cy="270" rx="61" ry="78" fill="#fffdf2"/>'
+    + '<g class="pg-eye"><circle cx="228" cy="278" r="16" fill="#111"/><circle cx="234" cy="270" r="5.5" fill="#fff"/></g>'
+    + '<g class="pg-eye"><circle cx="372" cy="278" r="16" fill="#111"/><circle cx="378" cy="270" r="5.5" fill="#fff"/></g>'
+    + '<path d="M278 290 Q300 270 322 290 Q315 314 300 320 Q285 314 278 290Z" fill="#ff9d00" stroke="#080b10" stroke-width="6"/>'
     + layers.front
     + hand
     + '</svg>';
@@ -2214,17 +2204,31 @@ function paintOwnPenguins(){
 }
 function renderGearUI(){
   const prev = document.getElementById('gear-preview');
-  const grid = document.getElementById('gear-grid');
+  const zones = document.getElementById('gear-zones');
+  const drop = document.getElementById('gear-drop');
   const count = document.getElementById('gear-count');
-  if (!grid) return;
+  if (!zones || !drop) return;
   const g = normalizeGear(P && P.gear);
   if (count) count.textContent = g.length + ' / 3';
-  if (prev) prev.innerHTML = '<div class="peng-svg" style="--peng-w:108px">' + penguinSVG('ice', g, 'gearPrev') + '</div>';
-  grid.innerHTML = GEAR_ITEMS.map(it => {
+  if (prev) prev.innerHTML = '<div class="peng-svg" style="--peng-w:150px">' + penguinSVG('ice', g, 'gearPrev') + '</div>';
+  zones.innerHTML = GEAR_MENUS.map(menu => {
+    const worn = GEAR_ITEMS.filter(it => menu.zones.indexOf(it.zone) !== -1 && g.indexOf(it.id) !== -1).map(it => it.label);
+    const open = GEAR_OPEN_MENU === menu.id;
+    return '<button type="button" class="gear-zone-btn' + (open ? ' on' : '') + '" onclick="toggleGearMenu(\'' + menu.id + '\')">' + menu.label + '<small>' + (worn.length ? escHTML(worn.join(' · ')) : 'Choisir') + '</small></button>';
+  }).join('');
+  const menu = GEAR_MENUS.find(m => m.id === GEAR_OPEN_MENU);
+  if (!menu) { drop.classList.add('hidden'); drop.innerHTML = ''; return; }
+  drop.classList.remove('hidden');
+  drop.innerHTML = GEAR_ITEMS.filter(it => menu.zones.indexOf(it.zone) !== -1).map(it => {
     const on = g.indexOf(it.id) !== -1;
-    return '<button type="button" class="gear-chip' + (on ? ' on' : '') + '" onclick="toggleGear(\'' + it.id + '\')">' + escHTML(it.label) + '<small>' + GEAR_ZONE_LABEL[it.zone] + '</small></button>';
+    return '<button type="button" class="gear-opt' + (on ? ' on' : '') + '" onclick="toggleGear(\'' + it.id + '\')">' + escHTML(it.label) + '<small>' + GEAR_ZONE_LABEL[it.zone] + '</small></button>';
   }).join('');
 }
+function toggleGearMenu(id){
+  GEAR_OPEN_MENU = GEAR_OPEN_MENU === id ? null : id;
+  renderGearUI();
+}
+window.toggleGearMenu = toggleGearMenu;
 function toggleGear(id){
   const item = gearById(id);
   if (!item || !P) return;
