@@ -2125,7 +2125,7 @@ const PG_ASPECT = 735 / 600;
 function gearLayers(has, g){
   const ink = ' stroke="#080b10" stroke-linejoin="round" stroke-linecap="round"';
   let back = '';
-  if (has('cape')) back += '<path d="M205 348 Q130 430 155 630 Q300 575 445 630 Q470 430 395 348 Q300 400 205 348Z" fill="#7c3aed"' + ink + ' stroke-width="8"/>';
+  if (has('cape')) back += '<path d="M222 314 Q148 346 116 458 Q142 582 174 650 Q300 598 426 650 Q498 582 524 458 Q492 346 378 314 Q332 290 300 302 Q268 290 222 314Z" fill="#7c3aed"' + ink + ' stroke-width="8"/>';
   let feet = '';
   if (has('boots')) {
     feet += '<path d="M244 585L238 640L275 651L292 600Z M356 585L362 640L325 651L308 600Z" fill="#101b2d" stroke="#070b12" stroke-width="7"/>';
@@ -2156,6 +2156,7 @@ function gearLayers(has, g){
     hair += '<g fill="none" stroke="#c17a43" stroke-width="3" stroke-linecap="round"><path d="M184 324Q190 357 165 379M176 399Q199 415 175 444M416 324Q410 357 435 379M424 399Q401 415 425 444M228 249Q257 222 279 229M300 218Q322 208 344 230"/></g>';
   }
   let front = '';
+  if (has('cape')) front += '<path d="M208 322 Q252 356 300 346 Q348 356 392 322 L384 350 Q300 378 216 350Z" fill="#6d28d9"' + ink + ' stroke-width="6"/>';
   if (has('tutu')) front += '<path d="M168 505 Q210 575 248 508 Q274 590 300 508 Q326 590 352 508 Q390 575 432 505 L414 534 Q300 600 186 534Z" fill="#f472b6"' + ink + ' stroke-width="7"/>';
   if (has('swim')) {
     front += '<g fill="none" stroke="#a50019" stroke-width="6"><path d="M244 410L236 365M356 410L364 365"/></g>';
@@ -2180,8 +2181,9 @@ function gearLayers(has, g){
   }
   if (has('bindi')) front += '<circle cx="300" cy="268" r="9" fill="#e11d48" stroke="#080b10" stroke-width="4"/>';
   if (has('stache')) front += '<path d="M248 372 Q274 350 300 372 Q326 350 352 372 Q326 398 300 382 Q274 398 248 372Z" fill="#5c3317"' + ink + ' stroke-width="5"/>';
-  if (has('cowboy')) front += '<ellipse cx="300" cy="188" rx="168" ry="28" fill="#6b3f24"' + ink + ' stroke-width="8"/><path d="M198 176 Q228 58 300 44 Q372 58 402 176 Q358 128 300 124 Q242 128 198 176Z" fill="#c4843c"' + ink + ' stroke-width="8"/><path d="M210 174 Q300 202 390 174" fill="none" stroke="#3b2412" stroke-width="14" stroke-linecap="round"/><polygon points="372,62 382,88 410,88 388,104 396,132 372,116 348,132 356,104 334,88 362,88" fill="#fde047" stroke="#080b10" stroke-width="4"/>';
+  if (has('cowboy')) front += '<g transform="translate(0,46)"><ellipse cx="300" cy="188" rx="168" ry="28" fill="#6b3f24"' + ink + ' stroke-width="8"/><path d="M198 176 Q228 58 300 44 Q372 58 402 176 Q358 128 300 124 Q242 128 198 176Z" fill="#c4843c"' + ink + ' stroke-width="8"/><path d="M210 174 Q300 202 390 174" fill="none" stroke="#3b2412" stroke-width="14" stroke-linecap="round"/><polygon points="372,62 382,88 410,88 388,104 396,132 372,116 348,132 356,104 334,88 362,88" fill="#fde047" stroke="#080b10" stroke-width="4"/></g>';
   if (has('straw')) {
+    front += '<g transform="translate(0,42)">';
     front += '<path d="M206 174Q207 93 255 67Q300 43 345 67Q393 93 394 174Q300 195 206 174Z" fill="url(#' + g + 'straw)" stroke="#080b12" stroke-width="8"/>';
     front += '<path d="M119 196Q147 143 220 137Q300 113 380 137Q453 143 481 196Q445 230 300 229Q155 230 119 196Z" fill="url(#' + g + 'straw)" stroke="#080b12" stroke-width="8"/>';
     front += '<path d="M119 196Q147 143 220 137Q300 113 380 137Q453 143 481 196Q445 230 300 229Q155 230 119 196Z" fill="url(#' + g + 'weave)"/>';
@@ -2191,12 +2193,12 @@ function gearLayers(has, g){
     front += '<ellipse cx="12" cy="16" rx="12" ry="22" transform="rotate(144 12 16)"/><ellipse cx="-12" cy="16" rx="12" ry="22" transform="rotate(216 -12 16)"/>';
     front += '<ellipse cx="-19" cy="-6" rx="12" ry="22" transform="rotate(288 -19 -6)"/><circle r="6" fill="#ffc52e"/>';
     front += '<path d="M0 0L17 -12" fill="none" stroke="#ffc52e" stroke-width="4"/>';
-    front += '</g>';
+    front += '</g></g>';
   }
-  if (has('cap')) front += '<path d="M188 186 Q300 78 412 186 Q358 132 300 128 Q242 132 188 186Z" fill="#3b82f6"' + ink + ' stroke-width="8"/><path d="M118 196 Q300 258 482 196 Q300 220 118 196Z" fill="#1d4ed8"' + ink + ' stroke-width="8"/><circle cx="300" cy="92" r="10" fill="#fff" stroke="#080b10" stroke-width="4"/>';
-  if (has('beanie')) front += '<path d="M186 188 Q300 62 414 188 Q356 128 300 122 Q244 128 186 188Z" fill="#e11d48"' + ink + ' stroke-width="8"/><circle cx="300" cy="58" r="22" fill="#fecdd3"' + ink + ' stroke-width="7"/>';
-  if (has('crown')) front += '<path d="M178 192 L208 62 L252 142 L300 38 L348 142 L392 62 L422 192Z" fill="#facc15"' + ink + ' stroke-width="8"/><circle cx="300" cy="78" r="8" fill="#ef4444"/><circle cx="236" cy="128" r="7" fill="#38bdf8"/><circle cx="364" cy="128" r="7" fill="#38bdf8"/>';
-  if (has('beret')) front += '<ellipse cx="328" cy="128" rx="128" ry="40" fill="#1e3a8a"' + ink + ' stroke-width="8" transform="rotate(-12 328 128)"/><circle cx="448" cy="86" r="14" fill="#e11d48"' + ink + ' stroke-width="6"/>';
+  if (has('cap')) front += '<g transform="translate(0,34)"><path d="M188 186 Q300 78 412 186 Q358 132 300 128 Q242 132 188 186Z" fill="#3b82f6"' + ink + ' stroke-width="8"/><path d="M118 196 Q300 258 482 196 Q300 220 118 196Z" fill="#1d4ed8"' + ink + ' stroke-width="8"/><circle cx="300" cy="92" r="10" fill="#fff" stroke="#080b10" stroke-width="4"/></g>';
+  if (has('beanie')) front += '<g transform="translate(0,38)"><path d="M186 188 Q300 62 414 188 Q356 128 300 122 Q244 128 186 188Z" fill="#e11d48"' + ink + ' stroke-width="8"/><circle cx="300" cy="58" r="22" fill="#fecdd3"' + ink + ' stroke-width="7"/></g>';
+  if (has('crown')) front += '<g transform="translate(0,34)"><path d="M178 192 L208 62 L252 142 L300 38 L348 142 L392 62 L422 192Z" fill="#facc15"' + ink + ' stroke-width="8"/><circle cx="300" cy="78" r="8" fill="#ef4444"/><circle cx="236" cy="128" r="7" fill="#38bdf8"/><circle cx="364" cy="128" r="7" fill="#38bdf8"/></g>';
+  if (has('beret')) front += '<g transform="translate(0,72)"><ellipse cx="328" cy="128" rx="128" ry="40" fill="#1e3a8a"' + ink + ' stroke-width="8" transform="rotate(-12 328 128)"/><circle cx="448" cy="86" r="14" fill="#e11d48"' + ink + ' stroke-width="6"/></g>';
   let handIce = '', handSign = '';
   if (has('wand')) {
     handIce = '<line x1="468" y1="455" x2="548" y2="280" stroke="#f6d7a8" stroke-width="11" stroke-linecap="round"/><polygon points="548,236 582,300 514,300" fill="#fde68a" stroke="#080b10" stroke-width="5"/>';
