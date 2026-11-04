@@ -2181,7 +2181,7 @@ function gearLayers(has, g){
   }
   if (has('bindi')) front += '<circle cx="300" cy="268" r="9" fill="#e11d48" stroke="#080b10" stroke-width="4"/>';
   if (has('stache')) front += '<path d="M248 372 Q274 350 300 372 Q326 350 352 372 Q326 398 300 382 Q274 398 248 372Z" fill="#5c3317"' + ink + ' stroke-width="5"/>';
-  if (has('cowboy')) front += '<g transform="translate(0,80)"><ellipse cx="300" cy="188" rx="168" ry="28" fill="#6b3f24"' + ink + ' stroke-width="8"/><path d="M198 176 Q228 58 300 44 Q372 58 402 176 Q358 128 300 124 Q242 128 198 176Z" fill="#c4843c"' + ink + ' stroke-width="8"/><path d="M210 174 Q300 202 390 174" fill="none" stroke="#3b2412" stroke-width="14" stroke-linecap="round"/><polygon points="372,62 382,88 410,88 388,104 396,132 372,116 348,132 356,104 334,88 362,88" fill="#fde047" stroke="#080b10" stroke-width="4"/></g>';
+  if (has('cowboy')) front += '<g transform="translate(0,80)"><ellipse cx="300" cy="188" rx="168" ry="28" fill="#6b3f24"' + ink + ' stroke-width="8"/><path d="M198 176 Q228 58 300 44 Q372 58 402 176 L402 198 Q300 216 198 198 Z" fill="#c4843c"' + ink + ' stroke-width="8"/><path d="M210 174 Q300 202 390 174" fill="none" stroke="#3b2412" stroke-width="14" stroke-linecap="round"/><polygon points="372,62 382,88 410,88 388,104 396,132 372,116 348,132 356,104 334,88 362,88" fill="#fde047" stroke="#080b10" stroke-width="4"/></g>';
   if (has('straw')) {
     front += '<g transform="translate(0,76)">';
     front += '<path d="M206 174Q207 93 255 67Q300 43 345 67Q393 93 394 174Q300 195 206 174Z" fill="url(#' + g + 'straw)" stroke="#080b12" stroke-width="8"/>';
