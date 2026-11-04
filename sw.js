@@ -15,7 +15,7 @@
  * ce qui force le rafraîchissement du cache sur iOS/Android sans intervention.
  * La valeur ci-dessous ne sert que de repli en dev / déploiement manuel.
  */
-const CACHE_VERSION = 'mlp-v9';
+const CACHE_VERSION = 'mlp-v10';
 const PRECACHE = [
   './',
   './index.html',

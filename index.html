@@ -2181,9 +2181,9 @@ function gearLayers(has, g){
   }
   if (has('bindi')) front += '<circle cx="300" cy="268" r="9" fill="#e11d48" stroke="#080b10" stroke-width="4"/>';
   if (has('stache')) front += '<path d="M248 372 Q274 350 300 372 Q326 350 352 372 Q326 398 300 382 Q274 398 248 372Z" fill="#5c3317"' + ink + ' stroke-width="5"/>';
-  if (has('cowboy')) front += '<g transform="translate(0,108)"><ellipse cx="300" cy="188" rx="168" ry="28" fill="#6b3f24"' + ink + ' stroke-width="8"/><path d="M198 176 Q228 58 300 44 Q372 58 402 176 Q358 128 300 124 Q242 128 198 176Z" fill="#c4843c"' + ink + ' stroke-width="8"/><path d="M210 174 Q300 202 390 174" fill="none" stroke="#3b2412" stroke-width="14" stroke-linecap="round"/><polygon points="372,62 382,88 410,88 388,104 396,132 372,116 348,132 356,104 334,88 362,88" fill="#fde047" stroke="#080b10" stroke-width="4"/></g>';
+  if (has('cowboy')) front += '<g transform="translate(0,80)"><ellipse cx="300" cy="188" rx="168" ry="28" fill="#6b3f24"' + ink + ' stroke-width="8"/><path d="M198 176 Q228 58 300 44 Q372 58 402 176 Q358 128 300 124 Q242 128 198 176Z" fill="#c4843c"' + ink + ' stroke-width="8"/><path d="M210 174 Q300 202 390 174" fill="none" stroke="#3b2412" stroke-width="14" stroke-linecap="round"/><polygon points="372,62 382,88 410,88 388,104 396,132 372,116 348,132 356,104 334,88 362,88" fill="#fde047" stroke="#080b10" stroke-width="4"/></g>';
   if (has('straw')) {
-    front += '<g transform="translate(0,104)">';
+    front += '<g transform="translate(0,76)">';
     front += '<path d="M206 174Q207 93 255 67Q300 43 345 67Q393 93 394 174Q300 195 206 174Z" fill="url(#' + g + 'straw)" stroke="#080b12" stroke-width="8"/>';
     front += '<path d="M119 196Q147 143 220 137Q300 113 380 137Q453 143 481 196Q445 230 300 229Q155 230 119 196Z" fill="url(#' + g + 'straw)" stroke="#080b12" stroke-width="8"/>';
     front += '<path d="M119 196Q147 143 220 137Q300 113 380 137Q453 143 481 196Q445 230 300 229Q155 230 119 196Z" fill="url(#' + g + 'weave)"/>';
@@ -2195,10 +2195,10 @@ function gearLayers(has, g){
     front += '<path d="M0 0L17 -12" fill="none" stroke="#ffc52e" stroke-width="4"/>';
     front += '</g></g>';
   }
-  if (has('cap')) front += '<g transform="translate(0,74)"><path d="M188 186 Q300 78 412 186 Q358 132 300 128 Q242 132 188 186Z" fill="#3b82f6"' + ink + ' stroke-width="8"/><path d="M118 196 Q300 258 482 196 Q300 220 118 196Z" fill="#1d4ed8"' + ink + ' stroke-width="8"/><circle cx="300" cy="92" r="10" fill="#fff" stroke="#080b10" stroke-width="4"/></g>';
-  if (has('beanie')) front += '<g transform="translate(0,92)"><path d="M186 188 Q300 62 414 188 Q356 128 300 122 Q244 128 186 188Z" fill="#e11d48"' + ink + ' stroke-width="8"/><circle cx="300" cy="58" r="22" fill="#fecdd3"' + ink + ' stroke-width="7"/></g>';
-  if (has('crown')) front += '<g transform="translate(0,86)"><path d="M178 192 L208 62 L252 142 L300 38 L348 142 L392 62 L422 192Z" fill="#facc15"' + ink + ' stroke-width="8"/><circle cx="300" cy="78" r="8" fill="#ef4444"/><circle cx="236" cy="128" r="7" fill="#38bdf8"/><circle cx="364" cy="128" r="7" fill="#38bdf8"/></g>';
-  if (has('beret')) front += '<g transform="translate(0,130)"><ellipse cx="328" cy="128" rx="128" ry="40" fill="#1e3a8a"' + ink + ' stroke-width="8" transform="rotate(-12 328 128)"/><circle cx="448" cy="86" r="14" fill="#e11d48"' + ink + ' stroke-width="6"/></g>';
+  if (has('cap')) front += '<g transform="translate(0,50)"><path d="M188 186 Q300 78 412 186 Q358 132 300 128 Q242 132 188 186Z" fill="#3b82f6"' + ink + ' stroke-width="8"/><path d="M118 196 Q300 258 482 196 Q300 220 118 196Z" fill="#1d4ed8"' + ink + ' stroke-width="8"/><circle cx="300" cy="92" r="10" fill="#fff" stroke="#080b10" stroke-width="4"/></g>';
+  if (has('beanie')) front += '<g transform="translate(0,64)"><path d="M186 188 Q300 62 414 188 Q356 128 300 122 Q244 128 186 188Z" fill="#f4efe4"' + ink + ' stroke-width="8"/><path d="M196 168 Q300 132 404 168 Q300 156 196 168Z" fill="#e11d48"/><circle cx="300" cy="58" r="22" fill="#ff8c69"' + ink + ' stroke-width="7"/></g>';
+  if (has('crown')) front += '<g transform="translate(0,58)"><path d="M178 192 L208 62 L252 142 L300 38 L348 142 L392 62 L422 192Z" fill="#facc15"' + ink + ' stroke-width="8"/><circle cx="300" cy="78" r="8" fill="#ef4444"/><circle cx="236" cy="128" r="7" fill="#38bdf8"/><circle cx="364" cy="128" r="7" fill="#38bdf8"/></g>';
+  if (has('beret')) front += '<g transform="translate(0,102)"><ellipse cx="328" cy="128" rx="128" ry="40" fill="#1e3a8a"' + ink + ' stroke-width="8" transform="rotate(-12 328 128)"/><circle cx="448" cy="86" r="14" fill="#e11d48"' + ink + ' stroke-width="6"/></g>';
   let handIce = '', handSign = '';
   if (has('wand')) {
     handIce = '<line x1="468" y1="455" x2="548" y2="280" stroke="#f6d7a8" stroke-width="11" stroke-linecap="round"/><polygon points="548,236 582,300 514,300" fill="#fde68a" stroke="#080b10" stroke-width="5"/>';
